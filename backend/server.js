@@ -1,6 +1,7 @@
 const express = require('express');
 const pool = require('./config/db');
 const productRoute = require('./routes/productRoute');
+const reviewRoute = require('./routes/reviewRoute');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -9,6 +10,7 @@ app.use(express.json());
 
 // Routes
 app.use('/api/products', productRoute);
+app.use('/api/reviews', reviewRoute);
 
 app.get('/health', async (req, res) => {
     try {

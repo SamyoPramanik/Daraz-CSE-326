@@ -20,9 +20,10 @@ CREATE TABLE IF NOT EXISTS categories (
 
 -- ✅ Products Table
 CREATE TABLE IF NOT EXISTS products (
-    id SERIAL PRIMARY KEY,
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR(255) NOT NULL,
     brand VARCHAR(255),
+    description TEXT,
     price NUMERIC(10,2) NOT NULL,
     discount_price NUMERIC(10,2),
     stock INT NOT NULL DEFAULT 0,
@@ -42,7 +43,7 @@ CREATE TABLE IF NOT EXISTS carts (
 CREATE TABLE IF NOT EXISTS cart_items (
     id SERIAL PRIMARY KEY,
     cart_id INT NOT NULL,
-    product_id INT NOT NULL,
+    product_id UUID NOT NULL,
     quantity INT NOT NULL DEFAULT 1,
     FOREIGN KEY (cart_id) REFERENCES carts(id) ON DELETE CASCADE,
     FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
@@ -65,14 +66,43 @@ CREATE TABLE IF NOT EXISTS orders (
 CREATE TABLE IF NOT EXISTS order_items (
     id SERIAL PRIMARY KEY,
     order_id UUID NOT NULL,
-    product_id INT NOT NULL,
+    product_id UUID NOT NULL,
     quantity INT NOT NULL,
     price NUMERIC(10,2) NOT NULL,
     FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
     FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
 );
 
+-- ⭐ Reviews Table
+CREATE TABLE IF NOT EXISTS reviews (
+    id SERIAL PRIMARY KEY,
+    user_id UUID NOT NULL,
+    product_id UUID NOT NULL,
+    rating INT NOT NULL CHECK (rating >= 1 AND rating <= 5),
+    review TEXT,
+    created_at TIMESTAMP DEFAULT NOW(),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
+    UNIQUE (user_id, product_id)
+);
+
+-- ⭐ Bookings Table (Temporary reservations during checkout)
+CREATE TABLE IF NOT EXISTS bookings (
+    id SERIAL PRIMARY KEY,
+    user_id UUID NOT NULL,
+    product_id UUID NOT NULL,
+    booking_count INT NOT NULL DEFAULT 1,
+    created_at TIMESTAMP DEFAULT NOW(),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
+    UNIQUE (user_id, product_id)
+);
+
 -- 📊 Performance Indexes
 CREATE INDEX IF NOT EXISTS idx_products_category ON products(category_id);
 CREATE INDEX IF NOT EXISTS idx_cart_user ON carts(user_id);
 CREATE INDEX IF NOT EXISTS idx_order_user ON orders(user_id);
+CREATE INDEX IF NOT EXISTS idx_review_product ON reviews(product_id);
+CREATE INDEX IF NOT EXISTS idx_review_user ON reviews(user_id);
+CREATE INDEX IF NOT EXISTS idx_booking_product ON bookings(product_id);
+CREATE INDEX IF NOT EXISTS idx_booking_user ON bookings(user_id);

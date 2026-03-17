@@ -175,8 +175,170 @@ WHERE id = $2
 RETURNING *;
 
 -- ============================================
--- 📊 ANALYTICS & REPORTS
+-- ⭐ REVIEW OPERATIONS
 -- ============================================
+
+-- Get all reviews for a product
+SELECT r.id, u.name, r.rating, r.review, r.created_at
+FROM reviews r 
+INNER JOIN users u ON r.user_id = u.id 
+WHERE r.product_id = $1
+ORDER BY r.created_at DESC;
+
+-- Get product rating summary
+SELECT 
+    p.id, p.name,
+    ROUND(AVG(r.rating), 2) as avg_rating,
+    COUNT(r.id) as review_count,
+    SUM(CASE WHEN r.rating = 5 THEN 1 ELSE 0 END) as five_star,
+    SUM(CASE WHEN r.rating = 4 THEN 1 ELSE 0 END) as four_star,
+    SUM(CASE WHEN r.rating = 3 THEN 1 ELSE 0 END) as three_star,
+    SUM(CASE WHEN r.rating = 2 THEN 1 ELSE 0 END) as two_star,
+    SUM(CASE WHEN r.rating = 1 THEN 1 ELSE 0 END) as one_star
+FROM products p
+LEFT JOIN reviews r ON p.id = r.product_id
+WHERE p.id = $1
+GROUP BY p.id, p.name;
+
+-- Get user's review for a product
+SELECT * FROM reviews 
+WHERE user_id = $1 AND product_id = $2;
+
+-- Create or update review
+INSERT INTO reviews (user_id, product_id, rating, review) 
+VALUES ($1, $2, $3, $4) 
+ON CONFLICT (user_id, product_id) 
+DO UPDATE SET rating = $3, review = $4, created_at = NOW()
+RETURNING *;
+
+-- Delete review
+DELETE FROM reviews 
+WHERE id = $1 AND user_id = $2
+RETURNING *;
+
+-- Get user's reviews
+SELECT r.id, p.name, r.rating, r.review, r.created_at
+FROM reviews r 
+INNER JOIN products p ON r.product_id = p.id 
+WHERE r.user_id = $1
+ORDER BY r.created_at DESC;
+
+-- Products by highest rating
+SELECT 
+    p.id, p.name, p.price,
+    ROUND(AVG(r.rating), 2) as avg_rating,
+    COUNT(r.id) as review_count
+FROM products p
+LEFT JOIN reviews r ON p.id = r.product_id
+GROUP BY p.id, p.name, p.price
+HAVING COUNT(r.id) > 0
+ORDER BY avg_rating DESC
+LIMIT 10;
+
+-- ============================================
+-- 📦 BOOKING OPERATIONS (Stock Reservation)
+-- ============================================
+
+-- Get user's active bookings (reservations)
+SELECT b.id, p.id as product_id, p.name, p.price, b.booking_count,
+       COALESCE(p.discount_price, p.price) * b.booking_count as total_price,
+       b.created_at,
+       EXTRACT(EPOCH FROM (NOW() - b.created_at))/60 as minutes_booked
+FROM bookings b 
+INNER JOIN products p ON b.product_id = p.id 
+WHERE b.user_id = $1
+ORDER BY b.created_at DESC;
+
+-- Create or update booking (add to cart/checkout start)
+INSERT INTO bookings (user_id, product_id, booking_count) 
+VALUES ($1, $2, $3) 
+ON CONFLICT (user_id, product_id) 
+DO UPDATE SET booking_count = $3, created_at = NOW()
+RETURNING *;
+
+-- Check if product can be booked
+SELECT 
+    p.id, p.name, p.stock,
+    COALESCE(SUM(b.booking_count), 0) as booked_count,
+    p.stock - COALESCE(SUM(b.booking_count), 0) as available_count
+FROM products p
+LEFT JOIN bookings b ON p.id = b.product_id
+WHERE p.id = $1
+GROUP BY p.id, p.name, p.stock
+HAVING p.stock > COALESCE(SUM(b.booking_count), 0);
+
+-- Get all bookings for a product
+SELECT b.id, u.email, u.name, b.booking_count, b.created_at
+FROM bookings b 
+INNER JOIN users u ON b.user_id = u.id 
+WHERE b.product_id = $1
+ORDER BY b.created_at DESC;
+
+-- Remove booking (checkout cancel)
+DELETE FROM bookings 
+WHERE user_id = $1 AND product_id = $2
+RETURNING *;
+
+-- Clear all user bookings
+DELETE FROM bookings 
+WHERE user_id = $1;
+
+-- Delete expired bookings (older than 30 minutes)
+DELETE FROM bookings 
+WHERE created_at < NOW() - INTERVAL '30 minutes'
+RETURNING *;
+
+-- Calculate total booked amount for user (before payment)
+SELECT 
+    COALESCE(SUM(b.booking_count * COALESCE(p.discount_price, p.price)), 0) as total_amount
+FROM bookings b
+INNER JOIN products p ON b.product_id = p.id
+WHERE b.user_id = $1;
+
+-- Check stock availability after bookings
+SELECT 
+    p.id, p.name, p.stock,
+    COALESCE(SUM(b.booking_count), 0) as reserved,
+    p.stock - COALESCE(SUM(b.booking_count), 0) as available
+FROM products p
+LEFT JOIN bookings b ON p.id = b.product_id
+WHERE p.stock > 0
+GROUP BY p.id, p.name, p.stock
+ORDER BY available ASC;
+
+-- ============================================
+-- 🔄 CHECKOUT FLOW (Convert Booking to Order)
+-- ============================================
+
+-- Create order from bookings (transactional)
+BEGIN;
+
+-- 1. Create order
+INSERT INTO orders (user_id, total_amount, payment_method, payment_status, order_status, shipping_address)
+VALUES ($1, $2, $3, 'Pending', 'Pending', $4)
+RETURNING id;
+
+-- 2. Create order items from bookings
+INSERT INTO order_items (order_id, product_id, quantity, price)
+SELECT $5, b.product_id, b.booking_count, COALESCE(p.discount_price, p.price)
+FROM bookings b
+INNER JOIN products p ON b.product_id = p.id
+WHERE b.user_id = $1;
+
+-- 3. Update product stock
+UPDATE products 
+SET stock = stock - b.booking_count
+FROM bookings b
+WHERE products.id = b.product_id AND b.user_id = $1;
+
+-- 4. Delete bookings for this user
+DELETE FROM bookings WHERE user_id = $1;
+
+-- 5. Clear cart
+DELETE FROM cart_items 
+WHERE cart_id = (SELECT id FROM carts WHERE user_id = $1);
+
+COMMIT;
 
 -- Best selling products
 SELECT 

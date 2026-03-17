@@ -19,22 +19,22 @@ INSERT INTO users (name, email, password, phone) VALUES
     ('Rashed Mahmud', 'rashed@example.com', 'hashed_password_345', '01412345682')
 ON CONFLICT DO NOTHING;
 
--- Insert Products
-INSERT INTO products (name, brand, price, discount_price, stock, flash_sale, category_id) VALUES
-    ('Samsung Galaxy S24', 'Samsung', 89999.00, 79999.00, 50, TRUE, 1),
-    ('iPhone 15 Pro', 'Apple', 129999.00, 119999.00, 30, FALSE, 1),
-    ('Sony WH-1000XM5 Headphones', 'Sony', 34999.00, 29999.00, 25, FALSE, 1),
-    ('Cotton T-Shirt', 'Local Brand', 599.00, 499.00, 200, TRUE, 2),
-    ('Denim Jeans', 'Levi''s', 3999.00, 2999.00, 80, FALSE, 2),
-    ('Winter Jacket', 'North Face', 12999.00, 9999.00, 40, FALSE, 2),
-    ('Non-stick Frying Pan', 'Tefal', 1999.00, 1499.00, 120, FALSE, 3),
-    ('Stainless Steel Utensil Set', 'Delcasa', 2499.00, 1999.00, 90, TRUE, 3),
-    ('The Midnight Library', 'Matt Haig', 799.00, 599.00, 150, FALSE, 4),
-    ('Educated', 'Tara Westover', 699.00, 549.00, 100, FALSE, 4),
-    ('Yoga Mat', 'Decathlon', 1499.00, 1099.00, 60, TRUE, 5),
-    ('Running Shoes', 'Nike', 7999.00, 5999.00, 45, FALSE, 5),
-    ('Face Moisturizer', 'Cetaphil', 1299.00, 999.00, 200, FALSE, 6),
-    ('Shampoo Bundle', 'Loreal', 2999.00, 1999.00, 80, TRUE, 6)
+-- Insert Products (with descriptions)
+INSERT INTO products (name, brand, description, price, discount_price, stock, flash_sale, category_id) VALUES
+    ('Samsung Galaxy S24', 'Samsung', 'Latest flagship smartphone with advanced camera system and 5G connectivity.', 89999.00, 79999.00, 50, TRUE, 1),
+    ('iPhone 15 Pro', 'Apple', 'Premium Apple smartphone with A17 Pro chip and titanium design.', 129999.00, 119999.00, 30, FALSE, 1),
+    ('Sony WH-1000XM5 Headphones', 'Sony', 'Industry-leading noise-canceling wireless headphones with superior sound quality.', 34999.00, 29999.00, 25, FALSE, 1),
+    ('Cotton T-Shirt', 'Local Brand', 'Comfortable 100% organic cotton T-shirt, perfect for everyday wear.', 599.00, 499.00, 200, TRUE, 2),
+    ('Denim Jeans', 'Levi''s', 'Classic durable denim jeans with timeless style.', 3999.00, 2999.00, 80, FALSE, 2),
+    ('Winter Jacket', 'North Face', 'Insulated winter jacket with waterproof shell and warmth insulation.', 12999.00, 9999.00, 40, FALSE, 2),
+    ('Non-stick Frying Pan', 'Tefal', 'Durable non-stick frying pan for healthy cooking.', 1999.00, 1499.00, 120, FALSE, 3),
+    ('Stainless Steel Utensil Set', 'Delcasa', 'Complete kitchen utensil set with professional-grade stainless steel.', 2499.00, 1999.00, 90, TRUE, 3),
+    ('The Midnight Library', 'Matt Haig', 'Bestselling fiction novel exploring infinite possibilities and life choices.', 799.00, 599.00, 150, FALSE, 4),
+    ('Educated', 'Tara Westover', 'Memoir about a woman who leaves her survivalist family to pursue education.', 699.00, 549.00, 100, FALSE, 4),
+    ('Yoga Mat', 'Decathlon', 'Non-slip exercise yoga mat with carrying strap.', 1499.00, 1099.00, 60, TRUE, 5),
+    ('Running Shoes', 'Nike', 'High-performance running shoes with advanced cushioning technology.', 7999.00, 5999.00, 45, FALSE, 5),
+    ('Face Moisturizer', 'Cetaphil', 'Hypoallergenic facial moisturizer suitable for all skin types.', 1299.00, 999.00, 200, FALSE, 6),
+    ('Shampoo Bundle', 'Loreal', 'Professional hair care shampoo and conditioner bundle set.', 2999.00, 1999.00, 80, TRUE, 6)
 ON CONFLICT DO NOTHING;
 
 -- Insert Carts (one for each user)
@@ -42,15 +42,15 @@ INSERT INTO carts (user_id)
 SELECT id FROM users LIMIT 5
 ON CONFLICT DO NOTHING;
 
--- Insert Cart Items (sample items in carts)
+-- Insert Cart Items (using product UUIDs)
 INSERT INTO cart_items (cart_id, product_id, quantity)
 VALUES
-    (1, 1, 1),
-    (1, 7, 2),
-    (2, 3, 1),
-    (2, 10, 3),
-    (3, 12, 1),
-    (3, 13, 2)
+    (1, (SELECT id FROM products WHERE name = 'Samsung Galaxy S24'), 1),
+    (1, (SELECT id FROM products WHERE name = 'Non-stick Frying Pan'), 2),
+    (2, (SELECT id FROM products WHERE name = 'Sony WH-1000XM5 Headphones'), 1),
+    (2, (SELECT id FROM products WHERE name = 'Educated'), 3),
+    (3, (SELECT id FROM products WHERE name = 'Running Shoes'), 1),
+    (3, (SELECT id FROM products WHERE name = 'Face Moisturizer'), 2)
 ON CONFLICT DO NOTHING;
 
 -- Insert Sample Orders
@@ -60,9 +60,28 @@ INSERT INTO orders (user_id, total_amount, payment_method, payment_status, order
     ((SELECT id FROM users LIMIT 1 OFFSET 2), 79999.00, 'COD', 'Pending', 'Pending', '789 Oak Rd, Sylhet, Bangladesh')
 ON CONFLICT DO NOTHING;
 
--- Insert Order Items
+-- Insert Order Items (using product UUIDs)
 INSERT INTO order_items (order_id, product_id, quantity, price) VALUES
-    ((SELECT id FROM orders LIMIT 1), 2, 1, 129999.00),
-    ((SELECT id FROM orders LIMIT 1 OFFSET 1), 12, 1, 5999.00),
-    ((SELECT id FROM orders LIMIT 1 OFFSET 2), 1, 1, 79999.00)
+    ((SELECT id FROM orders LIMIT 1), (SELECT id FROM products WHERE name = 'iPhone 15 Pro'), 1, 129999.00),
+    ((SELECT id FROM orders LIMIT 1 OFFSET 1), (SELECT id FROM products WHERE name = 'Running Shoes'), 1, 5999.00),
+    ((SELECT id FROM orders LIMIT 1 OFFSET 2), (SELECT id FROM products WHERE name = 'Samsung Galaxy S24'), 1, 79999.00)
+ON CONFLICT DO NOTHING;
+
+-- ⭐ Insert Reviews
+INSERT INTO reviews (user_id, product_id, rating, review)
+VALUES
+    ((SELECT id FROM users LIMIT 1), (SELECT id FROM products WHERE name = 'Samsung Galaxy S24'), 5, 'Excellent product! Great performance and battery life.'),
+    ((SELECT id FROM users LIMIT 1 OFFSET 1), (SELECT id FROM products WHERE name = 'Sony WH-1000XM5 Headphones'), 4, 'Good quality, fast delivery. Noise cancellation is superb.'),
+    ((SELECT id FROM users LIMIT 1 OFFSET 2), (SELECT id FROM products WHERE name = 'Running Shoes'), 5, 'Very comfortable for long runs. Great build quality.'),
+    ((SELECT id FROM users LIMIT 1 OFFSET 3), (SELECT id FROM products WHERE name = 'Face Moisturizer'), 4, 'Gentle on skin, no irritation. Worth the price.'),
+    ((SELECT id FROM users LIMIT 1 OFFSET 4), (SELECT id FROM products WHERE name = 'Yoga Mat'), 4, 'Durable and non-slip. Perfect for my workouts.')
+ON CONFLICT DO NOTHING;
+
+-- ⭐ Insert Bookings (temporary reservations during checkout)
+INSERT INTO bookings (user_id, product_id, booking_count)
+VALUES
+    ((SELECT id FROM users LIMIT 1), (SELECT id FROM products WHERE name = 'iPhone 15 Pro'), 1),
+    ((SELECT id FROM users LIMIT 1 OFFSET 1), (SELECT id FROM products WHERE name = 'Winter Jacket'), 1),
+    ((SELECT id FROM users LIMIT 1 OFFSET 2), (SELECT id FROM products WHERE name = 'Denim Jeans'), 2),
+    ((SELECT id FROM users LIMIT 1 OFFSET 3), (SELECT id FROM products WHERE name = 'The Midnight Library'), 1)
 ON CONFLICT DO NOTHING;
