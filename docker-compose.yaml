@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: daraz_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: daraz_user
+      POSTGRES_PASSWORD: daraz_password
+      POSTGRES_DB: daraz_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - daraz_pgdata:/var/lib/postgresql/data
+      # Maps local database folder to docker postgres initialization directory.
+      # Because "migrations.sql" starts with 'm' and "seed.sql" starts with 's',
+      # migrations run before seed automatically inside the container.
+      - ./database:/docker-entrypoint-initdb.d/
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U daraz_user -d daraz_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build: .
+    container_name: daraz_express
+    restart: always
+    ports:
+      - "4000:3000"
+    environment:
+      PORT: 3000
+      DB_USER: daraz_user
+      DB_PASSWORD: daraz_password
+      DB_NAME: daraz_db
+      DB_HOST: db
+      DB_PORT: 5432
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  daraz_pgdata:
