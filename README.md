@@ -11,3 +11,6 @@ Execute the following command in the root of the project:
 ```bash
 docker compose up --build
 ```
+
+
+ki je bolo samyo
