@@ -3,6 +3,12 @@ const pool = require('./config/db');
 const productRoute = require('./routes/productRoute');
 const reviewRoute = require('./routes/reviewRoute');
 
+const authRoute = require('./routes/authRoute');
+const orderRoute = require('./routes/orderRoute');
+const cartRoute = require('./routes/cartRoute');
+
+
+
 const app = express();
 const port = process.env.PORT || 4000;
 
@@ -11,6 +17,9 @@ app.use(express.json());
 // Routes
 app.use('/api/products', productRoute);
 app.use('/api/reviews', reviewRoute);
+app.use('/api/auth', authRoute);
+app.use('/api/orders', orderRoute);
+app.use('/api/cart', cartRoute);
 
 app.get('/health', async (req, res) => {
     try {
