@@ -20,6 +20,8 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    networks:
+      - daraz_network
 
   backend:
     build: ./backend
@@ -37,6 +39,43 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    networks:
+      - daraz_network
+
+  frontend:
+    build: ./frontend
+    container_name: daraz_frontend
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      NEXT_PUBLIC_SERVER_URL: http://backend:4000
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - daraz_network
+
+  nginx:
+    image: nginx:alpine
+    container_name: daraz_nginx
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      - ./ngnix/nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      frontend:
+        condition: service_healthy
+      backend:
+        condition: service_healthy
+    networks:
+      - daraz_network
 
 volumes:
   daraz_pgdata:
+
+
+networks:
+  daraz_network:
+    driver: bridge
