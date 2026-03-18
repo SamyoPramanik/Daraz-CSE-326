@@ -129,6 +129,26 @@ View all items currently in the authenticated user's cart.
 - **URL**: `/cart`
 - **Method**: `GET`
 - **Authorization**: Required
+- **Response**:
+  ```json
+  {
+      "status": "success",
+      "data": [
+          {
+              "id": 1,
+              "cart_id": 1,
+              "product_id": "uuid",
+              "name": "Samsung Galaxy S24",
+              "price": 89999.00,
+              "quantity": 1,
+              "total_price": 89999.00
+          }
+      ],
+      "meta": {
+          "cart_total": 89999.00
+      }
+  }
+  ```
 
 ### 6. Add Product to Cart
 - **URL**: `/cart`
@@ -139,6 +159,18 @@ View all items currently in the authenticated user's cart.
   {
       "productId": "uuid",
       "quantity": 1
+  }
+  ```
+- **Response** (201 Created):
+  ```json
+  {
+      "status": "success",
+      "message": "Product added to cart",
+      "data": {
+          "id": 2,
+          "product_id": "uuid",
+          "quantity": 1
+      }
   }
   ```
 
@@ -153,11 +185,30 @@ Increase or decrease the quantity of a specific cart item.
       "quantity": 2
   }
   ```
+- **Response**:
+  ```json
+  {
+      "status": "success",
+      "message": "Cart quantity updated",
+      "data": {
+          "id": 2,
+          "product_id": "uuid",
+          "quantity": 2
+      }
+  }
+  ```
 
 ### 8. Remove from Cart
 - **URL**: `/cart/:cartItemId`
 - **Method**: `DELETE`
 - **Authorization**: Required
+- **Response**:
+  ```json
+  {
+      "status": "success",
+      "message": "Item removed from cart"
+  }
+  ```
 
 ---
 
@@ -235,6 +286,23 @@ Submit a rating and review for a specific product purchased in an order.
   }
   ```
 - **Logic**: The server will verify if the authenticated user has an `order_item` for this `productId`. If so, it updates the `order_items` table with the rating and review.
+- **Response** (201 Created):
+  ```json
+  {
+      "status": "success",
+      "message": "Review created/updated successfully",
+      "data": {
+          "id": 1,
+          "order_id": "uuid",
+          "product_id": "uuid",
+          "quantity": 1,
+          "price": 89999.00,
+          "rating": 5,
+          "review": "Absolutely love it. Battery life is amazing!",
+          "review_date": "2026-03-18T10:00:00Z"
+      }
+  }
+  ```
 
 ### 12. Get All Reviews of a Product
 - **URL**: `/reviews/product/:productId`
@@ -261,3 +329,74 @@ Submit a rating and review for a specific product purchased in an order.
       }
   }
   ```
+
+---
+
+## Standard API Responses
+
+Our API uses conventional HTTP response codes to indicate the success or failure of an API request.
+
+### 200 OK
+Returned when a standard request is processed successfully.
+```json
+{
+    "status": "success",
+    "data": { "id": 1, "name": "Sample" }
+}
+```
+
+### 201 Created
+Returned when a new resource is successfully created (e.g., a new user registration, checkout, or review).
+```json
+{
+    "status": "success",
+    "message": "Resource created successfully",
+    "data": { "id": "uuid" }
+}
+```
+
+### 400 Bad Request
+Returned when the request is malformed or invalid (e.g., missing payload fields, invalid data formats).
+```json
+{
+    "status": "error",
+    "message": "Rating must be between 1 and 5"
+}
+```
+
+### 401 Unauthorized
+Returned when authentication fails or the provided JWT token is invalid, missing, or expired.
+```json
+{
+    "status": "error",
+    "message": "Access denied. Invalid or missing token."
+}
+```
+
+### 403 Forbidden
+Returned when the user is authenticated but does not have permission to perform an action (e.g., reviewing an item they never purchased).
+```json
+{
+    "status": "error",
+    "message": "You can only review products you have ordered"
+}
+```
+
+### 404 Not Found
+Returned when the requested resource (e.g., product, user, review) does not exist.
+```json
+{
+    "status": "error",
+    "message": "Product not found"
+}
+```
+
+### 500 Internal Server Error
+Returned when an unexpected error occurs on the server side (e.g., database connection failure).
+```json
+{
+    "status": "error",
+    "message": "Failed to retrieve reviews",
+    "error": "Internal details..."
+}
+```
