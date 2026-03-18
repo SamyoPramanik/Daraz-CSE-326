@@ -22,6 +22,7 @@ CREATE TABLE IF NOT EXISTS categories (
 CREATE TABLE IF NOT EXISTS products (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid (),
     name VARCHAR(255) NOT NULL,
+    image_url VARCHAR(255) NOT NULL,
     brand VARCHAR(255),
     description TEXT,
     price NUMERIC(10, 2) NOT NULL,
