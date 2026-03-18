@@ -8,10 +8,10 @@ const getProducts = async (req, res) => {
             data: result.rows,
         });
     } catch (err) {
-        res.status(500).json({ 
-            status: 'error', 
-            message: 'Failed to retrieve products', 
-            error: err.message 
+        res.status(500).json({
+            status: 'error',
+            message: 'Failed to retrieve products',
+            error: err.message
         });
     }
 };
@@ -39,26 +39,27 @@ const getProductWithReviews = async (req, res) => {
         // Get product reviews with user info
         const reviewsResult = await pool.query(
             `SELECT 
-                r.id,
-                r.rating,
-                r.review,
-                r.created_at,
+                oi.id,
+                oi.rating,
+                oi.review,
+                oi.review_date as created_at,
                 u.name as user_name,
                 u.email
-            FROM reviews r
-            JOIN users u ON r.user_id = u.id
-            WHERE r.product_id = $1
-            ORDER BY r.created_at DESC`,
+            FROM order_items oi
+            JOIN orders o ON oi.order_id = o.id
+            JOIN users u ON o.user_id = u.id
+            WHERE oi.product_id = $1 AND oi.rating IS NOT NULL
+            ORDER BY oi.review_date DESC`,
             [id]
         );
 
         // Get average rating
         const ratingResult = await pool.query(
             `SELECT 
-                ROUND(AVG(r.rating), 2) as avg_rating,
-                COUNT(r.id) as review_count
-            FROM reviews r
-            WHERE r.product_id = $1`,
+                ROUND(AVG(oi.rating), 2) as avg_rating,
+                COUNT(oi.id) as review_count
+            FROM order_items oi
+            WHERE oi.product_id = $1 AND oi.rating IS NOT NULL`,
             [id]
         );
 
@@ -79,10 +80,10 @@ const getProductWithReviews = async (req, res) => {
 
         res.json(response);
     } catch (err) {
-        res.status(500).json({ 
-            status: 'error', 
-            message: 'Failed to retrieve product details', 
-            error: err.message 
+        res.status(500).json({
+            status: 'error',
+            message: 'Failed to retrieve product details',
+            error: err.message
         });
     }
 };

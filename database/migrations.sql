@@ -4,12 +4,12 @@ CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
 -- ✅ Users Table
 CREATE TABLE IF NOT EXISTS users (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid (),
     name VARCHAR(255) NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
     phone VARCHAR(20),
-    created_at TIMESTAMP DEFAULT NOW()
+    created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 -- ✅ Categories Table
@@ -20,23 +20,16 @@ CREATE TABLE IF NOT EXISTS categories (
 
 -- ✅ Products Table
 CREATE TABLE IF NOT EXISTS products (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid (),
     name VARCHAR(255) NOT NULL,
     brand VARCHAR(255),
     description TEXT,
-    price NUMERIC(10,2) NOT NULL,
-    discount_price NUMERIC(10,2),
+    price NUMERIC(10, 2) NOT NULL,
+    discount_price NUMERIC(10, 2),
     stock INT NOT NULL DEFAULT 0,
     flash_sale BOOLEAN DEFAULT FALSE,
     category_id INT NOT NULL,
-    FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE
-);
-
--- ✅ Carts Table
-CREATE TABLE IF NOT EXISTS carts (
-    id SERIAL PRIMARY KEY,
-    user_id UUID UNIQUE,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    FOREIGN KEY (category_id) REFERENCES categories (id) ON DELETE CASCADE
 );
 
 -- ✅ CartItems Table
@@ -45,21 +38,20 @@ CREATE TABLE IF NOT EXISTS cart_items (
     cart_id INT NOT NULL,
     product_id UUID NOT NULL,
     quantity INT NOT NULL DEFAULT 1,
-    FOREIGN KEY (cart_id) REFERENCES carts(id) ON DELETE CASCADE,
-    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+    FOREIGN KEY (product_id) REFERENCES products (id) ON DELETE CASCADE
 );
 
 -- ✅ Orders Table
 CREATE TABLE IF NOT EXISTS orders (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid (),
     user_id UUID NOT NULL,
-    total_amount NUMERIC(10,2) NOT NULL,
+    total_amount NUMERIC(10, 2) NOT NULL,
     payment_method VARCHAR(50) NOT NULL,
     payment_status VARCHAR(50) NOT NULL,
     order_status VARCHAR(50) NOT NULL,
     shipping_address TEXT,
-    created_at TIMESTAMP DEFAULT NOW(),
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 );
 
 -- ✅ OrderItems Table
@@ -68,22 +60,15 @@ CREATE TABLE IF NOT EXISTS order_items (
     order_id UUID NOT NULL,
     product_id UUID NOT NULL,
     quantity INT NOT NULL,
-    price NUMERIC(10,2) NOT NULL,
-    FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
-    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
-);
-
--- ⭐ Reviews Table
-CREATE TABLE IF NOT EXISTS reviews (
-    id SERIAL PRIMARY KEY,
-    user_id UUID NOT NULL,
-    product_id UUID NOT NULL,
-    rating INT NOT NULL CHECK (rating >= 1 AND rating <= 5),
+    price NUMERIC(10, 2) NOT NULL,
+    rating INT CHECK (
+        rating >= 1
+        AND rating <= 5
+    ),
     review TEXT,
-    created_at TIMESTAMP DEFAULT NOW(),
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
-    UNIQUE (user_id, product_id)
+    review_date TIMESTAMPTZ,
+    FOREIGN KEY (order_id) REFERENCES orders (id) ON DELETE CASCADE,
+    FOREIGN KEY (product_id) REFERENCES products (id) ON DELETE CASCADE
 );
 
 -- ⭐ Bookings Table (Temporary reservations during checkout)
@@ -92,17 +77,25 @@ CREATE TABLE IF NOT EXISTS bookings (
     user_id UUID NOT NULL,
     product_id UUID NOT NULL,
     booking_count INT NOT NULL DEFAULT 1,
-    created_at TIMESTAMP DEFAULT NOW(),
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
+    FOREIGN KEY (product_id) REFERENCES products (id) ON DELETE CASCADE,
     UNIQUE (user_id, product_id)
 );
 
 -- 📊 Performance Indexes
-CREATE INDEX IF NOT EXISTS idx_products_category ON products(category_id);
-CREATE INDEX IF NOT EXISTS idx_cart_user ON carts(user_id);
-CREATE INDEX IF NOT EXISTS idx_order_user ON orders(user_id);
-CREATE INDEX IF NOT EXISTS idx_review_product ON reviews(product_id);
-CREATE INDEX IF NOT EXISTS idx_review_user ON reviews(user_id);
-CREATE INDEX IF NOT EXISTS idx_booking_product ON bookings(product_id);
-CREATE INDEX IF NOT EXISTS idx_booking_user ON bookings(user_id);
+CREATE INDEX IF NOT EXISTS idx_products_category ON products (category_id);
+
+CREATE INDEX IF NOT EXISTS idx_order_user ON orders (user_id);
+
+CREATE INDEX IF NOT EXISTS idx_order_items_order ON order_items (order_id);
+
+CREATE INDEX IF NOT EXISTS idx_order_items_product ON order_items (product_id);
+
+CREATE INDEX IF NOT EXISTS idx_order_items_reviews ON order_items (product_id)
+WHERE
+    rating IS NOT NULL;
+
+CREATE INDEX IF NOT EXISTS idx_booking_product ON bookings (product_id);
+
+CREATE INDEX IF NOT EXISTS idx_booking_user ON bookings (user_id);

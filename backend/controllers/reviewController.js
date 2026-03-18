@@ -7,25 +7,26 @@ const getProductReviews = async (req, res) => {
 
         const result = await pool.query(
             `SELECT 
-                r.id,
-                r.rating,
-                r.review,
-                r.created_at,
+                oi.id,
+                oi.rating,
+                oi.review,
+                oi.review_date as created_at,
                 u.name as user_name,
                 u.email
-            FROM reviews r
-            JOIN users u ON r.user_id = u.id
-            WHERE r.product_id = $1
-            ORDER BY r.created_at DESC`,
+            FROM order_items oi
+            JOIN orders o ON oi.order_id = o.id
+            JOIN users u ON o.user_id = u.id
+            WHERE oi.product_id = $1 AND oi.rating IS NOT NULL
+            ORDER BY oi.review_date DESC`,
             [productId]
         );
 
         const ratingResult = await pool.query(
             `SELECT 
-                ROUND(AVG(r.rating), 2) as avg_rating,
-                COUNT(r.id) as review_count
-            FROM reviews r
-            WHERE r.product_id = $1`,
+                ROUND(AVG(oi.rating), 2) as avg_rating,
+                COUNT(oi.id) as review_count
+            FROM order_items oi
+            WHERE oi.product_id = $1 AND oi.rating IS NOT NULL`,
             [productId]
         );
 
@@ -64,27 +65,32 @@ const createReview = async (req, res) => {
             });
         }
 
-        // Check if product exists
-        const productCheck = await pool.query(
-            'SELECT id FROM products WHERE id = $1',
-            [productId]
+        // Check if user has ordered the product
+        const orderItemCheck = await pool.query(
+            `SELECT oi.id 
+             FROM order_items oi
+             JOIN orders o ON oi.order_id = o.id
+             WHERE o.user_id = $1 AND oi.product_id = $2
+             LIMIT 1`,
+            [userId, productId]
         );
 
-        if (productCheck.rows.length === 0) {
-            return res.status(404).json({
+        if (orderItemCheck.rows.length === 0) {
+            return res.status(403).json({
                 status: 'error',
-                message: 'Product not found'
+                message: 'You can only review products you have ordered'
             });
         }
 
-        // Insert or update review
+        const orderItemId = orderItemCheck.rows[0].id;
+
+        // Update order_item with review
         const result = await pool.query(
-            `INSERT INTO reviews (user_id, product_id, rating, review)
-            VALUES ($1, $2, $3, $4)
-            ON CONFLICT (user_id, product_id)
-            DO UPDATE SET rating = $3, review = $4, created_at = NOW()
-            RETURNING *`,
-            [userId, productId, rating, review || null]
+            `UPDATE order_items 
+             SET rating = $1, review = $2, review_date = NOW()
+             WHERE id = $3
+             RETURNING *`,
+            [rating, review || null, orderItemId]
         );
 
         res.status(201).json({
@@ -109,7 +115,10 @@ const deleteReview = async (req, res) => {
 
         // Check if review exists and belongs to user
         const checkResult = await pool.query(
-            'SELECT id FROM reviews WHERE id = $1 AND user_id = $2',
+            `SELECT oi.id 
+             FROM order_items oi
+             JOIN orders o ON oi.order_id = o.id
+             WHERE oi.id = $1 AND o.user_id = $2`,
             [reviewId, userId]
         );
 
@@ -120,9 +129,11 @@ const deleteReview = async (req, res) => {
             });
         }
 
-        // Delete review
+        // Delete review (clear rating and review data from order_item)
         await pool.query(
-            'DELETE FROM reviews WHERE id = $1',
+            `UPDATE order_items 
+             SET rating = NULL, review = NULL, review_date = NULL
+             WHERE id = $1`,
             [reviewId]
         );
 

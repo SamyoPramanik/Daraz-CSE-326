@@ -16,19 +16,19 @@ services:
       # migrations run before seed automatically inside the container.
       - ./database:/docker-entrypoint-initdb.d/
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U daraz_user -d daraz_db"]
+      test: [ "CMD-SHELL", "pg_isready -U daraz_user -d daraz_db" ]
       interval: 5s
       timeout: 5s
       retries: 5
 
-  app:
+  backend:
     build: ./backend
-    container_name: daraz_express
+    container_name: daraz_backend
     restart: always
     ports:
-      - "4000:3000"
+      - "4000:4000"
     environment:
-      PORT: 3000
+      PORT: 4000
       DB_USER: daraz_user
       DB_PASSWORD: daraz_password
       DB_NAME: daraz_db
