@@ -2,11 +2,110 @@ const pool = require('../config/db');
 
 const getProducts = async (req, res) => {
     try {
-        const result = await pool.query('SELECT * FROM products');
+        const {
+            page = 1,
+            limit = 20,
+            flash_sale,
+            trending,
+            category,
+            search,
+            sort
+        } = req.query;
+
+        const offset = (page - 1) * limit;
+        const params = [];
+        let paramCount = 1;
+
+        let query = `
+            SELECT 
+                p.id,
+                p.name,
+                p.image_url,
+                p.price,
+                p.discount_price,
+                p.flash_sale,
+                ROUND(AVG(oi.rating), 2) as rating
+            FROM products p
+            LEFT JOIN categories c ON p.category_id = c.id
+            LEFT JOIN order_items oi ON p.id = oi.product_id AND oi.rating IS NOT NULL
+            WHERE 1=1
+        `;
+
+        if (search) {
+            query += ` AND p.name ILIKE $${paramCount}`;
+            params.push(`%${search}%`);
+            paramCount++;
+        }
+
+        if (flash_sale === 'true') {
+            query += ` AND p.flash_sale = TRUE`;
+        }
+
+        if (category) {
+            const categories = category.split(',').map(c => c.trim());
+            query += ` AND (
+                c.name = ANY($${paramCount}::text[]) OR 
+                p.category_id = ANY($${paramCount}::text[]::int[])
+            )`;
+            params.push(categories);
+            paramCount++;
+        }
+
+        query += ` GROUP BY p.id, p.name, p.image_url, p.price, p.discount_price, p.flash_sale`;
+
+        if (trending === 'true') {
+            query += ` ORDER BY rating DESC NULLS LAST`;
+        } else {
+            switch (sort) {
+                case 'price_asc':   query += ` ORDER BY p.price ASC`; break;
+                case 'price_desc':  query += ` ORDER BY p.price DESC`; break;
+                case 'rating_desc': query += ` ORDER BY rating DESC NULLS LAST`; break;
+                default:            query += ` ORDER BY p.name ASC`;
+            }
+        }
+
+        query += ` LIMIT $${paramCount} OFFSET $${paramCount + 1}`;
+        params.push(limit, offset);
+
+        let countQuery = `
+            SELECT COUNT(DISTINCT p.id) 
+            FROM products p
+            LEFT JOIN categories c ON p.category_id = c.id
+            WHERE 1=1
+        `;
+        const countParams = [];
+        let countParamCount = 1;
+
+        if (search) {
+            countQuery += ` AND p.name ILIKE $${countParamCount}`;
+            countParams.push(`%${search}%`);
+            countParamCount++;
+        }
+        if (flash_sale === 'true') countQuery += ` AND p.flash_sale = TRUE`;
+        if (category) {
+            const categories = category.split(',').map(c => c.trim());
+            countQuery += ` AND (c.name = ANY($${countParamCount}::text[]) OR p.category_id = ANY($${countParamCount}::text[]::int[]))`;
+            countParams.push(categories);
+        }
+
+        const [result, countResult] = await Promise.all([
+            pool.query(query, params),
+            pool.query(countQuery, countParams)
+        ]);
+
+        const total_items = parseInt(countResult.rows[0].count);
+
         res.json({
             status: 'success',
             data: result.rows,
+            meta: {
+                total_items,
+                total_pages: Math.ceil(total_items / limit),
+                current_page: parseInt(page),
+                limit: parseInt(limit)
+            }
         });
+
     } catch (err) {
         res.status(500).json({
             status: 'error',
