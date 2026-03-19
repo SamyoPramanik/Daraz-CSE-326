@@ -12,11 +12,27 @@ export default function LoginPage() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
-    const handleLogin = (e: React.FormEvent) => {
+    const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
-        // TODO: implement API login
-        console.log("Logging in", email, password);
-        router.push("/");
+        try {
+            const res = await fetch("http://localhost:4000/api/auth/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, password })
+            });
+            const data = await res.json();
+            
+            if (res.ok && data.status === "success") {
+                localStorage.setItem("token", data.data.token);
+                localStorage.setItem("user", JSON.stringify(data.data.user));
+                router.push("/");
+            } else {
+                alert(data.message || "Login failed");
+            }
+        } catch (error) {
+            console.error("Login error", error);
+            alert("An error occurred during login.");
+        }
     };
 
     return (

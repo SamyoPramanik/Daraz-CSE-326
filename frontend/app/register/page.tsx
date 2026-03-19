@@ -16,11 +16,27 @@ export default function RegisterPage() {
         password: "",
     });
 
-    const handleRegister = (e: React.FormEvent) => {
+    const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault();
-        // TODO: implement API registration
-        console.log("Registering", formData);
-        router.push("/login");
+        try {
+            const res = await fetch("http://localhost:4000/api/auth/register", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(formData)
+            });
+            const data = await res.json();
+            
+            if (res.ok && data.status === "success") {
+                localStorage.setItem("token", data.data.token);
+                localStorage.setItem("user", JSON.stringify(data.data.user));
+                router.push("/");
+            } else {
+                alert(data.message || "Registration failed");
+            }
+        } catch (error) {
+            console.error("Registration error", error);
+            alert("An error occurred during registration.");
+        }
     };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
