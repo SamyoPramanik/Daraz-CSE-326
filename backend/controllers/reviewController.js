@@ -11,8 +11,7 @@ const getProductReviews = async (req, res) => {
                 oi.rating,
                 oi.review,
                 oi.review_date as created_at,
-                u.name as user_name,
-                u.email
+                u.name as user_name
             FROM order_items oi
             JOIN orders o ON oi.order_id = o.id
             JOIN users u ON o.user_id = u.id
@@ -55,7 +54,15 @@ const getProductReviews = async (req, res) => {
 // Create or update review
 const createReview = async (req, res) => {
     try {
-        const { userId, productId, rating, review } = req.body;
+        const { productId, rating, review } = req.body;
+        const userId = req.user.id;
+
+        if (!productId) {
+            return res.status(400).json({
+                status: 'error',
+                message: 'productId is required'
+            });
+        }
 
         // Validate rating
         if (!rating || rating < 1 || rating > 5) {
@@ -67,10 +74,11 @@ const createReview = async (req, res) => {
 
         // Check if user has ordered the product
         const orderItemCheck = await pool.query(
-            `SELECT oi.id 
+            `SELECT oi.id
              FROM order_items oi
              JOIN orders o ON oi.order_id = o.id
              WHERE o.user_id = $1 AND oi.product_id = $2
+             ORDER BY (oi.rating IS NULL) DESC, o.created_at DESC
              LIMIT 1`,
             [userId, productId]
         );
@@ -111,7 +119,7 @@ const createReview = async (req, res) => {
 const deleteReview = async (req, res) => {
     try {
         const { reviewId } = req.params;
-        const { userId } = req.body;
+        const userId = req.user.id;
 
         // Check if review exists and belongs to user
         const checkResult = await pool.query(

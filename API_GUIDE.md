@@ -5,9 +5,13 @@ This document outlines the RESTful API endpoints for the Daraz eCommerce platfor
 ## Base URL
 `http://localhost:4000/api`
 
+> Note: For internal SSR compatibility, backend also accepts legacy routes without `/api` prefix.
+
 ## Authentication & Authorization
 All protected routes require a JWT token in the `Authorization` header.
 **Header Format**: `Authorization: Bearer <your_jwt_token>`
+
+Set `JWT_SECRET` in backend environment for production deployments.
 
 ### 1. Register User
 Register a new customer.
@@ -45,7 +49,10 @@ Authenticate and get a JWT token.
   ```json
   {
       "status": "success",
-      "data": { "token": "eyJhbGciOiJIUzI1NiIsIn..." }
+      "data": {
+          "token": "eyJhbGciOiJIUzI1NiIsIn...",
+          "user": { "id": "...", "name": "John Doe", "email": "john@example.com" }
+      }
   }
   ```
 
@@ -330,6 +337,19 @@ Submit a rating and review for a specific product purchased in an order.
   }
   ```
 
+### 13. Delete My Review
+Clear the rating/review from a previously reviewed order item.
+- **URL**: `/reviews/:reviewId`
+- **Method**: `DELETE`
+- **Authorization**: Required
+- **Response**:
+    ```json
+    {
+            "status": "success",
+            "message": "Review deleted successfully"
+    }
+    ```
+
 ---
 
 ## Standard API Responses
@@ -358,6 +378,33 @@ Returned when a new resource is successfully created (e.g., a new user registrat
 ### 400 Bad Request
 Returned when the request is malformed or invalid (e.g., missing payload fields, invalid data formats).
 ```json
+
+## Quick API Testing
+
+### Option A: Postman
+1. Import collection: `postman/Daraz_API.postman_collection.json`
+2. Import environment: `postman/Daraz_Local.postman_environment.json`
+3. Set environment variable values:
+    - `productId` (required for product/review/cart specific requests)
+    - `reviewId` (for delete review endpoint)
+4. Run `Auth > Login` first to auto-save `token`.
+
+### Option B: One-command Smoke Test
+From project root:
+
+```bash
+chmod +x backend/scripts/smoke_api.sh
+./backend/scripts/smoke_api.sh
+```
+
+Optional env overrides:
+
+```bash
+BASE_URL=http://localhost:4000/api \
+EMAIL=custom@example.com \
+PASSWORD=securepassword123 \
+./backend/scripts/smoke_api.sh
+```
 {
     "status": "error",
     "message": "Rating must be between 1 and 5"
