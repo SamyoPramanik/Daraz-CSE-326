@@ -15,11 +15,11 @@ const port = process.env.PORT || 4000;
 app.use(express.json());
 
 // Routes
-app.use('/api/products', productRoute);
-app.use('/api/reviews', reviewRoute);
-app.use('/api/auth', authRoute);
-app.use('/api/orders', orderRoute);
-app.use('/api/cart', cartRoute);
+app.use('/products', productRoute);
+app.use('/reviews', reviewRoute);
+app.use('/auth', authRoute);
+app.use('/orders', orderRoute);
+app.use('/cart', cartRoute);
 
 app.get('/health', async (req, res) => {
     try {
