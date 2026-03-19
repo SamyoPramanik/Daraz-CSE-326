@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -28,7 +29,13 @@ export default function ProductCard({ id, name, price, rating, imageUrl, origina
             <Card className="group h-full cursor-pointer flex flex-col overflow-hidden border-gray-100 bg-white transition-all hover:shadow-md">
                 <div className="aspect-square bg-gray-100 w-full relative">
                     {imageUrl ? (
-                        <img src={imageUrl} alt={name} className="object-cover w-full h-full" />
+                        <Image
+                            src={imageUrl}
+                            alt={name}
+                            fill
+                            sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+                            className="object-cover"
+                        />
                     ) : (
                         <div className="flex h-full w-full items-center justify-center bg-gray-200 text-gray-400">
                             No Image

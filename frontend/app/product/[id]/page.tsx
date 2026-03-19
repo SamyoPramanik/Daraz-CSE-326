@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import { fetchProduct } from "@/lib/api";
 import ProductActions from "@/components/ProductActions";
@@ -43,12 +44,14 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
 
                     {/* Product Image */}
                     <div className="md:w-5/12 lg:w-1/2">
-                        <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center">
+                        <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center relative">
                             {product.image_url ? (
-                                <img
+                                <Image
                                     src={product.image_url}
                                     alt={product.name}
-                                    className="object-cover w-full h-full"
+                                    fill
+                                    sizes="(max-width: 768px) 100vw, 50vw"
+                                    className="object-cover"
                                 />
                             ) : (
                                 <span className="text-gray-400 font-medium">No Image</span>
