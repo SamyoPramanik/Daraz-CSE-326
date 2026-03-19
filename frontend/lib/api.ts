@@ -1,7 +1,7 @@
 // Server-side (SSR): call backend directly — no Nginx, so NO /api prefix
 // Client-side (browser): use /api so Nginx can strip it before forwarding to backend
 const BASE_URL = typeof window === 'undefined'
-    ? (process.env.NEXT_PUBLIC_SERVER_URL || 'http://backend:4000')
+    ? (process.env.NEXT_INTERNAL_SERVER_URL || 'http://backend:4000')
     : '/api';
 
 export async function fetchProducts(params: Record<string, string | null> = {}) {

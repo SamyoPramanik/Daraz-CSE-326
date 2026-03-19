@@ -1,11 +1,11 @@
 FROM node:22-alpine
 WORKDIR /app
 COPY package*.json ./
-RUN npm install
+RUN npm install && apk add --no-cache curl
 
 COPY . .
-ARG NEXT_PUBLIC_SERVER_URL
-ENV NEXT_PUBLIC_SERVER_URL=$NEXT_PUBLIC_SERVER_URL
+ARG NEXT_INTERNAL_SERVER_URL
+ENV NEXT_INTERNAL_SERVER_URL=$NEXT_INTERNAL_SERVER_URL
 RUN npm run build
 EXPOSE 3000
 CMD ["npm", "start"]

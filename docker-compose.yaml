@@ -55,14 +55,14 @@ services:
     # ports:
     #   - "3000:3000"
     environment:
-      NEXT_PUBLIC_SERVER_URL: http://backend:4000
+      NEXT_INTERNAL_SERVER_URL: http://backend:4000
 
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:3000/api/health" ]
       interval: 10s
       timeout: 5s
       retries: 5
-      start_period: 15s
+      start_period: 10s
     networks:
       - daraz_network
 
@@ -74,6 +74,11 @@ services:
       - "9000:80"
     volumes:
       - ./ngnix/ngnix.conf:/etc/nginx/nginx.conf
+    depends_on:
+      frontend:
+        condition: service_healthy
+      backend:
+        condition: service_healthy
     networks:
       - daraz_network
 
