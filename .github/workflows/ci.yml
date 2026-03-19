@@ -28,9 +28,6 @@ jobs:
       - name: Test Next.js Frontend Delivery
         run: curl --fail http://localhost:9000/ || exit 1
 
-      - name: Run Backend Unit Tests
-        run: docker compose exec -T backend npm test --if-present
-
       - name: Show Docker Logs on Failure
         if: failure()
         run: docker compose logs

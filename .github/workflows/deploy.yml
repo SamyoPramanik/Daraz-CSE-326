@@ -1,0 +1,50 @@
+name: Deploy to Azure VM
+
+on:
+  workflow_run:
+    workflows: ["CI Pipeline"] # Must match the 'name' in ci.yml exactly
+    types:
+      - completed
+    branches:
+      - main
+
+jobs:
+  deploy:
+    # CRITICAL: This condition ensures deployment ONLY happens if CI passed.
+    # Without this, it would trigger even if the CI workflow failed.
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Copy project files to Azure VM
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.VM_HOST }}
+          username: ${{ secrets.VM_USER }}
+          key: ${{ secrets.VM_SSH_KEY }}
+          source: "."
+          target: "/home/${{ secrets.VM_USER }}/daraz"
+
+      - name: Execute deployment commands on VM
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VM_HOST }}
+          username: ${{ secrets.VM_USER }}
+          key: ${{ secrets.VM_SSH_KEY }}
+          script: |
+            cd /home/${{ secrets.VM_USER }}/daraz
+            
+            # Pull any new base images
+            docker compose pull
+            
+            # Shut down existing containers
+            docker compose down
+            
+            # Build and spin up the new containers
+            docker compose up -d --build
+            
+            # Clean up old images to keep the Azure VM disk clean
+            docker system prune -f
