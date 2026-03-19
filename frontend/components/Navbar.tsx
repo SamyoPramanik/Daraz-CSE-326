@@ -26,7 +26,7 @@ export default function Navbar() {
             <div className="container mx-auto px-4 h-16 flex items-center justify-between gap-4">
                 {/* Logo */}
                 <Link href="/" className="flex items-center gap-2">
-                    <span className="text-2xl font-bold text-primary tracking-tight">DarazClone</span>
+                    <span className="text-2xl font-bold text-primary tracking-tight">Daraz</span>
                 </Link>
 
                 {/* Search Bar */}
