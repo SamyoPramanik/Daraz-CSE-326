@@ -7,6 +7,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 
+const BASE_URL = typeof window === 'undefined'
+    ? (process.env.NEXT_INTERNAL_SERVER_URL || 'http://backend:4000')
+    : '/api';
+
 export default function LoginPage() {
     const router = useRouter();
     const [email, setEmail] = useState("");
@@ -15,7 +19,7 @@ export default function LoginPage() {
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            const res = await fetch("http://localhost:4000/api/auth/login", {
+            const res = await fetch(`${BASE_URL}/auth/login`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email, password })
