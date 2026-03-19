@@ -201,6 +201,42 @@ VALUES (
         6
     ),
     (
+        'Samsung Galaxy A55', 
+        'https://images.samsung.com/is/image/samsung/p6pim/levant/feature/165062223/levant-feature--nbsp-540234962?$FB_TYPE_A_JPG$', 
+        'Samsung', 'Mid-range smartphone with AMOLED display and long battery.', 
+        45999.00, 
+        39999.00, 
+        80, 
+        TRUE,
+        1
+    ),
+
+    (
+        'Xiaomi Redmi Note 13',
+        'https://i02.appmifile.com/mi-com-product/fly-birds/redmi-note-13/PC/bac9e4d29124ae838486e7f567d14361.jpg?f=webp',
+        'Xiaomi',
+        'Feature-packed budget smartphone with 200MP camera.',
+        24999.00,
+        21999.00,
+        120,
+        FALSE,
+        1
+    ),
+    (
+        'OnePlus 12',
+        'https://www.oneplus.com/content/dam/oasis/page/waffle-en/images-design-bottom1-1-95.jpg.avif',
+        'OnePlus',
+        'Flagship killer with Snapdragon 8 Gen 3 and 100W fast charging.',
+        79999.00,
+        72999.00,
+        40,
+        FALSE,
+        1
+    ),
+('Apple AirPods Pro 2', 'https://ddfndelma2gpn.cloudfront.net/product-image/855/apple_airpods_pro_2nd_gen_1.webp', 'Apple', 'Advanced ANC earbuds with adaptive transparency and H2 chip.', 29999.00, 26999.00, 45, FALSE, 1),
+('Samsung 55" 4K Smart TV', 'https://img.drz.lazcdn.com/static/bd/p/e33a1b3e5faea12d2cdbd5d07f2acbad.png_720x720q80.png', 'Samsung', '55-inch Crystal UHD 4K Smart TV with PurColor technology.', 74999.00, 64999.00, 20, TRUE, 1),
+
+    (
         'Shampoo Bundle',
         'https://img.drz.lazcdn.com/static/bd/p/73598bde01dcbc3e1eddf941ce07cdde.png_720x720q80.png',
         'Loreal',
