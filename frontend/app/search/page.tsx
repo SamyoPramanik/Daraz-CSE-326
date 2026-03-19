@@ -17,18 +17,26 @@ function SearchContent() {
     const currentSearch = searchParams.get("search") || "";
     const currentSort = searchParams.get("sort") || "pop";
     const currentCategories = searchParams.get("category")?.split(",").filter(Boolean) || [];
+    const currentFlashSale = searchParams.get("flash_sale") === "true";
 
     // Local States
     const [searchInput, setSearchInput] = useState(currentSearch);
     const [products, setProducts] = useState<any[]>([]);
-    const [categories, setCategories] = useState<string[]>([]);
+    const [categories, setCategories] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
     // Load categories on mount
     useEffect(() => {
         fetchCategories().then(setCategories).catch(() => {
-            setCategories(["Electronics", "Clothing", "Home & Kitchen", "Books", "Beauty", "Sports"]);
+            setCategories([
+                { id: 1, name: "Electronics" },
+                { id: 2, name: "Clothing" },
+                { id: 3, name: "Home & Kitchen" },
+                { id: 4, name: "Books" },
+                { id: 5, name: "Beauty" },
+                { id: 6, name: "Sports" }
+            ]);
         });
     }, []);
 
@@ -46,14 +54,20 @@ function SearchContent() {
     }, [searchParams, pathname, router]);
 
     // Handle Category Toggle
-    const toggleCategory = (cat: string) => {
+    const toggleCategory = (catId: number) => {
         let newCats = [...currentCategories];
-        if (newCats.includes(cat)) {
-            newCats = newCats.filter(c => c !== cat);
+        const catIdStr = catId.toString();
+        if (newCats.includes(catIdStr)) {
+            newCats = newCats.filter(c => c !== catIdStr);
         } else {
-            newCats.push(cat);
+            newCats.push(catIdStr);
         }
         updateQuery("category", newCats.length ? newCats.join(",") : null);
+    };
+
+    // Handle Flash Sale Toggle
+    const toggleFlashSale = () => {
+        updateQuery("flash_sale", currentFlashSale ? null : "true");
     };
 
     // Debounced Search execute
@@ -76,6 +90,7 @@ function SearchContent() {
                     search: currentSearch,
                     category: currentCategories.join(","),
                     sort: currentSort,
+                    flash_sale: currentFlashSale ? "true" : null,
                     limit: "20"
                 });
                 setProducts(res.data || []);
@@ -87,7 +102,7 @@ function SearchContent() {
         };
 
         loadProducts();
-    }, [currentSearch, currentSort, searchParams.get("category")]);
+    }, [currentSearch, currentSort, searchParams.get("category"), currentFlashSale]);
 
     return (
         <div className="container mx-auto px-4 py-6">
@@ -101,18 +116,33 @@ function SearchContent() {
                             Filters
                         </div>
 
-                        <div className="space-y-4">
-                            <h3 className="font-medium text-gray-900">Categories</h3>
-                            <div className="flex flex-col gap-3">
-                                {categories.map((cat: string) => (
-                                    <label key={cat} className="flex items-center gap-3 space-x-2 cursor-pointer">
-                                        <Checkbox
-                                            checked={currentCategories.includes(cat)}
-                                            onCheckedChange={() => toggleCategory(cat)}
-                                        />
-                                        <span className="text-sm text-gray-700">{cat}</span>
-                                    </label>
-                                ))}
+                        <div className="space-y-6">
+                            {/* Flash Sales Filter */}
+                            <div>
+                                <h3 className="font-medium text-gray-900 mb-3">Offers</h3>
+                                <label className="flex items-center gap-3 space-x-2 cursor-pointer">
+                                    <Checkbox
+                                        checked={currentFlashSale}
+                                        onCheckedChange={toggleFlashSale}
+                                    />
+                                    <span className="text-sm text-gray-700">Flash Sales</span>
+                                </label>
+                            </div>
+
+                            {/* Categories Filter */}
+                            <div>
+                                <h3 className="font-medium text-gray-900 mb-3">Categories</h3>
+                                <div className="flex flex-col gap-3">
+                                    {categories.map((cat: any) => (
+                                        <label key={cat.id} className="flex items-center gap-3 space-x-2 cursor-pointer">
+                                            <Checkbox
+                                                checked={currentCategories.includes(cat.id.toString())}
+                                                onCheckedChange={() => toggleCategory(cat.id)}
+                                            />
+                                            <span className="text-sm text-gray-700">{cat.name}</span>
+                                        </label>
+                                    ))}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -151,7 +181,7 @@ function SearchContent() {
                     </div>
 
                     {/* Active Filters Display */}
-                    {(currentCategories.length > 0 || currentSearch) && (
+                    {(currentCategories.length > 0 || currentSearch || currentFlashSale) && (
                         <div className="mb-4 flex flex-wrap gap-2 text-sm">
                             <span className="text-gray-500 mt-1">Active Filters:</span>
                             {currentSearch && (
@@ -159,12 +189,21 @@ function SearchContent() {
                                     Search: "{currentSearch}"
                                 </span>
                             )}
-                            {currentCategories.map(cat => (
-                                <span key={cat} className="rounded-full bg-orange-100 px-3 py-1 text-primary flex items-center gap-1">
-                                    {cat}
-                                    <button onClick={() => toggleCategory(cat)} className="ml-1 text-xl leading-none hover:text-red-500">&times;</button>
+                            {currentFlashSale && (
+                                <span className="rounded-full bg-orange-100 px-3 py-1 text-primary flex items-center gap-1">
+                                    Flash Sales
+                                    <button onClick={toggleFlashSale} className="ml-1 text-xl leading-none hover:text-red-500">&times;</button>
                                 </span>
-                            ))}
+                            )}
+                            {currentCategories.map(catId => {
+                                const category = categories.find((c: any) => c.id.toString() === catId);
+                                return (
+                                    <span key={catId} className="rounded-full bg-orange-100 px-3 py-1 text-primary flex items-center gap-1">
+                                        {category?.name || catId}
+                                        <button onClick={() => toggleCategory(parseInt(catId))} className="ml-1 text-xl leading-none hover:text-red-500">&times;</button>
+                                    </span>
+                                );
+                            })}
                         </div>
                     )}
 

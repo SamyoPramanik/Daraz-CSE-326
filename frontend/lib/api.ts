@@ -13,7 +13,7 @@ export async function fetchProducts(params: Record<string, string | null> = {}) 
     const url = `${BASE_URL}/products?${query.toString()}`;
 
     const res = await fetch(url, {
-        next: { revalidate: 60 },
+        next: { revalidate: 1 },
     });
 
     if (!res.ok) {
@@ -27,7 +27,7 @@ export async function fetchTrendingProducts() {
     const url = `${BASE_URL}/products/trending`;
 
     const res = await fetch(url, {
-        next: { revalidate: 60 },
+        next: { revalidate: 1 },
     });
 
     if (!res.ok) {
@@ -37,27 +37,39 @@ export async function fetchTrendingProducts() {
     return res.json();
 }
 
-export async function fetchCategories(): Promise<string[]> {
+export interface Category {
+    id: number;
+    name: string;
+}
+
+export async function fetchCategories(): Promise<Category[]> {
     const url = `${BASE_URL}/products/categories`;
 
     const res = await fetch(url, {
-        next: { revalidate: 3600 }, // Cache categories for 1 hour
+        next: { revalidate: 1 }, // Cache categories for 1 hour
     });
 
     if (!res.ok) {
         // fallback to static categories if endpoint fails
-        return ["Electronics", "Clothing", "Home & Kitchen", "Books", "Beauty", "Sports"];
+        return [
+            { id: 1, name: "Electronics" },
+            { id: 2, name: "Clothing" },
+            { id: 3, name: "Home & Kitchen" },
+            { id: 4, name: "Books" },
+            { id: 5, name: "Beauty" },
+            { id: 6, name: "Sports" }
+        ];
     }
 
     const json = await res.json();
-    return json.data as string[];
+    return json.data as Category[];
 }
 
 export async function fetchProduct(id: string) {
     const url = `${BASE_URL}/products/${id}`;
 
     const res = await fetch(url, {
-        next: { revalidate: 30 },
+        next: { revalidate: 1 },
     });
 
     if (!res.ok) {

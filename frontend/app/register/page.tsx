@@ -32,7 +32,7 @@ export default function RegisterPage() {
             <Card className="w-full max-w-md shadow-lg">
                 <CardHeader className="space-y-1 text-center">
                     <CardTitle className="text-2xl font-bold tracking-tight text-primary">Create an account</CardTitle>
-                    <CardDescription>Enter your information to create a DarazClone account</CardDescription>
+                    <CardDescription>Enter your information to create a Daraz account</CardDescription>
                 </CardHeader>
                 <form onSubmit={handleRegister}>
                     <CardContent className="space-y-4">

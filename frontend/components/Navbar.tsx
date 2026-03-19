@@ -34,7 +34,7 @@ export default function Navbar() {
                     <div className="relative w-full flex">
                         <Input
                             type="text"
-                            placeholder="Search in DarazClone..."
+                            placeholder="Search in Daraz..."
                             className="w-full rounded-r-none border-r-0 focus-visible:ring-0 focus-visible:ring-offset-0"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}

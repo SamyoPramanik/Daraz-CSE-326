@@ -24,7 +24,7 @@ export default function LoginPage() {
             <Card className="w-full max-w-md shadow-lg">
                 <CardHeader className="space-y-1 text-center">
                     <CardTitle className="text-2xl font-bold tracking-tight text-primary">Welcome Back</CardTitle>
-                    <CardDescription>Enter your email and password to login to DarazClone</CardDescription>
+                    <CardDescription>Enter your email and password to login to Daraz</CardDescription>
                 </CardHeader>
                 <form onSubmit={handleLogin}>
                     <CardContent className="space-y-4">

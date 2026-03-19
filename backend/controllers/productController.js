@@ -24,6 +24,8 @@ const getProducts = async (req, res) => {
                 p.price,
                 p.discount_price,
                 p.flash_sale,
+                p.category_id,
+                c.name as category_name,
                 ROUND(AVG(oi.rating), 2) as rating
             FROM products p
             LEFT JOIN categories c ON p.category_id = c.id
@@ -42,16 +44,15 @@ const getProducts = async (req, res) => {
         }
 
         if (category) {
-            const categories = category.split(',').map(c => c.trim());
-            query += ` AND (
-                c.name = ANY($${paramCount}::text[]) OR 
-                p.category_id = ANY($${paramCount}::text[]::int[])
-            )`;
-            params.push(categories);
-            paramCount++;
+            const categoryIds = category.split(',').map(c => parseInt(c.trim())).filter(id => !isNaN(id));
+            if (categoryIds.length > 0) {
+                query += ` AND p.category_id = ANY($${paramCount}::int[])`;
+                params.push(categoryIds);
+                paramCount++;
+            }
         }
 
-        query += ` GROUP BY p.id, p.name, p.image_url, p.price, p.discount_price, p.flash_sale`;
+        query += ` GROUP BY p.id, p.name, p.image_url, p.price, p.discount_price, p.flash_sale, p.category_id, c.name`;
 
         if (trending === 'true') {
             query += ` ORDER BY rating DESC NULLS LAST`;
@@ -83,9 +84,11 @@ const getProducts = async (req, res) => {
         }
         if (flash_sale === 'true') countQuery += ` AND p.flash_sale = TRUE`;
         if (category) {
-            const categories = category.split(',').map(c => c.trim());
-            countQuery += ` AND (c.name = ANY($${countParamCount}::text[]) OR p.category_id = ANY($${countParamCount}::text[]::int[]))`;
-            countParams.push(categories);
+            const categoryIds = category.split(',').map(c => parseInt(c.trim())).filter(id => !isNaN(id));
+            if (categoryIds.length > 0) {
+                countQuery += ` AND p.category_id = ANY($${countParamCount}::int[])`;
+                countParams.push(categoryIds);
+            }
         }
 
         const [result, countResult] = await Promise.all([
@@ -190,12 +193,12 @@ const getProductWithReviews = async (req, res) => {
 const getProductCategories = async (req, res) => {
     try {
         const result = await pool.query(
-            'SELECT name AS category FROM categories ORDER BY name'
+            'SELECT id, name FROM categories ORDER BY name'
         );
 
         res.json({
             status: 'success',
-            data: result.rows.map(row => row.category)
+            data: result.rows.map(row => ({ id: row.id, name: row.name }))
         });
     } catch (err) {
         res.status(500).json({
@@ -216,10 +219,13 @@ const getTrendingProducts = async (req, res) => {
                 p.price,
                 p.discount_price,
                 p.flash_sale,
+                p.category_id,
+                c.name as category_name,
                 ROUND(AVG(oi.rating), 2) as rating
             FROM products p
+            LEFT JOIN categories c ON p.category_id = c.id
             LEFT JOIN order_items oi ON p.id = oi.product_id AND oi.rating IS NOT NULL
-            GROUP BY p.id, p.name, p.image_url, p.price, p.discount_price, p.flash_sale
+            GROUP BY p.id, p.name, p.image_url, p.price, p.discount_price, p.flash_sale, p.category_id, c.name
             ORDER BY rating DESC NULLS LAST
             LIMIT 10`
         );
