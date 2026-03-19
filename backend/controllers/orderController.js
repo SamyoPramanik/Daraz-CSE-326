@@ -35,7 +35,8 @@ const checkout = async (req, res) => {
             FROM cart_items ci
             JOIN products p ON p.id = ci.product_id
             WHERE ci.cart_id = $1
-            ORDER BY ci.id ASC`,
+            ORDER BY ci.id ASC
+            FOR UPDATE OF p`,
             [cartId]
         );
 
@@ -63,7 +64,8 @@ const checkout = async (req, res) => {
             return sum + (Number(item.effective_price) * Number(item.quantity));
         }, 0);
 
-        const paymentStatus = payment_method.toUpperCase() === 'COD' ? 'Pending' : 'Paid';
+        const normalizedPaymentMethod = String(payment_method).trim();
+        const paymentStatus = normalizedPaymentMethod.toUpperCase() === 'COD' ? 'Pending' : 'Paid';
 
         const orderResult = await client.query(
             `INSERT INTO orders (
@@ -76,7 +78,7 @@ const checkout = async (req, res) => {
             )
             VALUES ($1, $2, $3, $4, 'Pending', $5)
             RETURNING id, total_amount`,
-            [userId, totalAmount, payment_method, paymentStatus, shipping_address]
+            [userId, totalAmount, normalizedPaymentMethod, paymentStatus, shipping_address]
         );
 
         const order = orderResult.rows[0];
@@ -88,12 +90,21 @@ const checkout = async (req, res) => {
                 [order.id, item.product_id, item.quantity, item.effective_price]
             );
 
-            await client.query(
+            const stockUpdateResult = await client.query(
                 `UPDATE products
                  SET stock = stock - $1
-                 WHERE id = $2`,
+                 WHERE id = $2 AND stock >= $1
+                 RETURNING id`,
                 [item.quantity, item.product_id]
             );
+
+            if (stockUpdateResult.rows.length === 0) {
+                await client.query('ROLLBACK');
+                return res.status(400).json({
+                    status: 'error',
+                    message: `Insufficient stock for product: ${item.name}`
+                });
+            }
         }
 
         await client.query('DELETE FROM cart_items WHERE cart_id = $1', [cartId]);

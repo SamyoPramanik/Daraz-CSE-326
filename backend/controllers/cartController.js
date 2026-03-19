@@ -9,6 +9,14 @@ const getUserCartId = (userId) => {
     return num % 2147483647;
 };
 
+const parsePositiveInteger = (value) => {
+    const parsed = Number(value);
+    if (!Number.isInteger(parsed) || parsed < 1) {
+        return null;
+    }
+    return parsed;
+};
+
 const viewCart = async (req, res) => {
     try {
         const cartId = getUserCartId(req.user.id);
@@ -61,8 +69,9 @@ const viewCart = async (req, res) => {
 const addProduct = async (req, res) => {
     try {
         const { productId, quantity = 1 } = req.body;
+        const normalizedQuantity = parsePositiveInteger(quantity);
 
-        if (!productId || quantity < 1) {
+        if (!productId || normalizedQuantity === null) {
             return res.status(400).json({
                 status: 'error',
                 message: 'productId and a valid quantity are required'
@@ -94,7 +103,7 @@ const addProduct = async (req, res) => {
 
         if (existingItemResult.rows.length > 0) {
             const existingItem = existingItemResult.rows[0];
-            const newQty = existingItem.quantity + Number(quantity);
+            const newQty = existingItem.quantity + normalizedQuantity;
 
             if (newQty > product.stock) {
                 return res.status(400).json({
@@ -112,7 +121,7 @@ const addProduct = async (req, res) => {
             );
             updatedItem = updateResult.rows[0];
         } else {
-            if (Number(quantity) > product.stock) {
+            if (normalizedQuantity > product.stock) {
                 return res.status(400).json({
                     status: 'error',
                     message: 'Requested quantity exceeds available stock'
@@ -123,7 +132,7 @@ const addProduct = async (req, res) => {
                 `INSERT INTO cart_items (cart_id, product_id, quantity)
                  VALUES ($1, $2, $3)
                  RETURNING id, product_id, quantity`,
-                [cartId, productId, quantity]
+                [cartId, productId, normalizedQuantity]
             );
             updatedItem = insertResult.rows[0];
         }
@@ -146,8 +155,9 @@ const updateCart = async (req, res) => {
     try {
         const { id } = req.params;
         const { quantity } = req.body;
+        const normalizedQuantity = parsePositiveInteger(quantity);
 
-        if (!quantity || quantity < 1) {
+        if (normalizedQuantity === null) {
             return res.status(400).json({
                 status: 'error',
                 message: 'quantity must be at least 1'
@@ -172,7 +182,7 @@ const updateCart = async (req, res) => {
         }
 
         const cartItem = cartItemResult.rows[0];
-        if (Number(quantity) > cartItem.stock) {
+        if (normalizedQuantity > cartItem.stock) {
             return res.status(400).json({
                 status: 'error',
                 message: 'Requested quantity exceeds available stock'
@@ -184,7 +194,7 @@ const updateCart = async (req, res) => {
              SET quantity = $1
              WHERE id = $2
              RETURNING id, product_id, quantity`,
-            [quantity, id]
+            [normalizedQuantity, id]
         );
 
         res.json({
