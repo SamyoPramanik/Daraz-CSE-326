@@ -7,7 +7,7 @@ import { Star, ShoppingCart } from "lucide-react";
 import { toast } from "sonner";
 
 interface ProductCardProps {
-    id: string | number;
+    id: string;
     name: string;
     price: number;
     rating: number;
@@ -35,9 +35,9 @@ export default function ProductCard({ id, name, price, rating, imageUrl, origina
                         </div>
                     )}
                 </div>
-                <CardContent className="p-4 flex flex-1 flex-col justify-between">
+                <CardContent className="px-4 py-2 flex flex-1 flex-col justify-between">
                     <div>
-                        <h3 className="line-clamp-2 text-lg font-semibold text-gray-900 mb-2" title={name}>
+                        <h3 className="line-clamp-2 text-lg font-semibold text-gray-900 mb-1" title={name}>
                             {name}
                         </h3>
                         <div className="mt-auto flex items-center justify-between">
@@ -53,7 +53,7 @@ export default function ProductCard({ id, name, price, rating, imageUrl, origina
                             </div>
                         </div>
                     </div>
-                    <div className="mt-4 pt-4 border-t">
+                    <div className="mt-3 pt-2 border-t">
                         <Button
                             variant="default"
                             className="w-full bg-primary hover:bg-primary/90 text-white gap-2"

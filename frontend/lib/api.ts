@@ -1,6 +1,8 @@
+// Server-side (SSR): call backend directly — no Nginx, so NO /api prefix
+// Client-side (browser): use /api so Nginx can strip it before forwarding to backend
 const BASE_URL = typeof window === 'undefined'
     ? (process.env.NEXT_PUBLIC_SERVER_URL || 'http://backend:4000')
-    : ''; // Use relative /api for client-side which is proxied by Nginx
+    : '/api';
 
 export async function fetchProducts(params: Record<string, string | null> = {}) {
     const query = new URLSearchParams();
@@ -8,7 +10,7 @@ export async function fetchProducts(params: Record<string, string | null> = {}) 
         if (value) query.append(key, value);
     });
 
-    const url = `${BASE_URL}/api/products?${query.toString()}`;
+    const url = `${BASE_URL}/products?${query.toString()}`;
 
     const res = await fetch(url, {
         next: { revalidate: 60 },
@@ -22,7 +24,7 @@ export async function fetchProducts(params: Record<string, string | null> = {}) 
 }
 
 export async function fetchTrendingProducts() {
-    const url = `${BASE_URL}/api/products/trending`;
+    const url = `${BASE_URL}/products/trending`;
 
     const res = await fetch(url, {
         next: { revalidate: 60 },
@@ -36,7 +38,7 @@ export async function fetchTrendingProducts() {
 }
 
 export async function fetchCategories(): Promise<string[]> {
-    const url = `${BASE_URL}/api/products/categories`;
+    const url = `${BASE_URL}/products/categories`;
 
     const res = await fetch(url, {
         next: { revalidate: 3600 }, // Cache categories for 1 hour
@@ -49,4 +51,20 @@ export async function fetchCategories(): Promise<string[]> {
 
     const json = await res.json();
     return json.data as string[];
+}
+
+export async function fetchProduct(id: string) {
+    const url = `${BASE_URL}/products/${id}`;
+
+    const res = await fetch(url, {
+        next: { revalidate: 30 },
+    });
+
+    if (!res.ok) {
+        if (res.status === 404) return null;
+        throw new Error('Failed to fetch product');
+    }
+
+    const json = await res.json();
+    return json.data;
 }

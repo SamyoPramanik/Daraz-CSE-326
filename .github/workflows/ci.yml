@@ -16,40 +16,25 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      # 1. Build the images for Next.js, Express.js, Postgres, and Nginx
       - name: Build Docker Compose Services
         run: docker compose build
 
-      # 2. Spin up the stack and wait for healthchecks to pass
-      # (Ensures Postgres and Express are fully ready before testing)
       - name: Start Services and Wait
         run: docker compose up -d --wait
 
-      # 3. Verify internal network connectivity
-      - name: Internal Network Health Check
-        run: |
-          docker compose exec -T nginx curl -f http://frontend:3000/api/health
-          docker compose exec -T nginx curl -f http://backend:4000/health
-
-      # 4. Test Nginx routing to the Express Backend & Postgres DB
-      # Maps to the /health route on the backend server
       - name: Test API and Database Integration
         run: curl --fail http://localhost:9000/api/health || exit 1
 
-      # 5. Test Nginx routing to the Next.js Frontend
       - name: Test Next.js Frontend Delivery
         run: curl --fail http://localhost:9000/ || exit 1
 
-      # 5. Run backend unit tests inside the running container (Optional)
       - name: Run Backend Unit Tests
         run: docker compose exec -T backend npm test --if-present
 
-      # 6. Output logs for debugging if any step fails
       - name: Show Docker Logs on Failure
         if: failure()
         run: docker compose logs
 
-      # 7. Tear down the CI environment
       - name: Stop Services
         if: always() # Ensures containers stop even if tests fail
         run: docker compose down

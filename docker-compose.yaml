@@ -7,8 +7,8 @@ services:
       POSTGRES_USER: daraz_user
       POSTGRES_PASSWORD: daraz_password
       POSTGRES_DB: daraz_db
-    ports:
-      - "5432:5432"
+    # ports:
+    #   - "5432:5432"
     volumes:
       - daraz_pgdata:/var/lib/postgresql/data
       # Maps local database folder to docker postgres initialization directory.
@@ -27,8 +27,8 @@ services:
     build: ./backend
     container_name: daraz_backend
     restart: always
-    ports:
-      - "4000:4000"
+    # ports:
+    #   - "4000:4000"
     environment:
       PORT: 4000
       DB_USER: daraz_user
@@ -52,13 +52,10 @@ services:
     build: ./frontend
     container_name: daraz_frontend
     restart: always
-    ports:
-      - "3000:3000"
+    # ports:
+    #   - "3000:3000"
     environment:
       NEXT_PUBLIC_SERVER_URL: http://backend:4000
-    depends_on:
-      backend:
-        condition: service_healthy
 
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:3000/api/health" ]
@@ -77,11 +74,6 @@ services:
       - "9000:80"
     volumes:
       - ./ngnix/ngnix.conf:/etc/nginx/nginx.conf
-    depends_on:
-      frontend:
-        condition: service_healthy
-      backend:
-        condition: service_healthy
     networks:
       - daraz_network
 
