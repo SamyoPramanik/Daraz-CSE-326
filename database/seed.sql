@@ -236,6 +236,19 @@ VALUES (
 ('Apple AirPods Pro 2', 'https://ddfndelma2gpn.cloudfront.net/product-image/855/apple_airpods_pro_2nd_gen_1.webp', 'Apple', 'Advanced ANC earbuds with adaptive transparency and H2 chip.', 29999.00, 26999.00, 45, FALSE, 1),
 ('Samsung 55" 4K Smart TV', 'https://img.drz.lazcdn.com/static/bd/p/e33a1b3e5faea12d2cdbd5d07f2acbad.png_720x720q80.png', 'Samsung', '55-inch Crystal UHD 4K Smart TV with PurColor technology.', 74999.00, 64999.00, 20, TRUE, 1),
 
+
+('LG 43" 4K Smart TV', 'https://www.lg.com/bd/images/tvs/md07542180/gallery/43UP7550PTC-uhd-4k-tvs-D1-1.jpg', 'LG', '43-inch UHD 4K Smart TV with ThinQ AI and webOS.', 44999.00, 39999.00, 30, FALSE, 1),
+('Dell XPS 15 Laptop', 'https://adminapi.vertech.com.bd/storage/media/large/XPS-15-9530-d-2553.jpg', 'Dell', 'Premium ultrabook with Intel Core i7 and OLED display.', 149999.00, 139999.00, 15, FALSE, 1),
+('HP Pavilion 15 Laptop', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQYPKJ9CA-6rDUX-9XtbzTCZQmkEZznYARFdw&s', 'HP', 'Everyday laptop with Intel Core i5 and Full HD display.', 64999.00, 57999.00, 25, FALSE, 1),
+('Asus ROG Gaming Laptop', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTQKxY7WU1zpfQZ7F-2cyMKNRxLeiqC4ixwxg&s', 'Asus', 'Gaming laptop with RTX 4060 and 144Hz display.', 119999.00, 109999.00, 10, TRUE, 1),
+('iPad Pro 12.9"', 'https://cdn.mos.cms.futurecdn.net/WYcLEj53eZAjjFvTepmCxB-970-80.jpg.webp', 'Apple', 'Professional iPad with M2 chip and Liquid Retina XDR display.', 114999.00, 104999.00, 20, FALSE, 1),
+('Samsung Tab S9', 'https://www.startech.com.bd/image/cache/catalog/tablet/samsung/galaxy-tab-a11/galaxy-tab-a11-002-silver-228x228.webp', 'Samsung', 'Android tablet with Snapdragon 8 Gen 2 and Dynamic AMOLED.', 79999.00, 71999.00, 25, FALSE, 1),
+('Canon EOS R50 Camera', 'https://www.startech.com.bd/image/cache/catalog/camera/mirriorless/canon/eos-r50/eos-r50-01-500x500.webp', 'Canon', 'Mirrorless camera with 24.2MP sensor and 4K video.', 89999.00, 79999.00, 15, FALSE, 1),
+('Sony Alpha ZV-E10 Camera', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQJI03M3odw7D8CjovQXByqHBFF9AqLe3t5ZQ&s', 'Sony', 'Vlog camera with interchangeable lens and real-time Eye AF.', 64999.00, 57999.00, 20, TRUE, 1),
+('Logitech MX Master 3 Mouse', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR4rlHBtvmar5_0OtmBK1dI_uLy81R65nc5Cw&s', 'Logitech', 'Advanced wireless mouse with MagSpeed scrolling.', 9999.00, 8499.00, 50, FALSE, 1),
+('Logitech MK470 Keyboard Mouse', 'https://vibegaming.com.bd/wp-content/uploads/2023/02/Screenshot-2023-02-18-143126-1.png.webp', 'Logitech', 'Slim wireless keyboard and mouse combo.', 5999.00, 4999.00, 70, FALSE, 1),
+('Samsung Galaxy Watch 6', 'https://gadgetbreeze.com.bd/wp-content/uploads/2023/11/SAMSUNG-Galaxy-Watch-6-Classic-47mm.jpg', 'Samsung', 'Advanced smartwatch with health monitoring and Wear OS.', 34999.00, 29999.00, 40, FALSE, 1),
+
     (
         'Shampoo Bundle',
         'https://img.drz.lazcdn.com/static/bd/p/73598bde01dcbc3e1eddf941ce07cdde.png_720x720q80.png',
