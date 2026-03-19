@@ -1,10 +1,16 @@
 const pool = require('../config/db');
-const crypto = require('crypto');
 
-const getUserCartId = (userId) => {
-    const hash = crypto.createHash('md5').update(userId).digest('hex').slice(0, 8);
-    const num = parseInt(hash, 16);
-    return num % 2147483647;
+const getOrCreateCartId = async (queryable, userId) => {
+    const result = await queryable.query(
+        `INSERT INTO carts (user_id)
+         VALUES ($1)
+         ON CONFLICT (user_id)
+         DO UPDATE SET user_id = EXCLUDED.user_id
+         RETURNING id`,
+        [userId]
+    );
+
+    return result.rows[0].id;
 };
 
 const checkout = async (req, res) => {
@@ -13,7 +19,7 @@ const checkout = async (req, res) => {
     try {
         const { payment_method, shipping_address } = req.body;
         const userId = req.user.id;
-        const cartId = getUserCartId(userId);
+        const cartId = await getOrCreateCartId(client, userId);
 
         if (!payment_method || !shipping_address) {
             return res.status(400).json({

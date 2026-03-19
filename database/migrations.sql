@@ -33,12 +33,21 @@ CREATE TABLE IF NOT EXISTS products (
     FOREIGN KEY (category_id) REFERENCES categories (id) ON DELETE CASCADE
 );
 
+-- ✅ Carts Table
+CREATE TABLE IF NOT EXISTS carts (
+    id SERIAL PRIMARY KEY,
+    user_id UUID NOT NULL UNIQUE,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+);
+
 -- ✅ CartItems Table
 CREATE TABLE IF NOT EXISTS cart_items (
     id SERIAL PRIMARY KEY,
     cart_id INT NOT NULL,
     product_id UUID NOT NULL,
     quantity INT NOT NULL DEFAULT 1,
+    FOREIGN KEY (cart_id) REFERENCES carts (id) ON DELETE CASCADE,
     FOREIGN KEY (product_id) REFERENCES products (id) ON DELETE CASCADE
 );
 
@@ -86,6 +95,10 @@ CREATE TABLE IF NOT EXISTS bookings (
 
 -- 📊 Performance Indexes
 CREATE INDEX IF NOT EXISTS idx_products_category ON products (category_id);
+
+CREATE INDEX IF NOT EXISTS idx_carts_user ON carts (user_id);
+
+CREATE INDEX IF NOT EXISTS idx_cart_items_cart ON cart_items (cart_id);
 
 CREATE INDEX IF NOT EXISTS idx_order_user ON orders (user_id);
 
