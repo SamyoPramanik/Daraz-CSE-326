@@ -57,10 +57,10 @@ const getProducts = async (req, res) => {
             query += ` ORDER BY rating DESC NULLS LAST`;
         } else {
             switch (sort) {
-                case 'price_asc':   query += ` ORDER BY p.price ASC`; break;
-                case 'price_desc':  query += ` ORDER BY p.price DESC`; break;
+                case 'price_asc': query += ` ORDER BY p.price ASC`; break;
+                case 'price_desc': query += ` ORDER BY p.price DESC`; break;
                 case 'rating_desc': query += ` ORDER BY rating DESC NULLS LAST`; break;
-                default:            query += ` ORDER BY p.name ASC`;
+                default: query += ` ORDER BY p.name ASC`;
             }
         }
 
@@ -187,7 +187,59 @@ const getProductWithReviews = async (req, res) => {
     }
 };
 
+const getProductCategories = async (req, res) => {
+    try {
+        const result = await pool.query(
+            'SELECT name AS category FROM categories ORDER BY name'
+        );
+
+        res.json({
+            status: 'success',
+            data: result.rows.map(row => row.category)
+        });
+    } catch (err) {
+        res.status(500).json({
+            status: 'error',
+            message: 'Failed to retrieve categories',
+            error: err.message
+        });
+    }
+};
+
+const getTrendingProducts = async (req, res) => {
+    try {
+        const result = await pool.query(
+            `SELECT 
+                p.id,
+                p.name,
+                p.image_url,
+                p.price,
+                p.discount_price,
+                p.flash_sale,
+                ROUND(AVG(oi.rating), 2) as rating
+            FROM products p
+            LEFT JOIN order_items oi ON p.id = oi.product_id AND oi.rating IS NOT NULL
+            GROUP BY p.id, p.name, p.image_url, p.price, p.discount_price, p.flash_sale
+            ORDER BY rating DESC NULLS LAST
+            LIMIT 10`
+        );
+
+        res.json({
+            status: 'success',
+            data: result.rows
+        });
+    } catch (err) {
+        res.status(500).json({
+            status: 'error',
+            message: 'Failed to retrieve trending products',
+            error: err.message
+        });
+    }
+};
+
 module.exports = {
     getProducts,
     getProductWithReviews,
+    getProductCategories,
+    getTrendingProducts
 };

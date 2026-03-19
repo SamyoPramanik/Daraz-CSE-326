@@ -5,10 +5,8 @@ import { Suspense, useCallback, useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import ProductCard from "@/components/ProductCard";
-import { ChevronDown, SlidersHorizontal } from "lucide-react";
-
-// Mock Categories
-const CATEGORIES = ["Electronics", "Clothing", "Home & Kitchen", "Books", "Beauty", "Sports"];
+import { ChevronDown, SlidersHorizontal, Loader2 } from "lucide-react";
+import { fetchProducts, fetchCategories } from "@/lib/api";
 
 function SearchContent() {
     const router = useRouter();
@@ -20,8 +18,19 @@ function SearchContent() {
     const currentSort = searchParams.get("sort") || "pop";
     const currentCategories = searchParams.get("category")?.split(",").filter(Boolean) || [];
 
-    // Local State representing URL intent (for immediate typing response before push)
+    // Local States
     const [searchInput, setSearchInput] = useState(currentSearch);
+    const [products, setProducts] = useState<any[]>([]);
+    const [categories, setCategories] = useState<string[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    // Load categories on mount
+    useEffect(() => {
+        fetchCategories().then(setCategories).catch(() => {
+            setCategories(["Electronics", "Clothing", "Home & Kitchen", "Books", "Beauty", "Sports"]);
+        });
+    }, []);
 
     // Sync back to URL
     const updateQuery = useCallback((key: string, value: string | null) => {
@@ -57,6 +66,29 @@ function SearchContent() {
         return () => clearTimeout(timeout);
     }, [searchInput, currentSearch, updateQuery]);
 
+    // Fetch Products when URL changes
+    useEffect(() => {
+        const loadProducts = async () => {
+            setIsLoading(true);
+            setError(null);
+            try {
+                const res = await fetchProducts({
+                    search: currentSearch,
+                    category: currentCategories.join(","),
+                    sort: currentSort,
+                    limit: "20"
+                });
+                setProducts(res.data || []);
+            } catch (err: any) {
+                setError(err.message || "Failed to load products");
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        loadProducts();
+    }, [currentSearch, currentSort, searchParams.get("category")]);
+
     return (
         <div className="container mx-auto px-4 py-6">
             <div className="flex flex-col md:flex-row gap-6">
@@ -72,7 +104,7 @@ function SearchContent() {
                         <div className="space-y-4">
                             <h3 className="font-medium text-gray-900">Categories</h3>
                             <div className="flex flex-col gap-3">
-                                {CATEGORIES.map(cat => (
+                                {categories.map((cat: string) => (
                                     <label key={cat} className="flex items-center gap-3 space-x-2 cursor-pointer">
                                         <Checkbox
                                             checked={currentCategories.includes(cat)}
@@ -137,19 +169,35 @@ function SearchContent() {
                     )}
 
                     {/* Product Grid */}
-                    <div className="grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-4">
-                        {/* Generating mock product cards until API is hooked up */}
-                        {Array.from({ length: 12 }).map((_, i) => (
-                            <ProductCard
-                                key={i}
-                                id={`prod_${i}`}
-                                name={`DarazClone Super Product ${i + 1} with an extremely long title name to show clamping`}
-                                price={Math.floor(Math.random() * 5000) + 100}
-                                originalPrice={Math.floor(Math.random() * 2000) + 5100}
-                                rating={3 + (Math.random() * 2)}
-                            />
-                        ))}
-                    </div>
+                    {isLoading ? (
+                        <div className="flex flex-col items-center justify-center py-20 text-gray-400 gap-4">
+                            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                            <p>Loading products...</p>
+                        </div>
+                    ) : error ? (
+                        <div className="p-10 text-center text-red-500 border border-red-100 bg-red-50 rounded-lg">
+                            {error}
+                        </div>
+                    ) : products.length === 0 ? (
+                        <div className="p-20 text-center text-gray-500 border border-dashed rounded-lg bg-white">
+                            <p className="text-lg font-medium">No products found</p>
+                            <p className="text-sm">Try adjusting your filters or search terms.</p>
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-4">
+                            {products.map((product) => (
+                                <ProductCard
+                                    key={product.id}
+                                    id={product.id}
+                                    name={product.name}
+                                    price={product.price}
+                                    originalPrice={product.discount_price}
+                                    imageUrl={product.image_url}
+                                    rating={parseFloat(product.rating || "0")}
+                                />
+                            ))}
+                        </div>
+                    )}
                 </div>
 
             </div>

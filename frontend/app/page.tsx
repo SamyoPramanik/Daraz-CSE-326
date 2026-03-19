@@ -1,9 +1,26 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Zap, TrendingUp, ChevronRight } from "lucide-react";
+import ProductCard from "@/components/ProductCard";
+import { fetchProducts, fetchTrendingProducts } from "@/lib/api";
 
-export default function Home() {
+
+export default async function Home() {
+  // Fetch flash sale and trending products
+  let flashSales = [];
+  let trendingProducts = [];
+
+  try {
+    const [flashSaleRes, trendingRes] = await Promise.all([
+      fetchProducts({ flash_sale: "true", limit: "5" }),
+      fetchTrendingProducts()
+    ]);
+    flashSales = flashSaleRes.data || [];
+    trendingProducts = trendingRes.data || [];
+  } catch (error) {
+    console.error("Failed to fetch products:", error);
+  }
+
   return (
     <div className="container mx-auto px-4 py-8">
       {/* Hero Section */}
@@ -37,51 +54,53 @@ export default function Home() {
           </Link>
         </div>
 
-        {/* Placeholder Grid */}
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-          {[1, 2, 3, 4, 5].map((i) => (
-            <Card key={i} className="group cursor-pointer overflow-hidden border-gray-100 bg-white transition-all hover:shadow-md">
-              <div className="aspect-square bg-gray-100">
-                {/* Image Placeholder */}
-                <div className="flex h-full w-full items-center justify-center bg-gray-200 text-gray-400">
-                  Image
-                </div>
-              </div>
-              <CardContent className="p-4">
-                <h3 className="line-clamp-2 text-sm font-medium text-gray-900">Product Name Placeholder {i}</h3>
-                <div className="mt-2 flex items-center gap-2">
-                  <span className="text-lg font-bold text-primary">৳ 999</span>
-                  <span className="text-xs text-gray-500 line-through">৳ 1299</span>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+        {flashSales.length === 0 ? (
+          <div className="p-10 text-center text-gray-400 border rounded-lg bg-white/50">
+            No flash sales available right now.
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+            {flashSales.map((product: any) => (
+              <ProductCard
+                key={product.id}
+                id={product.id}
+                name={product.name}
+                price={product.price}
+                originalPrice={product.discount_price}
+                imageUrl={product.image_url}
+                rating={parseFloat(product.rating || "0")}
+              />
+            ))}
+          </div>
+        )}
       </section>
 
-      {/* Trending Categories Preview */}
+      {/* Trending Products Preview */}
       <section>
         <div className="mb-6 flex items-center gap-2">
           <TrendingUp className="h-6 w-6 text-primary" />
           <h2 className="text-2xl font-bold text-gray-900">Trending Now</h2>
         </div>
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-          {[1, 2, 3, 4, 5].map((i) => (
-            <Card key={i} className="group cursor-pointer overflow-hidden border-gray-100 bg-white transition-all hover:shadow-md">
-              <div className="aspect-square bg-gray-100">
-                <div className="flex h-full w-full items-center justify-center bg-gray-200 text-gray-400">
-                  Image
-                </div>
-              </div>
-              <CardContent className="p-4">
-                <h3 className="line-clamp-2 text-sm font-medium text-gray-900">Trending Item {i}</h3>
-                <div className="mt-2">
-                  <span className="text-lg font-bold text-primary">৳ 1499</span>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+
+        {trendingProducts.length === 0 ? (
+          <div className="p-10 text-center text-gray-400 border rounded-lg bg-white/50">
+            No trending products found.
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+            {trendingProducts.map((product: any) => (
+              <ProductCard
+                key={product.id}
+                id={product.id}
+                name={product.name}
+                price={product.price}
+                originalPrice={product.discount_price}
+                imageUrl={product.image_url}
+                rating={parseFloat(product.rating || "0")}
+              />
+            ))}
+          </div>
+        )}
       </section>
     </div>
   );

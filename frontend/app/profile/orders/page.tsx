@@ -69,7 +69,7 @@ export default function MyOrdersPage() {
                 </div>
             ) : (
                 <div className="space-y-6">
-                    <Accordion type="multiple" className="w-full space-y-4">
+                    <Accordion multiple className="w-full space-y-4">
                         {orders.map(order => (
                             <AccordionItem value={order.id} key={order.id} className="border rounded-lg px-5 hover:border-gray-300 transition-colors">
                                 <AccordionTrigger className="hover:no-underline py-4">

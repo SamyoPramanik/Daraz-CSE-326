@@ -7,7 +7,7 @@ import { Star, ShoppingCart } from "lucide-react";
 import { toast } from "sonner";
 
 interface ProductCardProps {
-    id: string;
+    id: string | number;
     name: string;
     price: number;
     rating: number;
