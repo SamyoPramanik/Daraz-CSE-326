@@ -1,5 +1,10 @@
 const pool = require('../config/db');
 
+const toNumberOrNull = (value) => {
+    if (value === null || value === undefined) return null;
+    return Number(value);
+};
+
 const getProducts = async (req, res) => {
     try {
         const {
@@ -12,7 +17,9 @@ const getProducts = async (req, res) => {
             sort
         } = req.query;
 
-        const offset = (page - 1) * limit;
+        const pageNum = Math.max(1, parseInt(page, 10) || 1);
+        const limitNum = Math.max(1, parseInt(limit, 10) || 20);
+        const offset = (pageNum - 1) * limitNum;
         const params = [];
         let paramCount = 1;
 
@@ -44,10 +51,30 @@ const getProducts = async (req, res) => {
         }
 
         if (category) {
-            const categoryIds = category.split(',').map(c => parseInt(c.trim())).filter(id => !isNaN(id));
-            if (categoryIds.length > 0) {
+            const categoryTokens = category
+                .split(',')
+                .map((c) => c.trim())
+                .filter(Boolean);
+
+            const categoryIds = categoryTokens
+                .map((c) => parseInt(c, 10))
+                .filter((id) => !isNaN(id));
+
+            const categoryNames = categoryTokens
+                .filter((c) => isNaN(parseInt(c, 10)))
+                .map((c) => c.toLowerCase());
+
+            if (categoryIds.length > 0 && categoryNames.length > 0) {
+                query += ` AND (p.category_id = ANY($${paramCount}::int[]) OR LOWER(c.name) = ANY($${paramCount + 1}::text[]))`;
+                params.push(categoryIds, categoryNames);
+                paramCount += 2;
+            } else if (categoryIds.length > 0) {
                 query += ` AND p.category_id = ANY($${paramCount}::int[])`;
                 params.push(categoryIds);
+                paramCount++;
+            } else if (categoryNames.length > 0) {
+                query += ` AND LOWER(c.name) = ANY($${paramCount}::text[])`;
+                params.push(categoryNames);
                 paramCount++;
             }
         }
@@ -66,7 +93,7 @@ const getProducts = async (req, res) => {
         }
 
         query += ` LIMIT $${paramCount} OFFSET $${paramCount + 1}`;
-        params.push(limit, offset);
+        params.push(limitNum, offset);
 
         let countQuery = `
             SELECT COUNT(DISTINCT p.id) 
@@ -84,10 +111,30 @@ const getProducts = async (req, res) => {
         }
         if (flash_sale === 'true') countQuery += ` AND p.flash_sale = TRUE`;
         if (category) {
-            const categoryIds = category.split(',').map(c => parseInt(c.trim())).filter(id => !isNaN(id));
-            if (categoryIds.length > 0) {
+            const categoryTokens = category
+                .split(',')
+                .map((c) => c.trim())
+                .filter(Boolean);
+
+            const categoryIds = categoryTokens
+                .map((c) => parseInt(c, 10))
+                .filter((id) => !isNaN(id));
+
+            const categoryNames = categoryTokens
+                .filter((c) => isNaN(parseInt(c, 10)))
+                .map((c) => c.toLowerCase());
+
+            if (categoryIds.length > 0 && categoryNames.length > 0) {
+                countQuery += ` AND (p.category_id = ANY($${countParamCount}::int[]) OR LOWER(c.name) = ANY($${countParamCount + 1}::text[]))`;
+                countParams.push(categoryIds, categoryNames);
+                countParamCount += 2;
+            } else if (categoryIds.length > 0) {
                 countQuery += ` AND p.category_id = ANY($${countParamCount}::int[])`;
                 countParams.push(categoryIds);
+                countParamCount++;
+            } else if (categoryNames.length > 0) {
+                countQuery += ` AND LOWER(c.name) = ANY($${countParamCount}::text[])`;
+                countParams.push(categoryNames);
             }
         }
 
@@ -96,16 +143,22 @@ const getProducts = async (req, res) => {
             pool.query(countQuery, countParams)
         ]);
 
-        const total_items = parseInt(countResult.rows[0].count);
+        const total_items = parseInt(countResult.rows[0].count, 10);
+        const normalizedRows = result.rows.map((row) => ({
+            ...row,
+            price: Number(row.price),
+            discount_price: toNumberOrNull(row.discount_price),
+            rating: toNumberOrNull(row.rating)
+        }));
 
         res.json({
             status: 'success',
-            data: result.rows,
+            data: normalizedRows,
             meta: {
                 total_items,
-                total_pages: Math.ceil(total_items / limit),
-                current_page: parseInt(page),
-                limit: parseInt(limit)
+                total_pages: Math.ceil(total_items / limitNum),
+                current_page: pageNum,
+                limit: limitNum
             }
         });
 
@@ -145,8 +198,7 @@ const getProductWithReviews = async (req, res) => {
                 oi.rating,
                 oi.review,
                 oi.review_date as created_at,
-                u.name as user_name,
-                u.email
+                u.name as user_name
             FROM order_items oi
             JOIN orders o ON oi.order_id = o.id
             JOIN users u ON o.user_id = u.id
@@ -166,17 +218,26 @@ const getProductWithReviews = async (req, res) => {
         );
 
         const { avg_rating, review_count } = ratingResult.rows[0];
+        const normalizedProduct = {
+            ...product,
+            price: Number(product.price),
+            discount_price: toNumberOrNull(product.discount_price)
+        };
+        const normalizedReviews = reviewsResult.rows.map((r) => ({
+            ...r,
+            rating: Number(r.rating)
+        }));
 
         // Combine all data
         const response = {
             status: 'success',
             data: {
-                ...product,
+                ...normalizedProduct,
                 rating: {
-                    avg: avg_rating || 0,
-                    total_reviews: review_count || 0
+                    avg: toNumberOrNull(avg_rating) ?? 0,
+                    total_reviews: Number(review_count || 0)
                 },
-                reviews: reviewsResult.rows
+                reviews: normalizedReviews
             }
         };
 
@@ -232,7 +293,12 @@ const getTrendingProducts = async (req, res) => {
 
         res.json({
             status: 'success',
-            data: result.rows
+            data: result.rows.map((row) => ({
+                ...row,
+                price: Number(row.price),
+                discount_price: toNumberOrNull(row.discount_price),
+                rating: toNumberOrNull(row.rating)
+            }))
         });
     } catch (err) {
         res.status(500).json({

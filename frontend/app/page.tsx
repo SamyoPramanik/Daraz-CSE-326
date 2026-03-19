@@ -4,11 +4,19 @@ import { Zap, TrendingUp, ChevronRight } from "lucide-react";
 import ProductCard from "@/components/ProductCard";
 import { fetchProducts, fetchTrendingProducts } from "@/lib/api";
 
+interface ProductSummary {
+  id: string;
+  name: string;
+  price: number;
+  discount_price: number | null;
+  image_url: string;
+  rating: number | null;
+}
 
 export default async function Home() {
   // Fetch flash sale and trending products
-  let flashSales = [];
-  let trendingProducts = [];
+  let flashSales: ProductSummary[] = [];
+  let trendingProducts: ProductSummary[] = [];
 
   try {
     const [flashSaleRes, trendingRes] = await Promise.all([
@@ -60,15 +68,15 @@ export default async function Home() {
           </div>
         ) : (
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-            {flashSales.map((product: any) => (
+            {flashSales.map((product) => (
               <ProductCard
                 key={product.id}
                 id={product.id}
                 name={product.name}
                 price={product.price}
-                originalPrice={product.discount_price}
+                originalPrice={product.discount_price ?? undefined}
                 imageUrl={product.image_url}
-                rating={parseFloat(product.rating || "0")}
+                rating={Number(product.rating ?? 0)}
               />
             ))}
           </div>
@@ -88,15 +96,15 @@ export default async function Home() {
           </div>
         ) : (
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-            {trendingProducts.map((product: any) => (
+            {trendingProducts.map((product) => (
               <ProductCard
                 key={product.id}
                 id={product.id}
                 name={product.name}
                 price={product.price}
-                originalPrice={product.discount_price}
+                originalPrice={product.discount_price ?? undefined}
                 imageUrl={product.image_url}
-                rating={parseFloat(product.rating || "0")}
+                rating={Number(product.rating ?? 0)}
               />
             ))}
           </div>

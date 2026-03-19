@@ -1,12 +1,26 @@
 "use client";
 
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
-import { Suspense, useCallback, useEffect, useState } from "react";
+import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import ProductCard from "@/components/ProductCard";
 import { ChevronDown, SlidersHorizontal, Loader2 } from "lucide-react";
 import { fetchProducts, fetchCategories } from "@/lib/api";
+
+interface ProductSummary {
+    id: string;
+    name: string;
+    price: number;
+    discount_price: number | null;
+    image_url: string;
+    rating: number | null;
+}
+
+interface CategoryItem {
+    id: number;
+    name: string;
+}
 
 function SearchContent() {
     const router = useRouter();
@@ -16,13 +30,16 @@ function SearchContent() {
     // URL States
     const currentSearch = searchParams.get("search") || "";
     const currentSort = searchParams.get("sort") || "pop";
-    const currentCategories = searchParams.get("category")?.split(",").filter(Boolean) || [];
+    const currentCategories = useMemo(
+        () => searchParams.get("category")?.split(",").filter(Boolean) || [],
+        [searchParams]
+    );
     const currentFlashSale = searchParams.get("flash_sale") === "true";
 
     // Local States
     const [searchInput, setSearchInput] = useState(currentSearch);
-    const [products, setProducts] = useState<any[]>([]);
-    const [categories, setCategories] = useState<any[]>([]);
+    const [products, setProducts] = useState<ProductSummary[]>([]);
+    const [categories, setCategories] = useState<CategoryItem[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -94,15 +111,16 @@ function SearchContent() {
                     limit: "20"
                 });
                 setProducts(res.data || []);
-            } catch (err: any) {
-                setError(err.message || "Failed to load products");
+            } catch (err) {
+                const message = err instanceof Error ? err.message : "Failed to load products";
+                setError(message);
             } finally {
                 setIsLoading(false);
             }
         };
 
         loadProducts();
-    }, [currentSearch, currentSort, searchParams.get("category"), currentFlashSale]);
+    }, [currentSearch, currentSort, currentCategories, currentFlashSale]);
 
     return (
         <div className="container mx-auto px-4 py-6">
@@ -133,7 +151,7 @@ function SearchContent() {
                             <div>
                                 <h3 className="font-medium text-gray-900 mb-3">Categories</h3>
                                 <div className="flex flex-col gap-3">
-                                    {categories.map((cat: any) => (
+                                    {categories.map((cat) => (
                                         <label key={cat.id} className="flex items-center gap-3 space-x-2 cursor-pointer">
                                             <Checkbox
                                                 checked={currentCategories.includes(cat.id.toString())}
@@ -186,7 +204,7 @@ function SearchContent() {
                             <span className="text-gray-500 mt-1">Active Filters:</span>
                             {currentSearch && (
                                 <span className="rounded-full bg-orange-100 px-3 py-1 text-primary">
-                                    Search: "{currentSearch}"
+                                    Search: &quot;{currentSearch}&quot;
                                 </span>
                             )}
                             {currentFlashSale && (
@@ -196,7 +214,7 @@ function SearchContent() {
                                 </span>
                             )}
                             {currentCategories.map(catId => {
-                                const category = categories.find((c: any) => c.id.toString() === catId);
+                                const category = categories.find((c) => c.id.toString() === catId);
                                 return (
                                     <span key={catId} className="rounded-full bg-orange-100 px-3 py-1 text-primary flex items-center gap-1">
                                         {category?.name || catId}
@@ -230,9 +248,9 @@ function SearchContent() {
                                     id={product.id}
                                     name={product.name}
                                     price={product.price}
-                                    originalPrice={product.discount_price}
+                                    originalPrice={product.discount_price ?? undefined}
                                     imageUrl={product.image_url}
-                                    rating={parseFloat(product.rating || "0")}
+                                    rating={Number(product.rating ?? 0)}
                                 />
                             ))}
                         </div>

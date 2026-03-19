@@ -95,7 +95,7 @@ export default function MyReviewsPage() {
                                             </div>
                                         </div>
                                         {item.user_review_text && (
-                                            <p className="text-sm text-gray-600 italic">"{item.user_review_text}"</p>
+                                            <p className="text-sm text-gray-600 italic">&quot;{item.user_review_text}&quot;</p>
                                         )}
                                     </div>
                                 ) : (

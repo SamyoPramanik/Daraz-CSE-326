@@ -55,7 +55,7 @@ export default function CartPage() {
         return (
             <div className="container mx-auto px-4 py-16 text-center">
                 <h2 className="text-2xl font-bold mb-4 text-gray-800">Your Cart is Empty</h2>
-                <p className="text-gray-500 mb-8">Looks like you haven't added anything to your cart yet.</p>
+                <p className="text-gray-500 mb-8">Looks like you haven&apos;t added anything to your cart yet.</p>
                 <Link href="/search">
                     <Button className="bg-primary hover:bg-primary/90">Continue Shopping</Button>
                 </Link>

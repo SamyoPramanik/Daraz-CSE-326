@@ -3,7 +3,9 @@
 This document outlines the RESTful API endpoints for the Daraz eCommerce platform. 
 
 ## Base URL
-`http://localhost:4000/api`
+Docker + Nginx: `http://localhost:9000/api`
+
+Direct backend (without Nginx): `http://localhost:4000/api`
 
 > Note: For internal SSR compatibility, backend also accepts legacy routes without `/api` prefix.
 
@@ -378,33 +380,6 @@ Returned when a new resource is successfully created (e.g., a new user registrat
 ### 400 Bad Request
 Returned when the request is malformed or invalid (e.g., missing payload fields, invalid data formats).
 ```json
-
-## Quick API Testing
-
-### Option A: Postman
-1. Import collection: `postman/Daraz_API.postman_collection.json`
-2. Import environment: `postman/Daraz_Local.postman_environment.json`
-3. Set environment variable values:
-    - `productId` (required for product/review/cart specific requests)
-    - `reviewId` (for delete review endpoint)
-4. Run `Auth > Login` first to auto-save `token`.
-
-### Option B: One-command Smoke Test
-From project root:
-
-```bash
-chmod +x backend/scripts/smoke_api.sh
-./backend/scripts/smoke_api.sh
-```
-
-Optional env overrides:
-
-```bash
-BASE_URL=http://localhost:4000/api \
-EMAIL=custom@example.com \
-PASSWORD=securepassword123 \
-./backend/scripts/smoke_api.sh
-```
 {
     "status": "error",
     "message": "Rating must be between 1 and 5"
@@ -446,4 +421,31 @@ Returned when an unexpected error occurs on the server side (e.g., database conn
     "message": "Failed to retrieve reviews",
     "error": "Internal details..."
 }
+```
+
+## Quick API Testing
+
+### Option A: Postman
+1. Import collection: `postman/Daraz_API.postman_collection.json`
+2. Import environment: `postman/Daraz_Local.postman_environment.json`
+3. Set environment variable values:
+    - `productId` (required for product/review/cart specific requests)
+    - `reviewId` (for delete review endpoint)
+4. Run `Auth > Login` first to auto-save `token`.
+
+### Option B: One-command Smoke Test
+From project root:
+
+```bash
+chmod +x backend/scripts/smoke_api.sh
+./backend/scripts/smoke_api.sh
+```
+
+Optional env overrides:
+
+```bash
+BASE_URL=http://localhost:9000/api \
+EMAIL=custom@example.com \
+PASSWORD=securepassword123 \
+./backend/scripts/smoke_api.sh
 ```

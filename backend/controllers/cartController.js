@@ -35,9 +35,16 @@ const viewCart = async (req, res) => {
             return sum + parseFloat(item.total_price);
         }, 0);
 
+        const normalizedItems = result.rows.map((item) => ({
+            ...item,
+            price: Number(item.price),
+            discount_price: item.discount_price !== null ? Number(item.discount_price) : null,
+            total_price: Number(item.total_price)
+        }));
+
         res.json({
             status: 'success',
-            data: result.rows,
+            data: normalizedItems,
             meta: {
                 cart_total: Number(cartTotal.toFixed(2))
             }

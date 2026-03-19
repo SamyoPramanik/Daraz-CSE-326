@@ -1,9 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { ShoppingCart, Zap } from "lucide-react";
+import { ShoppingCart } from "lucide-react";
 import { toast } from "sonner";
 
 interface ProductActionsProps {
@@ -12,12 +11,11 @@ interface ProductActionsProps {
 }
 
 export default function ProductActions({ productId, stock }: ProductActionsProps) {
-    const router = useRouter();
     const [quantity, setQuantity] = useState(1);
 
     const handleAddToCart = () => {
         // POST /api/cart logic goes here
-        toast.success("Product added to cart");
+        toast.success(`Product added to cart (${productId})`);
     };
 
     return (

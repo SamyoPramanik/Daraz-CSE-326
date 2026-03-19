@@ -104,7 +104,7 @@ export default function CheckoutPage() {
                             Place Order
                         </Button>
                         <p className="text-xs text-center text-gray-400 mt-4">
-                            By clicking "Place Order" you agree to our Terms & Conditions.
+                            By clicking &quot;Place Order&quot; you agree to our Terms & Conditions.
                         </p>
                     </div>
                 </div>

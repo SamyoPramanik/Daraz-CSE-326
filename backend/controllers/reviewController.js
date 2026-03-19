@@ -30,16 +30,20 @@ const getProductReviews = async (req, res) => {
         );
 
         const { avg_rating, review_count } = ratingResult.rows[0];
+        const normalizedReviews = result.rows.map((row) => ({
+            ...row,
+            rating: Number(row.rating)
+        }));
 
         res.json({
             status: 'success',
             data: {
                 product_id: productId,
                 rating: {
-                    avg: avg_rating || 0,
-                    total_reviews: review_count || 0
+                    avg: avg_rating !== null ? Number(avg_rating) : 0,
+                    total_reviews: Number(review_count || 0)
                 },
-                reviews: result.rows
+                reviews: normalizedReviews
             }
         });
     } catch (err) {

@@ -3,9 +3,33 @@ import { fetchProduct } from "@/lib/api";
 import ProductActions from "@/components/ProductActions";
 import { Star, Truck, ShieldCheck } from "lucide-react";
 
+interface ProductReview {
+    id: number;
+    user_name: string;
+    rating: number;
+    review: string | null;
+    created_at: string;
+}
+
+interface ProductDetail {
+    id: string;
+    name: string;
+    image_url: string;
+    price: number;
+    discount_price: number | null;
+    stock: number;
+    description?: string;
+    flash_sale?: boolean;
+    rating?: {
+        avg: number;
+        total_reviews: number;
+    };
+    reviews?: ProductReview[];
+}
+
 export default async function ProductPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
-    const product = await fetchProduct(id);
+    const product = (await fetchProduct(id)) as ProductDetail | null;
 
     if (!product) notFound();
 
@@ -104,7 +128,7 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
                             </span>
                         </h2>
                         <div className="space-y-6">
-                            {product.reviews.map((review: any) => (
+                            {product.reviews.map((review) => (
                                 <div key={review.id} className="border-b pb-4 last:border-0 last:pb-0">
                                     <div className="flex items-center gap-2 mb-2">
                                         <div className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center font-bold text-primary text-sm">
