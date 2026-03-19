@@ -1,5 +1,8 @@
 const pool = require('../config/db');
 
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const isValidUuid = (value) => typeof value === 'string' && UUID_REGEX.test(value);
+
 const toNumberOrNull = (value) => {
     if (value === null || value === undefined) return null;
     return Number(value);
@@ -175,6 +178,13 @@ const getProducts = async (req, res) => {
 const getProductWithReviews = async (req, res) => {
     try {
         const { id } = req.params;
+
+        if (!isValidUuid(id)) {
+            return res.status(400).json({
+                status: 'error',
+                message: 'Invalid product id'
+            });
+        }
 
         // Get product details
         const productResult = await pool.query(

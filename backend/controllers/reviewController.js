@@ -1,9 +1,19 @@
 const pool = require('../config/db');
 
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const isValidUuid = (value) => typeof value === 'string' && UUID_REGEX.test(value);
+
 // Get all reviews for a product
 const getProductReviews = async (req, res) => {
     try {
         const { productId } = req.params;
+
+        if (!isValidUuid(productId)) {
+            return res.status(400).json({
+                status: 'error',
+                message: 'Invalid productId'
+            });
+        }
 
         const result = await pool.query(
             `SELECT 
@@ -61,10 +71,10 @@ const createReview = async (req, res) => {
         const { productId, rating, review } = req.body;
         const userId = req.user.id;
 
-        if (!productId) {
+        if (!isValidUuid(productId)) {
             return res.status(400).json({
                 status: 'error',
-                message: 'productId is required'
+                message: 'Invalid productId'
             });
         }
 
@@ -124,6 +134,13 @@ const deleteReview = async (req, res) => {
     try {
         const { reviewId } = req.params;
         const userId = req.user.id;
+
+        if (!Number.isInteger(Number(reviewId)) || Number(reviewId) < 1) {
+            return res.status(400).json({
+                status: 'error',
+                message: 'Invalid reviewId'
+            });
+        }
 
         // Check if review exists and belongs to user
         const checkResult = await pool.query(

@@ -1,13 +1,21 @@
 const pool = require('../config/db');
-const crypto = require('crypto');
 
+const getOrCreateCartId = async (queryable, userId) => {
+    const result = await queryable.query(
+        `INSERT INTO carts (user_id)
+         VALUES ($1)
+         ON CONFLICT (user_id)
+         DO UPDATE SET user_id = EXCLUDED.user_id
+         RETURNING id`,
+        [userId]
+    );
 
-
-const getUserCartId = (userId) => {
-    const hash = crypto.createHash('md5').update(userId).digest('hex').slice(0, 8);
-    const num = parseInt(hash, 16);
-    return num % 2147483647;
+    return result.rows[0].id;
 };
+
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+const isValidUuid = (value) => typeof value === 'string' && UUID_REGEX.test(value);
 
 const parsePositiveInteger = (value) => {
     const parsed = Number(value);
@@ -19,7 +27,7 @@ const parsePositiveInteger = (value) => {
 
 const viewCart = async (req, res) => {
     try {
-        const cartId = getUserCartId(req.user.id);
+        const cartId = await getOrCreateCartId(pool, req.user.id);
 
         const result = await pool.query(
             `SELECT
@@ -71,14 +79,14 @@ const addProduct = async (req, res) => {
         const { productId, quantity = 1 } = req.body;
         const normalizedQuantity = parsePositiveInteger(quantity);
 
-        if (!productId || normalizedQuantity === null) {
+        if (!isValidUuid(productId) || normalizedQuantity === null) {
             return res.status(400).json({
                 status: 'error',
                 message: 'productId and a valid quantity are required'
             });
         }
 
-        const cartId = getUserCartId(req.user.id);
+        const cartId = await getOrCreateCartId(pool, req.user.id);
 
         const productResult = await pool.query(
             'SELECT id, stock FROM products WHERE id = $1',
@@ -164,7 +172,7 @@ const updateCart = async (req, res) => {
             });
         }
 
-        const cartId = getUserCartId(req.user.id);
+        const cartId = await getOrCreateCartId(pool, req.user.id);
 
         const cartItemResult = await pool.query(
             `SELECT ci.id, ci.product_id, p.stock
@@ -214,7 +222,7 @@ const updateCart = async (req, res) => {
 const removeFromCart = async (req, res) => {
     try {
         const { id } = req.params;
-        const cartId = getUserCartId(req.user.id);
+        const cartId = await getOrCreateCartId(pool, req.user.id);
 
         const deleteResult = await pool.query(
             'DELETE FROM cart_items WHERE id = $1 AND cart_id = $2 RETURNING id',
