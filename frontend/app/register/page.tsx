@@ -7,6 +7,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 
+const BASE_URL = typeof window === 'undefined'
+    ? (process.env.NEXT_INTERNAL_SERVER_URL || 'http://backend:4000')
+    : '/api';
+
 export default function RegisterPage() {
     const router = useRouter();
     const [formData, setFormData] = useState({
@@ -16,11 +20,28 @@ export default function RegisterPage() {
         password: "",
     });
 
-    const handleRegister = (e: React.FormEvent) => {
+    const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault();
-        // TODO: implement API registration
-        console.log("Registering", formData);
-        router.push("/login");
+        try {
+            const res = await fetch(`${BASE_URL}/auth/register`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(formData)
+            });
+            const data = await res.json();
+            
+            if (res.ok && data.status === "success") {
+                // Store token in localStorage
+                localStorage.setItem("token", data.data.token);
+                localStorage.setItem("user", JSON.stringify(data.data.user));
+                router.push("/");
+            } else {
+                alert(data.message || "Registration failed");
+            }
+        } catch (error) {
+            console.error("Registration error", error);
+            alert("An error occurred during registration.");
+        }
     };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

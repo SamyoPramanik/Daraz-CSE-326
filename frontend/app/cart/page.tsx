@@ -1,55 +1,109 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
+import { fetchCart, updateCartItem, removeCartItem } from "@/lib/api";
 
 export default function CartPage() {
     const router = useRouter();
 
-    // Mock initial state based on API response structure
-    const [cartItems, setCartItems] = useState([
-        {
-            id: 1,
-            cart_id: 1,
-            product_id: "uuid-1",
-            name: "Samsung Galaxy S24",
-            price: 89999.0,
-            quantity: 1,
-            total_price: 89999.0,
-        },
-        {
-            id: 2,
-            cart_id: 1,
-            product_id: "uuid-2",
-            name: "Apple 20W USB-C Power Adapter",
-            price: 2500.0,
-            quantity: 2,
-            total_price: 5000.0,
-        }
-    ]);
+    const [cartItems, setCartItems] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    const [updating, setUpdating] = useState<number | null>(null);
 
-    const updateQuantity = (id: number, delta: number) => {
-        setCartItems(items => items.map(item => {
-            if (item.id === id) {
-                const newQuantity = Math.max(1, item.quantity + delta);
-                return {
-                    ...item,
-                    quantity: newQuantity,
-                    total_price: newQuantity * item.price
-                };
+    // Fetch cart data on component mount
+    useEffect(() => {
+        const loadCart = async () => {
+            try {
+                setLoading(true);
+                setError(null);
+                const response = await fetchCart();
+                setCartItems(response.data || []);
+            } catch (err: any) {
+                if (err.message.includes('Unauthorized')) {
+                    setError('Please login to view your cart');
+                    // Optionally redirect to login
+                    setTimeout(() => router.push('/login'), 2000);
+                } else {
+                    setError(err.message || 'Failed to load cart');
+                }
+                setCartItems([]);
+            } finally {
+                setLoading(false);
             }
-            return item;
-        }));
+        };
+
+        loadCart();
+    }, [router]);
+
+    const updateQuantity = async (id: number, delta: number) => {
+        const item = cartItems.find(i => i.id === id);
+        if (!item) return;
+
+        const newQuantity = Math.max(1, item.quantity + delta);
+        
+        try {
+            setUpdating(id);
+            await updateCartItem(id, newQuantity);
+            
+            // Update local state after successful API call
+            setCartItems(items => items.map(i => {
+                if (i.id === id) {
+                    return {
+                        ...i,
+                        quantity: newQuantity,
+                        total_price: newQuantity * i.price
+                    };
+                }
+                return i;
+            }));
+        } catch (err: any) {
+            setError(err.message || 'Failed to update quantity');
+        } finally {
+            setUpdating(null);
+        }
     };
 
-    const removeItem = (id: number) => {
-        setCartItems(items => items.filter(item => item.id !== id));
+    const removeItem = async (id: number) => {
+        try {
+            setUpdating(id);
+            await removeCartItem(id);
+            
+            // Remove from local state after successful API call
+            setCartItems(items => items.filter(item => item.id !== id));
+        } catch (err: any) {
+            setError(err.message || 'Failed to remove item from cart');
+        } finally {
+            setUpdating(null);
+        }
     };
 
     const cartTotal = cartItems.reduce((acc, curr) => acc + curr.total_price, 0);
+
+    if (loading) {
+        return (
+            <div className="container mx-auto px-4 py-16 text-center">
+                <h2 className="text-2xl font-bold mb-4 text-gray-800">Loading your cart...</h2>
+                <p className="text-gray-500">Please wait while we fetch your cart items.</p>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="container mx-auto px-4 py-16 text-center">
+                <h2 className="text-2xl font-bold mb-4 text-red-600">Error</h2>
+                <p className="text-gray-500 mb-8">{error}</p>
+                <Link href="/search">
+                    <Button className="bg-primary hover:bg-primary/90">Continue Shopping</Button>
+                </Link>
+            </div>
+        );
+    }
 
     if (cartItems.length === 0) {
         return (
