@@ -27,7 +27,7 @@ export default async function Home() {
       <section className="mb-12 rounded-2xl bg-orange-100 p-8 text-center md:text-left">
         <div className="max-w-2xl">
           <h1 className="mb-4 text-4xl font-extrabold tracking-tight text-gray-900 md:text-5xl">
-            Welcome to DarazClone
+            Welcome to Daraz
           </h1>
           <p className="mb-6 text-lg text-gray-700">
             Discover the best deals on millions of products spanning electronics, fashion, home goods, and more.
