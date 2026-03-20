@@ -27,7 +27,6 @@ export default function LoginPage() {
             const data = await res.json();
             
             if (res.ok && data.status === "success") {
-                // Store token in localStorage
                 localStorage.setItem("token", data.data.token);
                 localStorage.setItem("user", JSON.stringify(data.data.user));
                 router.push("/");
