@@ -5,7 +5,7 @@ import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import ProductCard from "@/components/ProductCard";
-import { ChevronDown, SlidersHorizontal, Loader2 } from "lucide-react";
+import { ChevronDown, SlidersHorizontal, Loader2, ChevronRight, ChevronLeft } from "lucide-react";
 import { fetchProducts, fetchCategories } from "@/lib/api";
 
 interface ProductSummary {
@@ -41,6 +41,8 @@ function SearchContent() {
     const [products, setProducts] = useState<ProductSummary[]>([]);
     const [categories, setCategories] = useState<CategoryItem[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [totalPages, setTotalPages] = useState(1);
+    const currentPage = parseInt(searchParams.get("page") || "1");
     const [error, setError] = useState<string | null>(null);
 
     // Load categories on mount
@@ -69,6 +71,15 @@ function SearchContent() {
         params.set("page", "1");
         router.push(`${pathname}?${params.toString()}`);
     }, [searchParams, pathname, router]);
+
+    //pagination er jonne relevant function
+
+    const updatePage = useCallback((page: number) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("page", page.toString());
+    router.push(`${pathname}?${params.toString()}`);
+    }, [searchParams, pathname, router]);
+
 
     // Handle Category Toggle
     const toggleCategory = (catId: number) => {
@@ -108,9 +119,11 @@ function SearchContent() {
                     category: currentCategories.join(","),
                     sort: currentSort,
                     flash_sale: currentFlashSale ? "true" : null,
-                    limit: "20"
+                    limit: "20",
+                    page: currentPage.toString()
                 });
                 setProducts(res.data || []);
+                setTotalPages(res.meta?.total_pages || 1);
             } catch (err) {
                 const message = err instanceof Error ? err.message : "Failed to load products";
                 setError(message);
@@ -120,7 +133,7 @@ function SearchContent() {
         };
 
         loadProducts();
-    }, [currentSearch, currentSort, currentCategories, currentFlashSale]);
+    }, [currentSearch, currentSort, currentCategories, currentFlashSale , currentPage]);
 
     return (
         <div className="container mx-auto px-4 py-6">
@@ -255,6 +268,52 @@ function SearchContent() {
                             ))}
                         </div>
                     )}
+
+
+                    {totalPages > 1 && (
+    <div className="mt-8 flex items-center justify-center gap-1">
+        <button
+            onClick={() => updatePage(currentPage - 1)}
+            disabled={currentPage === 1}
+            className="flex items-center gap-1 px-3 h-9 rounded-md border text-sm hover:bg-orange-50 hover:border-primary hover:text-primary transition disabled:opacity-40 disabled:cursor-not-allowed"
+        >
+            <ChevronLeft className="h-4 w-4" /> Previous
+        </button>
+
+        {Array.from({ length: totalPages }, (_, i) => i + 1)
+            .filter(p => p === 1 || p === totalPages || Math.abs(p - currentPage) <= 1)
+            .reduce<(number | string)[]>((acc, p, idx, arr) => {
+                if (idx > 0 && p - (arr[idx - 1] as number) > 1) acc.push("...");
+                acc.push(p);
+                return acc;
+            }, [])
+            .map((p, idx) =>
+                p === "..." ? (
+                    <span key={`dots-${idx}`} className="flex h-9 w-9 items-center justify-center text-gray-400">···</span>
+                ) : (
+                    <button
+                        key={p}
+                        onClick={() => updatePage(p as number)}
+                        className={`h-9 w-9 rounded-md border text-sm transition ${
+                            currentPage === p
+                                ? "bg-primary text-white border-primary"
+                                : "hover:bg-orange-50 hover:border-primary hover:text-primary"
+                        }`}
+                    >
+                        {p}
+                    </button>
+                )
+            )}
+
+        <button
+            onClick={() => updatePage(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className="flex items-center gap-1 px-3 h-9 rounded-md border text-sm hover:bg-orange-50 hover:border-primary hover:text-primary transition disabled:opacity-40 disabled:cursor-not-allowed"
+        >
+            Next <ChevronRight className="h-4 w-4" />
+        </button>
+    </div>
+)}
                 </div>
 
             </div>
