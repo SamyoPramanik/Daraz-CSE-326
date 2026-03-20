@@ -80,3 +80,115 @@ export async function fetchProduct(id: string) {
     const json = await res.json();
     return json.data;
 }
+
+// ============ CART API FUNCTIONS ============
+
+export async function fetchCart() {
+    const url = `${BASE_URL}/cart`;
+    const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+
+    const headers: Record<string, string> = {};
+    if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const res = await fetch(url, {
+        method: 'GET',
+        headers,
+    });
+
+    if (!res.ok) {
+        if (res.status === 401) {
+            throw new Error('Unauthorized - Please login');
+        }
+        throw new Error('Failed to fetch cart');
+    }
+
+    return res.json();
+}
+
+export async function updateCartItem(cartItemId: number, quantity: number) {
+    const url = `${BASE_URL}/cart/${cartItemId}`;
+    const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+
+    if (!token) {
+        throw new Error('Unauthorized - Please login');
+    }
+
+    const res = await fetch(url, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ quantity }),
+    });
+
+    if (!res.ok) {
+        if (res.status === 401) {
+            throw new Error('Unauthorized - Please login');
+        }
+        throw new Error('Failed to update cart item');
+    }
+
+    return res.json();
+}
+
+export async function removeCartItem(cartItemId: number) {
+    const url = `${BASE_URL}/cart/${cartItemId}`;
+    const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+
+    if (!token) {
+        throw new Error('Unauthorized - Please login');
+    }
+
+    const res = await fetch(url, {
+        method: 'DELETE',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+        },
+    });
+
+    if (!res.ok) {
+        if (res.status === 401) {
+            throw new Error('Unauthorized - Please login');
+        }
+        throw new Error('Failed to remove cart item');
+    }
+
+    return res.json();
+}
+
+export async function addToCart(productId: string, quantity: number) {
+    const url = `${BASE_URL}/cart`;
+    const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+
+    console.log('[addToCart] Token:', token ? 'Found' : 'Not found');
+    console.log('[addToCart] URL:', url);
+
+    if (!token) {
+        throw new Error('Unauthorized - Please login');
+    }
+
+    const res = await fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ productId, quantity }),
+        cache: 'no-store',
+    });
+
+    console.log('[addToCart] Response status:', res.status);
+
+    if (!res.ok) {
+        if (res.status === 401) {
+            throw new Error('Unauthorized - Please login');
+        }
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.message || 'Failed to add item to cart');
+    }
+
+    return res.json();
+}

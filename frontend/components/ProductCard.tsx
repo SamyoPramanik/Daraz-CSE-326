@@ -2,10 +2,13 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Star, ShoppingCart } from "lucide-react";
 import { toast } from "sonner";
+import { addToCart } from "@/lib/api";
 
 interface ProductCardProps {
     id: string;
@@ -17,11 +20,30 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ id, name, price, rating, imageUrl, originalPrice }: ProductCardProps) {
-    const handleAddToCart = (e: React.MouseEvent) => {
+    const router = useRouter();
+    const [isLoading, setIsLoading] = useState(false);
+
+    const handleAddToCart = async (e: React.MouseEvent) => {
         e.preventDefault();
         e.stopPropagation();
-        // API Call goes here to increment cart quantity
-        toast.success("Product added to cart");
+        
+        try {
+            setIsLoading(true);
+            console.log('[ProductCard] Adding to cart:', { id, quantity: 1 });
+            await addToCart(id, 1);
+            console.log('[ProductCard] Successfully added to cart');
+            toast.success("Product added to cart!");
+        } catch (err: any) {
+            console.error('[ProductCard] Error adding to cart:', err);
+            if (err.message.includes('Unauthorized')) {
+                toast.error('Please login to add items to cart');
+                router.push('/login');
+            } else {
+                toast.error(err.message || 'Failed to add to cart');
+            }
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -65,9 +87,10 @@ export default function ProductCard({ id, name, price, rating, imageUrl, origina
                             variant="default"
                             className="w-full bg-primary hover:bg-primary/90 text-white gap-2"
                             onClick={handleAddToCart}
+                            disabled={isLoading}
                         >
                             <ShoppingCart className="w-4 h-4" />
-                            Add to Cart
+                            {isLoading ? 'Adding...' : 'Add to Cart'}
                         </Button>
                     </div>
                 </CardContent>
