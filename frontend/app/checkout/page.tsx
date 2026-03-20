@@ -1,115 +1,272 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { fetchCart, placeOrder } from "@/lib/api";
+import { toast } from "sonner";
 
 export default function CheckoutPage() {
-    const router = useRouter();
-    const [shippingAddress, setShippingAddress] = useState("");
-    const [paymentMethod, setPaymentMethod] = useState("Cash on Delivery");
+  const router = useRouter();
+  const [cartItems, setCartItems] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [shippingAddress, setShippingAddress] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState("COD"); // Changed to COD
 
-    // Mock static total from cart pipeline
-    const cartTotal = 94999.0;
+  const DELIVERY_FEE = 60;
 
-    const handlePlaceOrder = (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!shippingAddress) return alert("Please enter a shipping address.");
-
-        // API `POST /api/orders/checkout` triggering logic goes here
-        console.log("Placing order", { shippingAddress, paymentMethod });
-        alert("Order Placed Successfully!");
-
-        // Hard navigate to Orders page after clearing out
-        router.push("/profile/orders");
+  // Fetch cart on component mount
+  useEffect(() => {
+    const loadCart = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const response = await fetchCart();
+        setCartItems(response.data || []);
+      } catch (err: any) {
+        if (err.message.includes("Unauthorized")) {
+          setError("Please login to checkout");
+          // Redirect to login after 2 seconds
+          setTimeout(() => router.push("/login"), 2000);
+        } else {
+          setError(err.message || "Failed to load cart");
+        }
+        setCartItems([]);
+      } finally {
+        setLoading(false);
+      }
     };
 
+    loadCart();
+  }, [router]);
+
+  const cartTotal = cartItems.reduce((acc, curr) => acc + curr.total_price, 0);
+  const totalPayment = cartTotal + DELIVERY_FEE;
+
+  const handlePlaceOrder = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!shippingAddress.trim()) {
+      toast.error("Please enter a shipping address");
+      return;
+    }
+
+    if (cartItems.length === 0) {
+      toast.error("Your cart is empty");
+      return;
+    }
+
+    try {
+      setSubmitting(true);
+      setError(null);
+      console.log("[Checkout] Placing order...", {
+        shippingAddress,
+        paymentMethod,
+      });
+
+      const response = await placeOrder(paymentMethod, shippingAddress);
+      console.log("[Checkout] Order placed successfully:", response);
+
+      toast.success("Order placed successfully! Redirecting to your orders...");
+
+      // Wait a bit longer to ensure order is created, then redirect
+      // This also allows the toast to be visible
+      setTimeout(() => {
+        router.push("/profile/orders");
+      }, 2000);
+    } catch (err: any) {
+      console.error("[Checkout] Error placing order:", err);
+      const errorMessage = err.message || "Failed to place order";
+      setError(errorMessage);
+      toast.error(errorMessage);
+      setSubmitting(false);
+    }
+  };
+
+  if (loading) {
     return (
-        <div className="container mx-auto px-4 py-8 max-w-5xl">
-            <h1 className="text-3xl font-bold text-gray-900 mb-8">Checkout</h1>
-
-            <form onSubmit={handlePlaceOrder} className="flex flex-col lg:flex-row gap-8">
-
-                {/* Left Forms */}
-                <div className="flex-1 space-y-8">
-
-                    <Card className="shadow-sm border-gray-100">
-                        <CardHeader>
-                            <CardTitle className="text-xl">Shipping Address</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="space-y-4">
-                                <div className="space-y-2">
-                                    <label className="text-sm font-medium leading-none" htmlFor="address">Full Address</label>
-                                    <Input
-                                        id="address"
-                                        placeholder="123 Main St, Dhaka, Bangladesh"
-                                        value={shippingAddress}
-                                        onChange={(e) => setShippingAddress(e.target.value)}
-                                        required
-                                    />
-                                </div>
-                            </div>
-                        </CardContent>
-                    </Card>
-
-                    <Card className="shadow-sm border-gray-100">
-                        <CardHeader>
-                            <CardTitle className="text-xl">Payment Method</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="space-y-4">
-                                {["Cash on Delivery", "bKash", "Credit/Debit Card"].map(method => (
-                                    <label key={method} className="flex items-center gap-3 p-4 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
-                                        <Checkbox
-                                            checked={paymentMethod === method}
-                                            onCheckedChange={() => setPaymentMethod(method)}
-                                            className="rounded-full rounded-full"
-                                        />
-                                        <span className="font-medium text-gray-700">{method}</span>
-                                    </label>
-                                ))}
-                            </div>
-                        </CardContent>
-                    </Card>
-
-                </div>
-
-                {/* Right Summary */}
-                <div className="w-full lg:w-96 shrink-0">
-                    <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm sticky top-24">
-                        <h2 className="text-xl font-bold text-gray-900 mb-6">Order Summary</h2>
-                        <div className="space-y-4 text-sm text-gray-600 mb-6 border-b pb-6">
-                            <div className="flex justify-between">
-                                <span>Items Total</span>
-                                <span>৳ {cartTotal.toLocaleString()}</span>
-                            </div>
-                            <div className="flex justify-between">
-                                <span>Delivery Fee</span>
-                                <span>৳ 60.00</span>
-                            </div>
-                        </div>
-                        <div className="flex justify-between font-bold text-xl text-gray-900 mb-8">
-                            <span>Total Payment</span>
-                            <span className="text-primary">৳ {(cartTotal + 60).toLocaleString()}</span>
-                        </div>
-
-                        <Button
-                            type="submit"
-                            className="w-full bg-primary hover:bg-primary/90 text-white font-bold h-14 text-lg"
-                        >
-                            Place Order
-                        </Button>
-                        <p className="text-xs text-center text-gray-400 mt-4">
-                            By clicking &quot;Place Order&quot; you agree to our Terms & Conditions.
-                        </p>
-                    </div>
-                </div>
-
-            </form>
-        </div>
+      <div className="container mx-auto px-4 py-16 text-center">
+        <h2 className="text-2xl font-bold mb-4 text-gray-800">
+          Loading checkout...
+        </h2>
+        <p className="text-gray-500">Please wait while we fetch your cart.</p>
+      </div>
     );
+  }
+
+  if (error && cartItems.length === 0) {
+    return (
+      <div className="container mx-auto px-4 py-16 text-center">
+        <h2 className="text-2xl font-bold mb-4 text-red-600">Error</h2>
+        <p className="text-gray-500 mb-8">{error}</p>
+        <Link href="/search">
+          <Button className="bg-primary hover:bg-primary/90">
+            Continue Shopping
+          </Button>
+        </Link>
+      </div>
+    );
+  }
+
+  if (cartItems.length === 0) {
+    return (
+      <div className="container mx-auto px-4 py-16 text-center">
+        <h2 className="text-2xl font-bold mb-4 text-gray-800">
+          Your Cart is Empty
+        </h2>
+        <p className="text-gray-500 mb-8">
+          Please add items to your cart before checking out.
+        </p>
+        <Link href="/search">
+          <Button className="bg-primary hover:bg-primary/90">
+            Continue Shopping
+          </Button>
+        </Link>
+      </div>
+    );
+  }
+
+  return (
+    <div className="container mx-auto px-4 py-8 max-w-5xl">
+      <h1 className="text-3xl font-bold text-gray-900 mb-8">Checkout</h1>
+
+      {error && (
+        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
+          {error}
+        </div>
+      )}
+
+      <form
+        onSubmit={handlePlaceOrder}
+        className="flex flex-col lg:flex-row gap-8"
+      >
+        {/* Left Forms */}
+        <div className="flex-1 space-y-8">
+          {/* Order Items */}
+          <Card className="shadow-sm border-gray-100">
+            <CardHeader>
+              <CardTitle className="text-xl">Order Items</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {cartItems.map((item) => (
+                  <div
+                    key={item.id}
+                    className="flex justify-between items-center pb-4 border-b last:border-b-0"
+                  >
+                    <div className="flex-1">
+                      <p className="font-medium text-gray-900">{item.name}</p>
+                      <p className="text-sm text-gray-500">
+                        Quantity: {item.quantity}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-medium text-gray-900">
+                        ৳ {item.total_price.toLocaleString()}
+                      </p>
+                      <p className="text-sm text-gray-500">
+                        ৳ {item.price.toLocaleString()} each
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="shadow-sm border-gray-100">
+            <CardHeader>
+              <CardTitle className="text-xl">Shipping Address</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <label
+                    className="text-sm font-medium leading-none"
+                    htmlFor="address"
+                  >
+                    Full Address
+                  </label>
+                  <Input
+                    id="address"
+                    placeholder="123 Main St, Dhaka, Bangladesh"
+                    value={shippingAddress}
+                    onChange={(e) => setShippingAddress(e.target.value)}
+                    required
+                  />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="shadow-sm border-gray-100">
+            <CardHeader>
+              <CardTitle className="text-xl">Payment Method</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {["COD", "bKash", "Credit/Debit Card"].map((method) => (
+                  <label
+                    key={method}
+                    className="flex items-center gap-3 p-4 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors"
+                  >
+                    <Checkbox
+                      checked={paymentMethod === method}
+                      onCheckedChange={() => setPaymentMethod(method)}
+                    />
+                    <span className="font-medium text-gray-700">
+                      {method === "COD" ? "Cash on Delivery" : method}
+                    </span>
+                  </label>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Right Summary */}
+        <div className="w-full lg:w-96 shrink-0">
+          <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm sticky top-24">
+            <h2 className="text-xl font-bold text-gray-900 mb-6">
+              Order Summary
+            </h2>
+            <div className="space-y-4 text-sm text-gray-600 mb-6 border-b pb-6">
+              <div className="flex justify-between">
+                <span>Items Total ({cartItems.length})</span>
+                <span>৳ {cartTotal.toLocaleString()}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Delivery Fee</span>
+                <span>৳ {DELIVERY_FEE.toLocaleString()}</span>
+              </div>
+            </div>
+            <div className="flex justify-between font-bold text-xl text-gray-900 mb-8">
+              <span>Total Payment</span>
+              <span className="text-primary">
+                ৳ {totalPayment.toLocaleString()}
+              </span>
+            </div>
+
+            <Button
+              type="submit"
+              disabled={submitting || cartItems.length === 0}
+              className="w-full bg-primary hover:bg-primary/90 text-white font-bold h-14 text-lg disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {submitting ? "Placing Order..." : "Place Order"}
+            </Button>
+            <p className="text-xs text-center text-gray-400 mt-4">
+              By clicking &quot;Place Order&quot; you agree to our Terms &
+              Conditions.
+            </p>
+          </div>
+        </div>
+      </form>
+    </div>
+  );
 }
