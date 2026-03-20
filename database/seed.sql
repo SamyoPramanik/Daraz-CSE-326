@@ -240,7 +240,7 @@ VALUES (
 ('LG 43" 4K Smart TV', 'https://www.lg.com/bd/images/tvs/md07542180/gallery/43UP7550PTC-uhd-4k-tvs-D1-1.jpg', 'LG', '43-inch UHD 4K Smart TV with ThinQ AI and webOS.', 44999.00, 39999.00, 30, FALSE, 1),
 ('Dell XPS 15 Laptop', 'https://adminapi.vertech.com.bd/storage/media/large/XPS-15-9530-d-2553.jpg', 'Dell', 'Premium ultrabook with Intel Core i7 and OLED display.', 149999.00, 139999.00, 15, FALSE, 1),
 ('HP Pavilion 15 Laptop', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQYPKJ9CA-6rDUX-9XtbzTCZQmkEZznYARFdw&s', 'HP', 'Everyday laptop with Intel Core i5 and Full HD display.', 64999.00, 57999.00, 25, FALSE, 1),
-('Asus ROG Gaming Laptop', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTQKxY7WU1zpfQZ7F-2cyMKNRxLeiqC4ixwxg&s', 'Asus', 'Gaming laptop with RTX 4060 and 144Hz display.', 119999.00, 109999.00, 10, TRUE, 1),
+('Asus ROG Gaming Laptop', 'https://dazzle.sgp1.cdn.digitaloceanspaces.com/99040/ASUS-ROG-Strix-G16-G614FR-AMD-Ryzen-9-9955HX-RTX-5070-Ti-12GB-Graphics-FHD-Plus-Gaming-Laptop-price-in-bangladesh.jpg', 'Asus', 'Gaming laptop with RTX 4060 and 144Hz display.', 119999.00, 109999.00, 10, TRUE, 1),
 ('iPad Pro 12.9"', 'https://cdn.mos.cms.futurecdn.net/WYcLEj53eZAjjFvTepmCxB-970-80.jpg.webp', 'Apple', 'Professional iPad with M2 chip and Liquid Retina XDR display.', 114999.00, 104999.00, 20, FALSE, 1),
 ('Samsung Tab S9', 'https://www.startech.com.bd/image/cache/catalog/tablet/samsung/galaxy-tab-a11/galaxy-tab-a11-002-silver-228x228.webp', 'Samsung', 'Android tablet with Snapdragon 8 Gen 2 and Dynamic AMOLED.', 79999.00, 71999.00, 25, FALSE, 1),
 ('Canon EOS R50 Camera', 'https://www.startech.com.bd/image/cache/catalog/camera/mirriorless/canon/eos-r50/eos-r50-01-500x500.webp', 'Canon', 'Mirrorless camera with 24.2MP sensor and 4K video.', 89999.00, 79999.00, 15, FALSE, 1),
@@ -270,7 +270,7 @@ VALUES (
 
 ('PlayStation 5 Console', 'https://www.startech.com.bd/image/cache/catalog/gaming-console/playstation/playstation-5-digital-edition/ps5-digital-edition-01-500x500.webp', 'Sony', 'Next-gen gaming console with ultra-high speed SSD.', 69999.00, 64999.00, 10, FALSE, 1),
 
-('Xbox Series X', 'https://img.drz.lazcdn.com/static/bd/p/0f1a2b3c4d5e6f7a8b9c0d1e.jpg_720x720q80.jpg', 'Microsoft', 'Most powerful Xbox with 4K gaming at 120fps.', 64999.00, 59999.00, 12, FALSE, 1),
+('Xbox Series X', 'https://www.startech.com.bd/image/cache/catalog/gaming-console/microsoft/xbox-series-x/xbox-series-x-white-01-500x500.webp', 'Microsoft', 'Most powerful Xbox with 4K gaming at 120fps.', 64999.00, 59999.00, 12, FALSE, 1),
 
 ('Rode NT-USB Microphone', 'https://www.startech.com.bd/image/cache/catalog/microphone/rode/nt-usb-plus/nt-usb-plus-01-500x500.webp', 'Rode', 'Studio-quality USB microphone for podcasting and streaming.', 15999.00, 13999.00, 30, FALSE, 1),
 
@@ -335,7 +335,67 @@ VALUES (
 
 ('Baseball Cap', 'https://img.drz.lazcdn.com/static/bd/p/932e5c77da936b271dcab48502b20c21.jpg_720x720q80.jpg', 'New Era', 'Adjustable cotton baseball cap for sun protection.', 999.00, 799.00, 150, FALSE, 2),
 
+('Electric Rice Cooker', 'https://www.haegergroup.com/wp-content/uploads/RC-18L.001A_1-1.jpg', 'Panasonic', 'Automatic 1.8L electric rice cooker with keep-warm.', 3499.00, 2999.00, 80, FALSE, 3),
 
+('Blender', 'https://www.sunbeam.com.au/media/catalog/product/0/6/06-pbt3000bk-blender-black-lifestyle_flat_1.jpg?width=735&height=735&store=sunbeam_au_view&image-type=image', 'Philips', '700W blender with stainless steel blades and 1.5L jar.', 4999.00, 3999.00, 60, TRUE, 3),
+
+('Microwave Oven', 'https://img.drz.lazcdn.com/static/bd/p/97212ede0edeb0200a59b41089a89925.jpg_720x720q80.jpg', 'Samsung', '23L solo microwave oven with ceramic inside.', 9999.00, 7999.00, 30, FALSE, 3),
+
+('Electric Kettle', 'https://cdn.waltonplaza.com.bd/70a30fd8-ad5d-4e30-b6b0-d9a72ca9f6f1.jpeg', 'Philips', '1.7L stainless steel electric kettle with auto shut-off.', 2499.00, 1999.00, 100, FALSE, 3),
+
+('Air Fryer', 'https://www.iferi.com/cdn/shop/files/701_9b426d7f-dd4b-430a-9708-f3efbd348e31.jpg?v=1764233419&width=1100', 'Xiaomi', '4.5L digital air fryer with 8 preset cooking programs.', 7999.00, 6499.00, 40, TRUE, 3),
+
+('Pressure Cooker', 'https://static-01.daraz.com.bd/p/ebda2856dc41f270cd70da0b13cadc0c.jpg', 'Prestige', '5L stainless steel pressure cooker with safety valve.', 3999.00, 3299.00, 70, FALSE, 3),
+
+('Dinner Set 24pcs', 'https://img.drz.lazcdn.com/static/bd/p/8f127c8d9e0f1a2b3c4d5e6f.jpg_720x720q80.jpg', 'Corelle', '24-piece dinner set with plates, bowls and mugs.', 5999.00, 4999.00, 50, FALSE, 3),
+
+('Glass Storage Jar Set', 'https://eternalceramicsbd.com/cdn/shop/files/2_2-3_2_2-3.jpg?v=1770757197', 'Bormioli Rocco', 'Set of 6 airtight glass storage jars.', 2999.00, 2499.00, 80, FALSE, 3),
+
+('Knife Set', 'https://m.media-amazon.com/images/I/81dIS4ecWfL._AC_UF894,1000_QL80_.jpg', 'Victorinox', 'Professional 5-piece stainless steel knife set.', 7999.00, 6499.00, 30, FALSE, 3),
+
+('Bamboo Cutting Board Set', 'https://images-cdn.ubuy.com.sa/634ed49f124d62741b4d28fc-royalhouse-bamboo-cutting-board-set-of.jpg', 'OXO', 'Set of 3 bamboo cutting boards in different sizes.', 1999.00, 1599.00, 100, TRUE, 3),
+
+('Vacuum Cleaner', 'https://ebestsupply.com.bd/wp-content/uploads/2023/12/1b377ac5cc8283acad30735d503300c5.jpg', 'Dyson', 'Cordless vacuum cleaner with powerful suction.', 29999.00, 24999.00, 20, FALSE, 3),
+
+('Washing Machine 7kg', 'https://www.lg.com/bd/images/washing-machines/md07537004/gallery/T70SNSF3Z-Washing-Machines-Front-View-DM-01.jpg', 'Samsung', '7kg fully automatic front-load washing machine.', 39999.00, 34999.00, 15, FALSE, 3),
+
+('Refrigerator 300L', 'https://image.made-in-china.com/202f0j00mZIhqfkbABzp/300L-Double-Door-Refrigerator-Fridge-Bc-328.webp', 'Walton', '300L frost-free double door refrigerator.', 44999.00, 39999.00, 10, TRUE, 3),
+
+('Steam Iron', 'https://adminapi.applegadgetsbd.com/storage/media/large/Panasonic-NI-M300T-Steam-Iron-blue-4162.jpg', 'Philips', 'Steam iron with non-stick soleplate and anti-drip system.', 2999.00, 2499.00, 80, FALSE, 3),
+
+('Ceiling Fan', 'https://img.drz.lazcdn.com/static/bd/p/20734dbe66cd56997e785ddb0b6c8f75.png_720x720q80.png', 'Vision', '56-inch energy-efficient ceiling fan with remote.', 4999.00, 3999.00, 50, FALSE, 3),
+
+('LED Table Lamp', 'https://img.drz.lazcdn.com/static/bd/p/deab1a68a48d60f5bf1a11fa5b02dc79.jpg_720x720q80.jpg', 'Ikea', 'Modern LED table lamp with adjustable brightness.', 1999.00, 1499.00, 100, FALSE, 3),
+
+('King Bed Sheet Set', 'https://onlineshop.com.bd/frd-data/img/product/2024/07/_914_frd_1719994824.jpg', 'Raymond Home', 'King-size 100% cotton bed sheet set with 2 pillow covers.', 2999.00, 2399.00, 80, TRUE, 3),
+
+('Memory Foam Pillow Pair', 'https://lamarvel.ae/cdn/shop/files/memory-foam2.png?v=1705070628&width=1080', 'Sleepsia', 'Pack of 2 memory foam pillows with removable covers.', 2499.00, 1999.00, 100, FALSE, 3),
+
+('Winter Blanket', 'https://www.smartguds.com/cdn/shop/products/HTB1JuqeaMmH3KVjSZKzq6z2OXXaK_00c9940f-6b78-4873-ac15-a8ec59cd2622.jpg?v=1655810891', 'Bombay Dyeing', 'Soft polyester winter blanket with anti-pilling technology.', 1999.00, 1599.00, 120, FALSE, 3),
+
+('Blackout Curtain Pair', 'https://www.jysk.ca/media/catalog/product/o/m/omegna-blackout-curtain-black-01.jpg?quality=80&fit=bounds&height=520&width=520&canvas=520:520', 'Story@Home', 'Pair of blackout curtains for bedroom privacy.', 2499.00, 1999.00, 70, FALSE, 3),
+
+('Silent Wall Clock', 'https://www.pshomeandliving.com.au/assets/full/23043.jpg?20230609154407', 'Seiko', 'Silent sweep wall clock with wood frame design.', 1499.00, 1199.00, 80, TRUE, 3),
+
+('Photo Frame Set', 'https://artstreet.in/cdn/shop/files/61Q46qy3LLL._SX522_522x522.jpg?v=1686979748', 'Ikea', 'Set of 6 minimalist photo frames in different sizes.', 1999.00, 1599.00, 100, FALSE, 3),
+
+('Sensor Trash Can', 'https://image.made-in-china.com/2f0j00aBLkoVDZbsct/Automatic-Smart-Trash-Can-with-Sensor-Big-Capacity-Bin.webp', 'Joseph Joseph', 'Stainless steel sensor trash can with soft-close lid.', 3999.00, 3299.00, 50, FALSE, 3),
+
+('Laundry Basket', 'https://bengal.com.bd/wp-content/uploads/2019/06/Square-Laundry-Basket-500x500.jpg', 'Sterilite', 'Large wicker-style laundry basket with lid.', 1499.00, 1199.00, 80, FALSE, 3),
+
+('RO Water Purifier', 'https://www.kent.co.in/images/ro/ro-water-purifiers-banner.png', 'Kent', 'RO+UV water purifier with 8L storage tank.', 14999.00, 12999.00, 25, TRUE, 3),
+
+('Smart Humidifier', 'https://extremegadgets.com.bd/wp-content/uploads/2023/12/description-image-13.jpeg', 'Xiaomi', 'Smart ultrasonic humidifier with app control.', 4999.00, 3999.00, 40, FALSE, 3),
+
+('Smart Air Purifier', 'https://gadgetbreeze.com.bd/wp-content/uploads/2024/12/Xiaomi-MIJIA-Air-Purifier-5_Main.jpg', 'Xiaomi', 'Smart air purifier with HEPA filter and air quality display.', 12999.00, 10999.00, 20, FALSE, 3),
+
+('Spin Mop Bucket Set', 'https://enfield-bd.com/wp-content/uploads/2022/04/High-Quality-Floor-Cleaner-With-Steel-Spin-Head-Multi-Color-Spin-Mop-Bucket-Portable-Magic-Double-Drive-Stainless-Steel-1-1.jpg', 'Scotch-Brite', 'Spin mop with wringer bucket for easy floor cleaning.', 2499.00, 1999.00, 60, FALSE, 3),
+
+('Bathroom Accessories Set', 'https://market99.com/cdn/shop/files/WW10005014_1.jpg?v=1750931236', 'Neatly', '5-piece bathroom accessories set with soap dispenser.', 1999.00, 1599.00, 70, TRUE, 3),
+
+('4-Slice Toaster', 'https://m.media-amazon.com/images/S/aplus-media-library-service-media/a3df8160-afd7-4645-846f-c2c221e94607.__CR0,0,970,600_PT0_SX970_V1___.jpg', 'Philips', '4-slice toaster with 7 browning settings.', 3499.00, 2799.00, 50, FALSE, 3),
+
+('Hand Mixer', 'https://rokbucket.rokomari.io/ProductNew20190903/260X372/Scarlett_Super_Hand_Mixer_260w-Non_Brand-b8a2a-440827.png', 'Kenwood', '300W hand mixer with 5 speed settings.', 3999.00, 3299.00, 40, FALSE, 3),
 
 
 
