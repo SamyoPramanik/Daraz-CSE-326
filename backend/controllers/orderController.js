@@ -201,10 +201,77 @@ const viewOrders = async (req, res) => {
             error: error.message
         });
     }
-};  
+};
 
+const getOrderById = async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const orderId = req.params.id;
+
+        const result = await pool.query(
+            `SELECT
+                o.id,
+                o.total_amount,
+                o.order_status,
+                o.payment_method,
+                o.payment_status,
+                o.shipping_address,
+                o.created_at,
+                oi.id AS order_item_id,
+                oi.product_id,
+                p.name AS product_name,
+                oi.quantity,
+                oi.price
+            FROM orders o
+            LEFT JOIN order_items oi ON oi.order_id = o.id
+            LEFT JOIN products p ON p.id = oi.product_id
+            WHERE o.id = $1 AND o.user_id = $2
+            ORDER BY oi.id ASC`,
+            [orderId, userId]
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({
+                status: 'error',
+                message: 'Order not found'
+            });
+        }
+
+        const firstRow = result.rows[0];
+        const order = {
+            id: firstRow.id,
+            total_amount: Number(firstRow.total_amount),
+            order_status: firstRow.order_status,
+            payment_method: firstRow.payment_method,
+            payment_status: firstRow.payment_status,
+            shipping_address: firstRow.shipping_address,
+            created_at: firstRow.created_at,
+            order_items: result.rows
+                .filter(row => row.order_item_id)
+                .map(row => ({
+                    id: row.order_item_id,
+                    product_id: row.product_id,
+                    product_name: row.product_name,
+                    quantity: row.quantity,
+                    price: Number(row.price)
+                }))
+        };
+
+        res.json({
+            status: 'success',
+            data: order
+        });
+    } catch (error) {
+        res.status(500).json({
+            status: 'error',
+            message: 'Failed to retrieve order',
+            error: error.message
+        });
+    }
+};
 
 module.exports = {
     checkout,
-    viewOrders
+    viewOrders,
+    getOrderById
 };

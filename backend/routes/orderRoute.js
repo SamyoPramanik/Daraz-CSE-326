@@ -1,13 +1,17 @@
-const express = require('express');
-const { requireAuth } = require('../middleware/authMiddleware');
+const express = require("express");
+const { requireAuth } = require("../middleware/authMiddleware");
 
-
-const { checkout , viewOrders } = require('../controllers/orderController');
+const {
+  checkout,
+  viewOrders,
+  getOrderById,
+} = require("../controllers/orderController");
 
 const router = express.Router();
 
-router.post('/checkout', requireAuth, checkout);
-router.get('/me', requireAuth, viewOrders);
-router.get('/', requireAuth, viewOrders);
+router.post("/checkout", requireAuth, checkout);
+router.get("/me", requireAuth, viewOrders);
+router.get("/:id", requireAuth, getOrderById);
+router.get("/", requireAuth, viewOrders);
 
 module.exports = router;
