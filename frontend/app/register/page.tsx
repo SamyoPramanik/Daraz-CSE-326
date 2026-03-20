@@ -13,19 +13,23 @@ const BASE_URL = typeof window === 'undefined'
     ? (process.env.NEXT_INTERNAL_SERVER_URL || 'http://backend:4000')
     : '/api';
 
-export default function LoginPage() {
+export default function RegisterPage() {
     const router = useRouter();
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
+    const [formData, setFormData] = useState({
+        name: "",
+        email: "",
+        phone: "",
+        password: "",
+    });
     const setAuth = useAuthStore((state) => state.setAuth);
 
-    const handleLogin = async (e: React.FormEvent) => {
+    const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            const res = await fetch(`${BASE_URL}/auth/login`, {
+            const res = await fetch(`${BASE_URL}/auth/register`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email, password })
+                body: JSON.stringify(formData)
             });
             const data = await res.json();
 
@@ -33,23 +37,37 @@ export default function LoginPage() {
                 setAuth(data.data.token, data.data.user);
                 router.push("/");
             } else {
-                toast.error(data.message || "Login failed");
+                toast.error(data.message || "Registration failed");
             }
         } catch (error) {
-            console.error("Login error", error);
-            toast.error("An error occurred during login.");
+            console.error("Registration error", error);
+            toast.error("An error occurred during registration.");
         }
+    };
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setFormData(prev => ({ ...prev, [e.target.id]: e.target.value }));
     };
 
     return (
         <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center p-4">
             <Card className="w-full max-w-md shadow-lg">
                 <CardHeader className="space-y-1 text-center">
-                    <CardTitle className="text-2xl font-bold tracking-tight text-primary">Welcome Back</CardTitle>
-                    <CardDescription>Enter your email and password to login to Daraz</CardDescription>
+                    <CardTitle className="text-2xl font-bold tracking-tight text-primary">Create an account</CardTitle>
+                    <CardDescription>Enter your information to create a Daraz account</CardDescription>
                 </CardHeader>
-                <form onSubmit={handleLogin}>
+                <form onSubmit={handleRegister}>
                     <CardContent className="space-y-4">
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium leading-none" htmlFor="name">Full Name</label>
+                            <Input
+                                id="name"
+                                placeholder="John Doe"
+                                required
+                                value={formData.name}
+                                onChange={handleChange}
+                            />
+                        </div>
                         <div className="space-y-2">
                             <label className="text-sm font-medium leading-none" htmlFor="email">Email</label>
                             <Input
@@ -57,8 +75,19 @@ export default function LoginPage() {
                                 type="email"
                                 placeholder="m@example.com"
                                 required
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
+                                value={formData.email}
+                                onChange={handleChange}
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium leading-none" htmlFor="phone">Phone Number</label>
+                            <Input
+                                id="phone"
+                                type="tel"
+                                placeholder="01712345678"
+                                required
+                                value={formData.phone}
+                                onChange={handleChange}
                             />
                         </div>
                         <div className="space-y-2">
@@ -67,19 +96,19 @@ export default function LoginPage() {
                                 id="password"
                                 type="password"
                                 required
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
+                                value={formData.password}
+                                onChange={handleChange}
                             />
                         </div>
                     </CardContent>
                     <CardFooter className="flex flex-col gap-4">
                         <Button type="submit" className="w-full bg-primary text-white hover:bg-primary/90">
-                            Sign In
+                            Create Account
                         </Button>
                         <div className="text-center text-sm text-gray-500">
-                            Don&apos;t have an account?{" "}
-                            <Link href="/register" className="font-medium text-primary hover:underline">
-                                Sign up
+                            Already have an account?{" "}
+                            <Link href="/login" className="font-medium text-primary hover:underline">
+                                Sign in
                             </Link>
                         </div>
                     </CardFooter>
