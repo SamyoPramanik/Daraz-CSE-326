@@ -6,12 +6,12 @@ import { useState } from "react";
 import { Search, ShoppingCart, User as UserIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useAuthStore } from "@/lib/authStore";
 
 export default function Navbar() {
     const router = useRouter();
     const [searchQuery, setSearchQuery] = useState("");
-    // TODO: Replace with real auth state
-    const isLoggedIn = false;
+    const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
     const cartItemsCount = 0;
 
     const handleSearch = (e: React.FormEvent) => {

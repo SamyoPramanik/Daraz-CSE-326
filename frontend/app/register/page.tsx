@@ -6,66 +6,50 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { toast } from "sonner";
+import { useAuthStore } from "@/lib/authStore";
 
 const BASE_URL = typeof window === 'undefined'
     ? (process.env.NEXT_INTERNAL_SERVER_URL || 'http://backend:4000')
     : '/api';
 
-export default function RegisterPage() {
+export default function LoginPage() {
     const router = useRouter();
-    const [formData, setFormData] = useState({
-        name: "",
-        email: "",
-        phone: "",
-        password: "",
-    });
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const setAuth = useAuthStore((state) => state.setAuth);
 
-    const handleRegister = async (e: React.FormEvent) => {
+    const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            const res = await fetch(`${BASE_URL}/auth/register`, {
+            const res = await fetch(`${BASE_URL}/auth/login`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(formData)
+                body: JSON.stringify({ email, password })
             });
             const data = await res.json();
-            
+
             if (res.ok && data.status === "success") {
-                localStorage.setItem("token", data.data.token);
-                localStorage.setItem("user", JSON.stringify(data.data.user));
+                setAuth(data.data.token, data.data.user);
                 router.push("/");
             } else {
-                alert(data.message || "Registration failed");
+                toast.error(data.message || "Login failed");
             }
         } catch (error) {
-            console.error("Registration error", error);
-            alert("An error occurred during registration.");
+            console.error("Login error", error);
+            toast.error("An error occurred during login.");
         }
-    };
-
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setFormData(prev => ({ ...prev, [e.target.id]: e.target.value }));
     };
 
     return (
         <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center p-4">
             <Card className="w-full max-w-md shadow-lg">
                 <CardHeader className="space-y-1 text-center">
-                    <CardTitle className="text-2xl font-bold tracking-tight text-primary">Create an account</CardTitle>
-                    <CardDescription>Enter your information to create a Daraz account</CardDescription>
+                    <CardTitle className="text-2xl font-bold tracking-tight text-primary">Welcome Back</CardTitle>
+                    <CardDescription>Enter your email and password to login to Daraz</CardDescription>
                 </CardHeader>
-                <form onSubmit={handleRegister}>
+                <form onSubmit={handleLogin}>
                     <CardContent className="space-y-4">
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium leading-none" htmlFor="name">Full Name</label>
-                            <Input
-                                id="name"
-                                placeholder="John Doe"
-                                required
-                                value={formData.name}
-                                onChange={handleChange}
-                            />
-                        </div>
                         <div className="space-y-2">
                             <label className="text-sm font-medium leading-none" htmlFor="email">Email</label>
                             <Input
@@ -73,19 +57,8 @@ export default function RegisterPage() {
                                 type="email"
                                 placeholder="m@example.com"
                                 required
-                                value={formData.email}
-                                onChange={handleChange}
-                            />
-                        </div>
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium leading-none" htmlFor="phone">Phone Number</label>
-                            <Input
-                                id="phone"
-                                type="tel"
-                                placeholder="01712345678"
-                                required
-                                value={formData.phone}
-                                onChange={handleChange}
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
                             />
                         </div>
                         <div className="space-y-2">
@@ -94,19 +67,19 @@ export default function RegisterPage() {
                                 id="password"
                                 type="password"
                                 required
-                                value={formData.password}
-                                onChange={handleChange}
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
                             />
                         </div>
                     </CardContent>
                     <CardFooter className="flex flex-col gap-4">
                         <Button type="submit" className="w-full bg-primary text-white hover:bg-primary/90">
-                            Create Account
+                            Sign In
                         </Button>
                         <div className="text-center text-sm text-gray-500">
-                            Already have an account?{" "}
-                            <Link href="/login" className="font-medium text-primary hover:underline">
-                                Sign in
+                            Don&apos;t have an account?{" "}
+                            <Link href="/register" className="font-medium text-primary hover:underline">
+                                Sign up
                             </Link>
                         </div>
                     </CardFooter>
