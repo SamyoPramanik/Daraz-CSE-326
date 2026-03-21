@@ -7,7 +7,8 @@ import { fetchProducts, fetchTrendingProducts } from "@/lib/api";
 
 export const metadata: Metadata = {
   title: "Homepage | Daraz",
-  description: "Welcome to Daraz - Discover the best deals on millions of products",
+  description:
+    "Welcome to Daraz - Discover the best deals on millions of products",
 };
 
 interface ProductSummary {
@@ -27,7 +28,7 @@ export default async function Home() {
   try {
     const [flashSaleRes, trendingRes] = await Promise.all([
       fetchProducts({ flash_sale: "true", limit: "5" }),
-      fetchTrendingProducts()
+      fetchTrendingProducts(),
     ]);
     flashSales = flashSaleRes.data || [];
     trendingProducts = trendingRes.data || [];
@@ -44,10 +45,14 @@ export default async function Home() {
             Welcome to Daraz
           </h1>
           <p className="mb-6 text-lg text-gray-700">
-            Discover the best deals on millions of products spanning electronics, fashion, home goods, and more.
+            Discover the best deals on millions of products spanning
+            electronics, fashion, home goods, and more.
           </p>
           <Link href="/search">
-            <Button size="lg" className="bg-primary px-8 text-white hover:bg-primary/90">
+            <Button
+              size="lg"
+              className="bg-primary px-8 text-white hover:bg-primary/90"
+            >
               Start Shopping
             </Button>
           </Link>
@@ -62,7 +67,10 @@ export default async function Home() {
             <h2 className="text-2xl font-bold text-gray-900">Flash Sales</h2>
           </div>
           <Link href="/search?flash_sale=true">
-            <Button variant="ghost" className="text-primary hover:text-primary/90">
+            <Button
+              variant="ghost"
+              className="text-primary hover:text-primary/90"
+            >
               View All <ChevronRight className="ml-1 h-4 w-4" />
             </Button>
           </Link>
@@ -79,8 +87,10 @@ export default async function Home() {
                 key={product.id}
                 id={product.id}
                 name={product.name}
-                price={product.price}
-                originalPrice={product.discount_price ?? undefined}
+                price={product.discount_price ?? product.price}
+                originalPrice={
+                  product.discount_price ? product.price : undefined
+                }
                 imageUrl={product.image_url}
                 rating={Number(product.rating ?? 0)}
               />
@@ -107,8 +117,10 @@ export default async function Home() {
                 key={product.id}
                 id={product.id}
                 name={product.name}
-                price={product.price}
-                originalPrice={product.discount_price ?? undefined}
+                price={product.discount_price ?? product.price}
+                originalPrice={
+                  product.discount_price ? product.price : undefined
+                }
                 imageUrl={product.image_url}
                 rating={Number(product.rating ?? 0)}
               />

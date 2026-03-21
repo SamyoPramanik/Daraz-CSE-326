@@ -50,42 +50,53 @@ export default function ProductActions({
 
   return (
     <div className="flex flex-col gap-4 mt-auto">
-      <div className="flex items-center gap-4">
-        <span className="text-gray-700 font-medium">Quantity</span>
-        <div className="flex items-center border rounded-md overflow-hidden">
-          <button
-            onClick={() => setQuantity(Math.max(1, quantity - 1))}
-            className="px-3 py-2 bg-gray-50 hover:bg-gray-100 text-lg font-medium transition-colors"
-          >
-            −
-          </button>
-          <span className="px-5 py-2 font-semibold min-w-14 text-center">
-            {quantity}
-          </span>
-          <button
-            onClick={() => setQuantity(Math.min(stock, quantity + 1))}
-            className="px-3 py-2 bg-gray-50 hover:bg-gray-100 text-lg font-medium transition-colors"
-          >
-            +
-          </button>
+      {stock === 0 ? (
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-center">
+          <p className="text-red-700 font-semibold text-lg">Out of Stock</p>
+          <p className="text-red-600 text-sm mt-1">
+            This product is currently unavailable
+          </p>
         </div>
-        {stock < 10 && (
-          <span className="text-sm text-red-500 font-medium">
-            Only {stock} left!
-          </span>
-        )}
-      </div>
+      ) : (
+        <>
+          <div className="flex items-center gap-4">
+            <span className="text-gray-700 font-medium">Quantity</span>
+            <div className="flex items-center border rounded-md overflow-hidden">
+              <button
+                onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                className="px-3 py-2 bg-gray-50 hover:bg-gray-100 text-lg font-medium transition-colors"
+              >
+                −
+              </button>
+              <span className="px-5 py-2 font-semibold min-w-14 text-center">
+                {quantity}
+              </span>
+              <button
+                onClick={() => setQuantity(Math.min(stock, quantity + 1))}
+                className="px-3 py-2 bg-gray-50 hover:bg-gray-100 text-lg font-medium transition-colors"
+              >
+                +
+              </button>
+            </div>
+            {stock < 10 && (
+              <span className="text-sm text-red-500 font-medium">
+                Only {stock} left!
+              </span>
+            )}
+          </div>
 
-      <div className="flex gap-3 mt-2">
-        <Button
-          onClick={handleAddToCart}
-          disabled={isLoading}
-          className="flex-1 bg-primary hover:bg-primary/90 text-white h-12 text-base font-semibold gap-2"
-        >
-          <ShoppingCart className="w-4 h-4" />
-          {isLoading ? "Adding..." : "Add to Cart"}
-        </Button>
-      </div>
+          <div className="flex gap-3 mt-2">
+            <Button
+              onClick={handleAddToCart}
+              disabled={isLoading}
+              className="flex-1 bg-primary hover:bg-primary/90 text-white h-12 text-base font-semibold gap-2"
+            >
+              <ShoppingCart className="w-4 h-4" />
+              {isLoading ? "Adding..." : "Add to Cart"}
+            </Button>
+          </div>
+        </>
+      )}
     </div>
   );
 }

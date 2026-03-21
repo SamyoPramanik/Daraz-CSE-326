@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import { Search, ShoppingCart, User as UserIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -10,6 +10,7 @@ import { useAuthStore } from "@/lib/authStore";
 
 export default function Navbar() {
   const router = useRouter();
+  const pathname = usePathname();
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [cartItemsCount, setCartItemsCount] = useState(0);
@@ -62,28 +63,30 @@ export default function Navbar() {
           </span>
         </Link>
 
-        {/* Search Bar */}
-        <form
-          onSubmit={handleSearch}
-          className="flex-1 max-w-2xl flex items-center"
-        >
-          <div className="relative w-full flex">
-            <Input
-              type="text"
-              placeholder="Search in Daraz..."
-              className="w-full rounded-r-none border-r-0 focus-visible:ring-0 focus-visible:ring-offset-0"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-            <Button
-              type="submit"
-              variant="default"
-              className="rounded-l-none bg-primary hover:bg-primary/90 text-white px-6"
-            >
-              <Search className="h-5 w-5" />
-            </Button>
-          </div>
-        </form>
+        {/* Search Bar - Hidden on search page */}
+        {pathname !== "/search" && (
+          <form
+            onSubmit={handleSearch}
+            className="flex-1 max-w-2xl flex items-center"
+          >
+            <div className="relative w-full flex">
+              <Input
+                type="text"
+                placeholder="Search in Daraz..."
+                className="w-full rounded-r-none border-r-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+              <Button
+                type="submit"
+                variant="default"
+                className="rounded-l-none bg-primary hover:bg-primary/90 text-white px-6"
+              >
+                <Search className="h-5 w-5" />
+              </Button>
+            </div>
+          </form>
+        )}
 
         {/* User Controls */}
         <div className="flex items-center gap-4">
