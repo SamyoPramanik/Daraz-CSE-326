@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import { Search, ShoppingCart, User as UserIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useAuthStore } from "@/lib/authStore";
 
 export default function Navbar() {
   const router = useRouter();
