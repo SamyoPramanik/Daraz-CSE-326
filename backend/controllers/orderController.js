@@ -71,8 +71,7 @@ const checkout = async (req, res) => {
     }, 0);
 
     const normalizedPaymentMethod = String(payment_method).trim();
-    const paymentStatus =
-      normalizedPaymentMethod.toUpperCase() === "COD" ? "Pending" : "Paid";
+    const paymentStatus = "Paid"; // All orders marked as paid immediately
 
     const orderResult = await client.query(
       `INSERT INTO orders (
@@ -83,7 +82,7 @@ const checkout = async (req, res) => {
                 order_status,
                 shipping_address
             )
-            VALUES ($1, $2, $3, $4, 'Pending', $5)
+            VALUES ($1, $2, $3, $4, 'Delivered', $5)
             RETURNING id, total_amount`,
       [
         userId,
@@ -155,11 +154,13 @@ const viewOrders = async (req, res) => {
                 o.created_at,
                 oi.id AS order_item_id,
                 oi.product_id,
-                p.name,
+                p.name AS product_name,
+                p.image_url,
                 oi.quantity,
                 oi.price,
                 oi.rating,
-                oi.review
+                oi.review,
+                oi.review_date
             FROM orders o
             LEFT JOIN order_items oi ON oi.order_id = o.id
             LEFT JOIN products p ON p.id = oi.product_id
@@ -178,21 +179,23 @@ const viewOrders = async (req, res) => {
           total_amount: Number(row.total_amount),
           order_status: row.order_status,
           created_at: row.created_at,
-          items: [],
+          order_items: [],
         };
         orderMap.set(row.id, order);
         grouped.push(order);
       }
 
       if (row.order_item_id) {
-        orderMap.get(row.id).items.push({
-          order_item_id: row.order_item_id,
+        orderMap.get(row.id).order_items.push({
+          id: row.order_item_id,
           product_id: row.product_id,
-          name: row.name,
+          product_name: row.product_name,
+          image_url: row.image_url,
           quantity: row.quantity,
           price: Number(row.price),
           rating: row.rating,
           review: row.review,
+          review_date: row.review_date,
         });
       }
     }
@@ -227,8 +230,12 @@ const getOrderById = async (req, res) => {
                 oi.id AS order_item_id,
                 oi.product_id,
                 p.name AS product_name,
+                p.image_url,
                 oi.quantity,
-                oi.price
+                oi.price,
+                oi.rating,
+                oi.review,
+                oi.review_date
             FROM orders o
             LEFT JOIN order_items oi ON oi.order_id = o.id
             LEFT JOIN products p ON p.id = oi.product_id
@@ -261,6 +268,10 @@ const getOrderById = async (req, res) => {
           product_name: row.product_name,
           quantity: row.quantity,
           price: Number(row.price),
+          image_url: row.image_url,
+          rating: row.rating,
+          review: row.review,
+          review_date: row.review_date,
         })),
     };
 

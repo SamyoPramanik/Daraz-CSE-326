@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -147,8 +148,20 @@ export default function MyOrdersPage() {
                           className="flex items-center justify-between"
                         >
                           <div className="flex items-center gap-4">
-                            <div className="w-16 h-16 bg-gray-100 rounded flex items-center justify-center text-xs text-gray-400">
-                              Image
+                            <div className="w-16 h-16 bg-gray-100 rounded flex items-center justify-center text-xs text-gray-400 relative">
+                              {item.image_url ? (
+                                <Image
+                                  src={item.image_url}
+                                  alt={item.product_name}
+                                  fill
+                                  sizes="64px"
+                                  className="object-cover rounded"
+                                />
+                              ) : (
+                                <span className="text-xs text-gray-400">
+                                  No Image
+                                </span>
+                              )}
                             </div>
                             <div className="flex flex-col">
                               <Link

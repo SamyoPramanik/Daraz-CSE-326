@@ -1,11 +1,13 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { fetchOrderById } from "@/lib/api";
+import ReviewForm from "@/components/ReviewForm";
 
 export default function OrderDetailsPage({
   params,
@@ -122,26 +124,43 @@ export default function OrderDetailsPage({
             <div className="p-4 space-y-4">
               {order.order_items && order.order_items.length > 0 ? (
                 order.order_items.map((item: any) => (
-                  <div
-                    key={item.id}
-                    className="flex gap-4 pb-4 border-b last:border-b-0"
-                  >
-                    <div className="w-20 h-20 bg-gray-100 rounded flex items-center justify-center shrink-0">
-                      <span className="text-xs text-gray-400">Image</span>
-                    </div>
-                    <div className="flex-1">
-                      <Link
-                        href={`/product/${item.product_id}`}
-                        className="font-medium text-gray-900 hover:text-primary transition-colors"
-                      >
-                        {item.product_name || "Product"}
-                      </Link>
-                      <div className="text-sm text-gray-500 mt-1">
-                        Qty: {item.quantity}
+                  <div key={item.id} className="pb-4 border-b last:border-b-0">
+                    <div className="flex gap-4">
+                      <div className="w-20 h-20 bg-gray-100 rounded flex items-center justify-center shrink-0 relative">
+                        {item.image_url ? (
+                          <Image
+                            src={item.image_url}
+                            alt={item.product_name}
+                            fill
+                            sizes="80px"
+                            className="object-cover rounded"
+                          />
+                        ) : (
+                          <span className="text-xs text-gray-400">
+                            No Image
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex-1">
+                        <Link
+                          href={`/product/${item.product_id}`}
+                          className="font-medium text-gray-900 hover:text-primary transition-colors"
+                        >
+                          {item.product_name || "Product"}
+                        </Link>
+                        <div className="text-sm text-gray-500 mt-1">
+                          Qty: {item.quantity}
+                        </div>
+                      </div>
+                      <div className="text-right font-bold text-gray-900">
+                        ৳ {item.price.toLocaleString()}
                       </div>
                     </div>
-                    <div className="text-right font-bold text-gray-900">
-                      ৳ {item.price.toLocaleString()}
+                    <div className="mt-4 pt-4 border-t border-gray-200">
+                      <ReviewForm
+                        productId={item.product_id.toString()}
+                        productName={item.product_name}
+                      />
                     </div>
                   </div>
                 ))
