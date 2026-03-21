@@ -12,9 +12,13 @@ export default function Navbar() {
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [cartItemsCount, setCartItemsCount] = useState(0);
+  const [mounted, setMounted] = useState(false);
 
   // Check auth state on mount and when it changes
   useEffect(() => {
+    // Mark component as mounted to prevent hydration mismatches
+    setMounted(true);
+
     const checkAuthState = () => {
       if (typeof window !== "undefined") {
         const token = localStorage.getItem("token");
@@ -22,17 +26,21 @@ export default function Navbar() {
       }
     };
 
+    // Check on initial load
     checkAuthState();
 
     // Listen for storage changes (when logged in/out in another tab)
     window.addEventListener("storage", checkAuthState);
 
-    // Also listen for custom auth change event
-    window.addEventListener("authStateChanged", checkAuthState);
+    // Also listen for custom auth change event (from login/register)
+    const handleAuthChange = () => {
+      checkAuthState();
+    };
+    window.addEventListener("authStateChanged", handleAuthChange);
 
     return () => {
       window.removeEventListener("storage", checkAuthState);
-      window.removeEventListener("authStateChanged", checkAuthState);
+      window.removeEventListener("authStateChanged", handleAuthChange);
     };
   }, []);
 
@@ -78,7 +86,10 @@ export default function Navbar() {
 
         {/* User Controls */}
         <div className="flex items-center gap-4">
-          {isLoggedIn ? (
+          {!mounted ? (
+            // Show nothing while mounting to prevent hydration flicker
+            <div className="w-32 h-10" />
+          ) : isLoggedIn ? (
             <>
               {/* Cart */}
               <Link href="/cart">
