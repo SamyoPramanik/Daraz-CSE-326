@@ -1,8 +1,14 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Zap, TrendingUp, ChevronRight } from "lucide-react";
 import ProductCard from "@/components/ProductCard";
 import { fetchProducts, fetchTrendingProducts } from "@/lib/api";
+
+export const metadata: Metadata = {
+  title: "Homepage | Daraz",
+  description: "Welcome to Daraz - Discover the best deals on millions of products",
+};
 
 interface ProductSummary {
   id: string;

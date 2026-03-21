@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -43,11 +44,11 @@ export default function LoginPage() {
 
         router.push("/");
       } else {
-        alert(data.message || "Login failed");
+        toast.error(data.message || "Login failed");
       }
     } catch (error) {
       console.error("Login error", error);
-      alert("An error occurred during login.");
+      toast.error("An error occurred during login.");
     }
   };
 

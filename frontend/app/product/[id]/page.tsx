@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { fetchProduct } from "@/lib/api";
@@ -27,6 +28,27 @@ interface ProductDetail {
     total_reviews: number;
   };
   reviews?: ProductReview[];
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+  const product = (await fetchProduct(id)) as ProductDetail | null;
+
+  if (!product) {
+    return {
+      title: "Product | Daraz",
+      description: "Product not found",
+    };
+  }
+
+  return {
+    title: `${product.name} | Daraz`,
+    description: product.description || product.name,
+  };
 }
 
 export default async function ProductPage({
