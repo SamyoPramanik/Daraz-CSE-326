@@ -21,6 +21,7 @@ interface ProductSummary {
   discount_price: number | null;
   image_url: string;
   rating: number | null;
+  stock: number;
 }
 
 interface CategoryItem {
@@ -309,6 +310,7 @@ function SearchContent() {
                   }
                   imageUrl={product.image_url}
                   rating={Number(product.rating ?? 0)}
+                  stock={product.stock}
                 />
               ))}
             </div>

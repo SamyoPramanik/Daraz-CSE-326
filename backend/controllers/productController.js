@@ -35,6 +35,7 @@ const getProducts = async (req, res) => {
                 p.image_url,
                 p.price,
                 p.discount_price,
+                p.stock,
                 p.flash_sale,
                 p.category_id,
                 c.name as category_name,
@@ -84,7 +85,7 @@ const getProducts = async (req, res) => {
       }
     }
 
-    query += ` GROUP BY p.id, p.name, p.image_url, p.price, p.discount_price, p.flash_sale, p.category_id, c.name`;
+    query += ` GROUP BY p.id, p.name, p.image_url, p.price, p.discount_price, p.stock, p.flash_sale, p.category_id, c.name`;
 
     if (trending === "true") {
       query += ` ORDER BY rating DESC NULLS LAST`;
