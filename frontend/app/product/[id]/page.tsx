@@ -23,6 +23,7 @@ interface ProductDetail {
   stock: number;
   description?: string;
   flash_sale?: boolean;
+  total_sold?: number;
   rating?: {
     avg: number;
     total_reviews: number;
@@ -108,6 +109,28 @@ export default async function ProductPage({
               {product.flash_sale && (
                 <span className="px-2 py-0.5 bg-red-100 text-red-600 text-xs font-bold rounded uppercase tracking-wide">
                   Flash Sale
+                </span>
+              )}
+            </div>
+
+            {/* Stock and Sales Info */}
+            <div className="flex flex-col gap-2 mb-4 text-sm">
+              <div className="text-gray-700">
+                {product.total_sold !== undefined && (
+                  <span className="font-medium">
+                    {product.total_sold === 0
+                      ? "No sales yet"
+                      : `${product.total_sold} sold`}
+                  </span>
+                )}
+              </div>
+              {product.stock === 0 ? (
+                <span className="px-3 py-2 bg-red-100 text-red-700 font-semibold rounded text-center w-fit">
+                  Out of Stock
+                </span>
+              ) : (
+                <span className="text-green-600 font-medium">
+                  {product.stock} items available
                 </span>
               )}
             </div>

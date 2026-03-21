@@ -45,20 +45,33 @@ export default function CartPage() {
     const item = cartItems.find((i) => i.id === id);
     if (!item) return;
 
-    const newQuantity = Math.max(1, item.quantity + delta);
+    const newQuantity = item.quantity + delta;
+
+    // Prevent quantity from going below 1
+    if (newQuantity < 1) return;
+
+    // Prevent quantity from exceeding available stock
+    if (newQuantity > item.stock) {
+      setError(`Only ${item.stock} items available in stock`);
+      return;
+    }
 
     try {
       setUpdating(id);
+      setError(null);
       await updateCartItem(id, newQuantity);
 
       // Update local state after successful API call
+      // Use discount_price if available, otherwise use original price
+      const effectivePrice = item.discount_price ?? item.price;
+
       setCartItems((items) =>
         items.map((i) => {
           if (i.id === id) {
             return {
               ...i,
               quantity: newQuantity,
-              total_price: newQuantity * i.price,
+              total_price: newQuantity * effectivePrice,
             };
           }
           return i;
@@ -136,6 +149,18 @@ export default function CartPage() {
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold text-gray-900 mb-8">Shopping Cart</h1>
 
+      {error && (
+        <div className="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg flex justify-between items-center">
+          <span>{error}</span>
+          <button
+            onClick={() => setError(null)}
+            className="text-red-600 hover:text-red-800 font-bold"
+          >
+            ✕
+          </button>
+        </div>
+      )}
+
       <div className="flex flex-col lg:flex-row gap-8">
         {/* Cart Items List */}
         <div className="flex-1 space-y-4">
@@ -165,7 +190,16 @@ export default function CartPage() {
                   {item.name}
                 </Link>
                 <div className="text-sm text-gray-500 mt-1">
-                  Unit Price: ৳ {item.price.toLocaleString()}
+                  Unit Price: ৳{" "}
+                  {(item.discount_price ?? item.price).toLocaleString()}
+                  {item.discount_price && (
+                    <span className="ml-2 text-xs line-through text-gray-400">
+                      ৳ {item.price.toLocaleString()}
+                    </span>
+                  )}
+                </div>
+                <div className="text-xs text-gray-400 mt-1">
+                  Stock: {item.stock} available
                 </div>
               </div>
 
@@ -173,7 +207,8 @@ export default function CartPage() {
                 <div className="flex items-center border rounded-md">
                   <button
                     onClick={() => updateQuantity(item.id, -1)}
-                    className="px-3 py-1 bg-gray-50 hover:bg-gray-100 text-lg"
+                    disabled={item.quantity === 1 || updating === item.id}
+                    className="px-3 py-1 bg-gray-50 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed text-lg"
                   >
                     -
                   </button>
@@ -182,7 +217,10 @@ export default function CartPage() {
                   </span>
                   <button
                     onClick={() => updateQuantity(item.id, 1)}
-                    className="px-3 py-1 bg-gray-50 hover:bg-gray-100 text-lg"
+                    disabled={
+                      item.quantity >= item.stock || updating === item.id
+                    }
+                    className="px-3 py-1 bg-gray-50 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed text-lg"
                   >
                     +
                   </button>
