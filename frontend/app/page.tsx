@@ -18,6 +18,7 @@ interface ProductSummary {
   discount_price: number | null;
   image_url: string;
   rating: number | null;
+  stock: number;
 }
 
 export default async function Home() {
@@ -93,6 +94,7 @@ export default async function Home() {
                 }
                 imageUrl={product.image_url}
                 rating={Number(product.rating ?? 0)}
+                stock={product.stock}
               />
             ))}
           </div>
@@ -123,6 +125,7 @@ export default async function Home() {
                 }
                 imageUrl={product.image_url}
                 rating={Number(product.rating ?? 0)}
+                stock={product.stock}
               />
             ))}
           </div>
