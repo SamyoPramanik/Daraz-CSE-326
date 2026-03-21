@@ -1,22 +1,24 @@
-const pool = require('../config/db');
+const pool = require("../config/db");
 
-const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-const isValidUuid = (value) => typeof value === 'string' && UUID_REGEX.test(value);
+const UUID_REGEX =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const isValidUuid = (value) =>
+  typeof value === "string" && UUID_REGEX.test(value);
 
 // Get all reviews for a product
 const getProductReviews = async (req, res) => {
-    try {
-        const { productId } = req.params;
+  try {
+    const { productId } = req.params;
 
-        if (!isValidUuid(productId)) {
-            return res.status(400).json({
-                status: 'error',
-                message: 'Invalid productId'
-            });
-        }
+    if (!isValidUuid(productId)) {
+      return res.status(400).json({
+        status: "error",
+        message: "Invalid productId",
+      });
+    }
 
-        const result = await pool.query(
-            `SELECT 
+    const result = await pool.query(
+      `SELECT 
                 oi.id,
                 oi.rating,
                 oi.review,
@@ -27,160 +29,170 @@ const getProductReviews = async (req, res) => {
             JOIN users u ON o.user_id = u.id
             WHERE oi.product_id = $1 AND oi.rating IS NOT NULL
             ORDER BY oi.review_date DESC`,
-            [productId]
-        );
+      [productId],
+    );
 
-        const ratingResult = await pool.query(
-            `SELECT 
+    const ratingResult = await pool.query(
+      `SELECT 
                 ROUND(AVG(oi.rating), 2) as avg_rating,
                 COUNT(oi.id) as review_count
             FROM order_items oi
             WHERE oi.product_id = $1 AND oi.rating IS NOT NULL`,
-            [productId]
-        );
+      [productId],
+    );
 
-        const { avg_rating, review_count } = ratingResult.rows[0];
-        const normalizedReviews = result.rows.map((row) => ({
-            ...row,
-            rating: Number(row.rating)
-        }));
+    const { avg_rating, review_count } = ratingResult.rows[0];
+    const normalizedReviews = result.rows.map((row) => ({
+      ...row,
+      rating: Number(row.rating),
+    }));
 
-        res.json({
-            status: 'success',
-            data: {
-                product_id: productId,
-                rating: {
-                    avg: avg_rating !== null ? Number(avg_rating) : 0,
-                    total_reviews: Number(review_count || 0)
-                },
-                reviews: normalizedReviews
-            }
-        });
-    } catch (err) {
-        res.status(500).json({
-            status: 'error',
-            message: 'Failed to retrieve reviews',
-            error: err.message
-        });
-    }
+    res.json({
+      status: "success",
+      data: {
+        product_id: productId,
+        rating: {
+          avg: avg_rating !== null ? Number(avg_rating) : 0,
+          total_reviews: Number(review_count || 0),
+        },
+        reviews: normalizedReviews,
+      },
+    });
+  } catch (err) {
+    res.status(500).json({
+      status: "error",
+      message: "Failed to retrieve reviews",
+      error: err.message,
+    });
+  }
 };
 
 // Create or update review
 const createReview = async (req, res) => {
-    try {
-        const { productId, rating, review } = req.body;
-        const userId = req.user.id;
+  try {
+    const { productId, rating, review } = req.body;
+    const userId = req.user.id;
 
-        if (!isValidUuid(productId)) {
-            return res.status(400).json({
-                status: 'error',
-                message: 'Invalid productId'
-            });
-        }
+    if (!isValidUuid(productId)) {
+      return res.status(400).json({
+        status: "error",
+        message: "Invalid productId",
+      });
+    }
 
-        // Validate rating
-        if (!rating || rating < 1 || rating > 5) {
-            return res.status(400).json({
-                status: 'error',
-                message: 'Rating must be between 1 and 5'
-            });
-        }
+    // Validate rating
+    if (!rating || rating < 1 || rating > 5) {
+      return res.status(400).json({
+        status: "error",
+        message: "Rating must be between 1 and 5",
+      });
+    }
 
-        // Check if user has ordered the product
-        const orderItemCheck = await pool.query(
-            `SELECT oi.id
+    // Check if user has ordered the product
+    const orderItemCheck = await pool.query(
+      `SELECT oi.id, oi.rating
              FROM order_items oi
              JOIN orders o ON oi.order_id = o.id
              WHERE o.user_id = $1 AND oi.product_id = $2
              ORDER BY (oi.rating IS NULL) DESC, o.created_at DESC
              LIMIT 1`,
-            [userId, productId]
-        );
+      [userId, productId],
+    );
 
-        if (orderItemCheck.rows.length === 0) {
-            return res.status(403).json({
-                status: 'error',
-                message: 'You can only review products you have ordered'
-            });
-        }
+    if (orderItemCheck.rows.length === 0) {
+      return res.status(403).json({
+        status: "error",
+        message: "You can only review products you have ordered",
+      });
+    }
 
-        const orderItemId = orderItemCheck.rows[0].id;
+    const orderItem = orderItemCheck.rows[0];
+    const orderItemId = orderItem.id;
 
-        // Update order_item with review
-        const result = await pool.query(
-            `UPDATE order_items 
+    // Check if already reviewed - prevent duplicate reviews
+    if (orderItem.rating !== null) {
+      return res.status(400).json({
+        status: "error",
+        message:
+          "You have already reviewed this product. One review per product is allowed.",
+      });
+    }
+
+    // Update order_item with review
+    const result = await pool.query(
+      `UPDATE order_items 
              SET rating = $1, review = $2, review_date = NOW()
              WHERE id = $3
              RETURNING *`,
-            [rating, review || null, orderItemId]
-        );
+      [rating, review || null, orderItemId],
+    );
 
-        res.status(201).json({
-            status: 'success',
-            message: 'Review created/updated successfully',
-            data: result.rows[0]
-        });
-    } catch (err) {
-        res.status(500).json({
-            status: 'error',
-            message: 'Failed to create review',
-            error: err.message
-        });
-    }
+    res.status(201).json({
+      status: "success",
+      message: "Review created/updated successfully",
+      data: result.rows[0],
+    });
+  } catch (err) {
+    res.status(500).json({
+      status: "error",
+      message: "Failed to create review",
+      error: err.message,
+    });
+  }
 };
 
 // Delete review
 const deleteReview = async (req, res) => {
-    try {
-        const { reviewId } = req.params;
-        const userId = req.user.id;
+  try {
+    const { reviewId } = req.params;
+    const userId = req.user.id;
 
-        if (!Number.isInteger(Number(reviewId)) || Number(reviewId) < 1) {
-            return res.status(400).json({
-                status: 'error',
-                message: 'Invalid reviewId'
-            });
-        }
+    if (!Number.isInteger(Number(reviewId)) || Number(reviewId) < 1) {
+      return res.status(400).json({
+        status: "error",
+        message: "Invalid reviewId",
+      });
+    }
 
-        // Check if review exists and belongs to user
-        const checkResult = await pool.query(
-            `SELECT oi.id 
+    // Check if review exists and belongs to user
+    const checkResult = await pool.query(
+      `SELECT oi.id 
              FROM order_items oi
              JOIN orders o ON oi.order_id = o.id
              WHERE oi.id = $1 AND o.user_id = $2`,
-            [reviewId, userId]
-        );
+      [reviewId, userId],
+    );
 
-        if (checkResult.rows.length === 0) {
-            return res.status(404).json({
-                status: 'error',
-                message: 'Review not found or you do not have permission to delete'
-            });
-        }
+    if (checkResult.rows.length === 0) {
+      return res.status(404).json({
+        status: "error",
+        message: "Review not found or you do not have permission to delete",
+      });
+    }
 
-        // Delete review (clear rating and review data from order_item)
-        await pool.query(
-            `UPDATE order_items 
+    // Delete review (clear rating and review data from order_item)
+    await pool.query(
+      `UPDATE order_items 
              SET rating = NULL, review = NULL, review_date = NULL
              WHERE id = $1`,
-            [reviewId]
-        );
+      [reviewId],
+    );
 
-        res.json({
-            status: 'success',
-            message: 'Review deleted successfully'
-        });
-    } catch (err) {
-        res.status(500).json({
-            status: 'error',
-            message: 'Failed to delete review',
-            error: err.message
-        });
-    }
+    res.json({
+      status: "success",
+      message: "Review deleted successfully",
+    });
+  } catch (err) {
+    res.status(500).json({
+      status: "error",
+      message: "Failed to delete review",
+      error: err.message,
+    });
+  }
 };
 
 module.exports = {
-    getProductReviews,
-    createReview,
-    deleteReview
+  getProductReviews,
+  createReview,
+  deleteReview,
 };
