@@ -290,3 +290,58 @@ export async function fetchOrderById(orderId: string | number) {
 
   return res.json();
 }
+
+// ============ REVIEW API FUNCTIONS ============
+
+export async function fetchProductReviews(productId: string) {
+  const url = `${BASE_URL}/reviews/product/${productId}`;
+
+  const res = await fetch(url, {
+    method: "GET",
+    cache: "no-store",
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch reviews");
+  }
+
+  return res.json();
+}
+
+export async function submitReview(
+  productId: string,
+  rating: number,
+  review: string,
+) {
+  const url = `${BASE_URL}/reviews`;
+  const token =
+    typeof window !== "undefined" ? localStorage.getItem("token") : null;
+
+  if (!token) {
+    throw new Error("Unauthorized - Please login");
+  }
+
+  const res = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      productId,
+      rating,
+      review: review || null,
+    }),
+    cache: "no-store",
+  });
+
+  if (!res.ok) {
+    if (res.status === 401) {
+      throw new Error("Unauthorized - Please login");
+    }
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.message || "Failed to submit review");
+  }
+
+  return res.json();
+}
