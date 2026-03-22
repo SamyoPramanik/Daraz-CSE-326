@@ -38,6 +38,12 @@ VALUES (
         '01512345681'
     ),
     (
+        'Intesar Tahmid',
+        'payel@gmail.com',
+        'alam',
+        '01812345678'
+    ),
+    (
         'Rashed Mahmud',
         'rashed@example.com',
         'hashed_password_345',
