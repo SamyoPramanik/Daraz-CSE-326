@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Zap, TrendingUp, ChevronRight } from "lucide-react";
 import ProductCard from "@/components/ProductCard";
 import { fetchProducts, fetchTrendingProducts } from "@/lib/api";
+import HeroSection from "@/components/HeroSection";
 
 export const metadata: Metadata = {
   title: "Homepage | Daraz",
@@ -40,25 +41,7 @@ export default async function Home() {
   return (
     <div className="container mx-auto px-4 py-8">
       {/* Hero Section */}
-      <section className="mb-12 rounded-2xl bg-orange-100 p-8 text-center md:text-left">
-        <div className="max-w-2xl">
-          <h1 className="mb-4 text-4xl font-extrabold tracking-tight text-gray-900 md:text-5xl">
-            Welcome to Daraz
-          </h1>
-          <p className="mb-6 text-lg text-gray-700">
-            Discover the best deals on millions of products spanning
-            electronics, fashion, home goods, and more.
-          </p>
-          <Link href="/search">
-            <Button
-              size="lg"
-              className="bg-primary px-8 text-white hover:bg-primary/90"
-            >
-              Start Shopping
-            </Button>
-          </Link>
-        </div>
-      </section>
+      <HeroSection />
 
       {/* Flash Sale Preview */}
       <section className="mb-12">
