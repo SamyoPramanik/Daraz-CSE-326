@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
 import {
   Card,
   CardContent,
@@ -14,14 +15,46 @@ import {
 } from "@/components/ui/card";
 import { Lock } from "lucide-react";
 
+const BASE_URL =
+  typeof window === "undefined"
+    ? process.env.NEXT_INTERNAL_SERVER_URL || "http://backend:4000"
+    : "/api";
+
 export default function AdminLoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Connect to API in Phase 3
-    console.log("Login clicked with:", { email, password });
+    setIsLoading(true);
+
+    try {
+      const res = await fetch(`${BASE_URL}/auth/admin/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok && data.status === "success") {
+        localStorage.setItem("token", data.data.token);
+        localStorage.setItem("user", JSON.stringify(data.data.user));
+
+        toast.success("✅ Login successful!");
+        
+        // TODO: Redirect to /admin in Phase 6
+        console.log("Admin logged in successfully");
+      } else {
+        toast.error(data.message || "Login failed");
+      }
+    } catch (error) {
+      console.error("Login error", error);
+      toast.error("An error occurred during login.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -71,9 +104,10 @@ export default function AdminLoginPage() {
 
             <Button
               type="submit"
-              className="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-semibold"
+              disabled={isLoading}
+              className="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Admin Login
+              {isLoading ? "Logging in..." : "Admin Login"}
             </Button>
           </form>
         </CardContent>
