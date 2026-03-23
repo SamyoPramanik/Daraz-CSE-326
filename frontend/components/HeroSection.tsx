@@ -2,8 +2,28 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { useAuthStore } from "@/lib/authStore";
 
 export default function HeroSection() {
+  const router = useRouter();
+  const { user, isLoggedIn, hasInitialized, initializeFromStorage } = useAuthStore();
+
+  // Initialize auth on mount
+  useEffect(() => {
+    if (!hasInitialized) {
+      initializeFromStorage();
+    }
+  }, [hasInitialized, initializeFromStorage]);
+
+  // Redirect admins to admin dashboard
+  useEffect(() => {
+    if (hasInitialized && isLoggedIn && user?.is_admin) {
+      router.push("/admin");
+    }
+  }, [hasInitialized, isLoggedIn, user?.is_admin, router]);
+
   return (
     <section className="mb-12 rounded-2xl bg-orange-100 p-8 text-center md:text-left">
       <div className="max-w-2xl">

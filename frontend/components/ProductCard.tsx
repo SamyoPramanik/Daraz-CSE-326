@@ -2,13 +2,14 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Star, ShoppingCart } from "lucide-react";
 import { toast } from "sonner";
 import { addToCart } from "@/lib/api";
+import { useAuthStore } from "@/lib/authStore";
 
 interface ProductCardProps {
   id: string;
@@ -30,7 +31,15 @@ export default function ProductCard({
   stock = 99,
 }: ProductCardProps) {
   const router = useRouter();
+  const { user, hasInitialized, initializeFromStorage } = useAuthStore();
   const [isLoading, setIsLoading] = useState(false);
+
+  // Initialize auth on mount
+  useEffect(() => {
+    if (!hasInitialized) {
+      initializeFromStorage();
+    }
+  }, [hasInitialized, initializeFromStorage]);
 
   const handleAddToCart = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -101,7 +110,15 @@ export default function ProductCard({
             </div>
           </div>
           <div className="mt-3 pt-2 border-t">
-            {stock === 0 ? (
+            {user?.is_admin ? (
+              <Button
+                disabled
+                className="w-full bg-gray-400 text-white cursor-not-allowed"
+                title="Admin View Only"
+              >
+                Admin View Only
+              </Button>
+            ) : stock === 0 ? (
               <Button
                 disabled
                 className="w-full bg-gray-400 text-white cursor-not-allowed"

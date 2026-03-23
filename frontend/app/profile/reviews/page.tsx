@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Star } from "lucide-react";
 import { fetchOrders } from "@/lib/api";
+import { useAuthStore } from "@/lib/authStore";
 import ReviewForm from "@/components/ReviewForm";
 
 interface Product {
@@ -22,12 +23,28 @@ interface Product {
 
 export default function MyReviewsPage() {
   const router = useRouter();
+  const { user, isLoggedIn, hasInitialized, initializeFromStorage } = useAuthStore();
   const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [reviewedProducts, setReviewedProducts] = useState<Product[]>([]);
   const [pendingProducts, setPendingProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
+
+  // Initialize auth on mount
+  useEffect(() => {
+    if (!hasInitialized) {
+      initializeFromStorage();
+    }
+  }, []);
+
+  // Check if user is admin - redirect if so
+  useEffect(() => {
+    if (hasInitialized && isLoggedIn && user?.is_admin) {
+      router.push("/admin");
+      return;
+    }
+  }, [hasInitialized, isLoggedIn, user?.is_admin, router]);
 
   useEffect(() => {
     const loadReviews = async () => {

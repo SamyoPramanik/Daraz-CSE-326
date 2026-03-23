@@ -98,6 +98,10 @@ CREATE INDEX IF NOT EXISTS idx_products_category ON products (category_id);
 
 CREATE INDEX IF NOT EXISTS idx_carts_user ON carts (user_id);
 
+-- ✅ Phase 4: Add is_admin column to users table for admin authentication
+ALTER TABLE users 
+ADD COLUMN IF NOT EXISTS is_admin BOOLEAN DEFAULT FALSE;
+
 CREATE INDEX IF NOT EXISTS idx_cart_items_cart ON cart_items (cart_id);
 
 CREATE INDEX IF NOT EXISTS idx_order_user ON orders (user_id);

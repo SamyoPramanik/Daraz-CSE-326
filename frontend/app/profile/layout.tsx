@@ -4,10 +4,12 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Package, Star, LogOut } from "lucide-react";
 import { useState, useEffect } from "react";
+import { useAuthStore } from "@/lib/authStore";
 
 interface User {
   name: string;
   email: string;
+  is_admin?: boolean;
 }
 
 export default function ProfileLayout({
@@ -16,36 +18,28 @@ export default function ProfileLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const [user, setUser] = useState<User | null>(null);
+  const { user, clearAuth, hasInitialized, initializeFromStorage } = useAuthStore();
   const [mounted, setMounted] = useState(false);
 
+  // Initialize from storage on mount
   useEffect(() => {
-    setMounted(true);
-    if (typeof window !== "undefined") {
-      const userJson = localStorage.getItem("user");
-      if (userJson) {
-        try {
-          const userData = JSON.parse(userJson);
-          setUser(userData);
-        } catch (err) {
-          console.error("Failed to parse user data:", err);
-        }
-      }
+    if (!hasInitialized) {
+      initializeFromStorage();
     }
-  }, []);
+    setMounted(true);
+  }, [hasInitialized, initializeFromStorage]);
 
-  const navLinks = [
-    { label: "My Orders", href: "/profile/orders", icon: Package },
-    { label: "My Reviews", href: "/profile/reviews", icon: Star },
-  ];
+  // Only show these links for regular users (non-admin)
+  const navLinks = user?.is_admin
+    ? [] // Admins see no profile navigation links
+    : [
+        { label: "My Orders", href: "/profile/orders", icon: Package },
+        { label: "My Reviews", href: "/profile/reviews", icon: Star },
+      ];
 
   const handleLogout = () => {
-    if (typeof window !== "undefined") {
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
-      window.dispatchEvent(new Event("authStateChanged"));
-      window.location.href = "/";
-    }
+    clearAuth();
+    window.location.href = "/";
   };
 
   return (
@@ -60,6 +54,11 @@ export default function ProfileLayout({
                   Hello, {user.name}
                 </h2>
                 <p className="text-sm text-gray-500">{user.email}</p>
+                {user.is_admin && (
+                  <p className="text-xs font-semibold text-orange-600 mt-1">
+                    👑 Admin User
+                  </p>
+                )}
               </div>
             ) : (
               <div className="mb-6 px-4 pt-2 animate-pulse">
