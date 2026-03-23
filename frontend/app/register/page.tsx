@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { useAuthStore } from "@/lib/authStore";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -22,6 +23,7 @@ const BASE_URL =
 
 export default function RegisterPage() {
     const router = useRouter();
+    const { setAuth } = useAuthStore();
     const [formData, setFormData] = useState({
         name: "",
         email: "",
@@ -40,11 +42,7 @@ export default function RegisterPage() {
             const data = await res.json();
 
             if (res.ok && data.status === "success") {
-                localStorage.setItem("token", data.data.token);
-                localStorage.setItem("user", JSON.stringify(data.data.user));
-
-                // Dispatch event to notify navbar of auth state change
-                window.dispatchEvent(new Event("authStateChanged"));
+                setAuth(data.data.token, data.data.user);
 
                 router.push("/");
             } else {
