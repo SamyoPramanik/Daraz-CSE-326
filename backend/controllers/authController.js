@@ -121,7 +121,63 @@ const userLogin = async (req, res) => {
     }
 };
 
+const adminLogin = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+
+        if (!email || !password) {
+            return res.status(400).json({
+                status: 'error',
+                message: 'email and password are required'
+            });
+        }
+
+        const result = await pool.query(
+            'SELECT id, name, email, password FROM users WHERE email = $1',
+            [email]
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(401).json({
+                status: 'error',
+                message: 'Invalid email or password'
+            });
+        }
+
+        const user = result.rows[0];
+        const passwordMatched = await bcrypt.compare(password, user.password);
+
+        if (!passwordMatched) {
+            return res.status(401).json({
+                status: 'error',
+                message: 'Invalid email or password'
+            });
+        }
+
+        const token = generateToken(user);
+
+        res.status(200).json({
+            status: 'success',
+            data: {
+                token,
+                user: {
+                    id: user.id,
+                    name: user.name,
+                    email: user.email
+                }
+            }
+        });
+    } catch (error) {
+        res.status(500).json({
+            status: 'error',
+            message: 'Admin login failed',
+            error: error.message
+        });
+    }
+};
+
 module.exports = {
     registerUser,
-    userLogin
+    userLogin,
+    adminLogin
 };
