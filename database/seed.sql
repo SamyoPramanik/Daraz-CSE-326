@@ -10,7 +10,7 @@ VALUES ('Electronics'),
     ('Sports & Outdoors'),
     ('Beauty & Personal Care') ON CONFLICT DO NOTHING;
 
--- Insert Users
+-- Insert Users - COMMENTED OUT (Admin user will be seeded separately)
 -- INSERT INTO
 --     users (name, email, password, phone)
 -- VALUES (
@@ -36,12 +36,6 @@ VALUES ('Electronics'),
 --         'nadia@example.com',
 --         'hashed_password_012',
 --         '01512345681'
---     ),
---     (
---         'Intesar Tahmid',
---         'payel@gmail.com',
---         'alam',
---         '01812345678'
 --     ),
 --     (
 --         'Rashed Mahmud',
@@ -452,6 +446,19 @@ VALUES (
         6
     ) ON CONFLICT DO NOTHING;
 
+-- ✅ Phase 4: Pre-seed Admin User BEFORE Orders
+-- Admin user is created with is_admin = true on system initialization
+-- This MUST come before orders insert so that orders can reference the admin user
+-- Credentials: admin@daraz.com / admin123
+INSERT INTO users (name, email, password, phone, is_admin)
+VALUES (
+    'System Admin',
+    'admin@daraz.com',
+    '$2b$10$JxPJGPQ15Cwi2P6y0aUI4OkK3zzTIpPf/8rye.VuupOFvqqDu5M8i',
+    '+8801234567890',
+    true
+) ON CONFLICT (email) DO UPDATE SET is_admin = true;
+
 -- Insert Sample Orders
 INSERT INTO
     orders (
@@ -641,4 +648,6 @@ VALUES (
                 name = 'The Midnight Library'
         ),
         1
-    ) ON CONFLICT DO NOTHING;
+    )
+ON CONFLICT DO NOTHING;
+

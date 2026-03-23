@@ -9,7 +9,7 @@ const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
 
 const generateToken = (user) => {
     return jwt.sign(
-        { id: user.id, email: user.email, name: user.name },
+        { id: user.id, email: user.email, name: user.name, is_admin: user.is_admin || false },
         JWT_SECRET,
         { expiresIn: JWT_EXPIRES_IN }
     );
@@ -78,7 +78,7 @@ const userLogin = async (req, res) => {
         }
 
         const result = await pool.query(
-            'SELECT id, name, email, password FROM users WHERE email = $1',
+            'SELECT id, name, email, password, is_admin FROM users WHERE email = $1',
             [email]
         );
 
@@ -90,6 +90,15 @@ const userLogin = async (req, res) => {
         }
 
         const user = result.rows[0];
+        
+        // Prevent admin users from logging in as regular users
+        if (user.is_admin) {
+            return res.status(403).json({
+                status: 'error',
+                message: 'Admin users must use the admin login portal'
+            });
+        }
+        
         const passwordMatched = await bcrypt.compare(password, user.password);
 
         if (!passwordMatched) {
@@ -133,7 +142,7 @@ const adminLogin = async (req, res) => {
         }
 
         const result = await pool.query(
-            'SELECT id, name, email, password FROM users WHERE email = $1',
+            'SELECT id, name, email, password, is_admin FROM users WHERE email = $1',
             [email]
         );
 
@@ -145,6 +154,15 @@ const adminLogin = async (req, res) => {
         }
 
         const user = result.rows[0];
+        
+        // Check if user is admin
+        if (!user.is_admin) {
+            return res.status(403).json({
+                status: 'error',
+                message: 'Access denied. Admin privileges required.'
+            });
+        }
+        
         const passwordMatched = await bcrypt.compare(password, user.password);
 
         if (!passwordMatched) {
@@ -163,7 +181,8 @@ const adminLogin = async (req, res) => {
                 user: {
                     id: user.id,
                     name: user.name,
-                    email: user.email
+                    email: user.email,
+                    is_admin: user.is_admin
                 }
             }
         });

@@ -2,9 +2,11 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import { useAuthStore } from "@/lib/authStore";
 import {
   Card,
   CardContent,
@@ -21,6 +23,8 @@ const BASE_URL =
     : "/api";
 
 export default function AdminLoginPage() {
+  const router = useRouter();
+  const { setAuth } = useAuthStore();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -39,14 +43,29 @@ export default function AdminLoginPage() {
       const data = await res.json();
 
       if (res.ok && data.status === "success") {
-        localStorage.setItem("token", data.data.token);
-        localStorage.setItem("user", JSON.stringify(data.data.user));
+        console.log("=== LOGIN RESPONSE ===");
+        console.log("Token:", data.data.token);
+        console.log("User:", data.data.user);
+        console.log("is_admin value:", data.data.user.is_admin);
+        console.log("is_admin type:", typeof data.data.user.is_admin);
+
+        // Use Zustand store setAuth instead of direct localStorage
+        setAuth(data.data.token, data.data.user);
+
+        // Verify localStorage was updated
+        const stored = localStorage.getItem("user");
+        console.log("LocalStorage user:", stored);
+
+        // Dispatch event to notify navbar of auth state change
+        window.dispatchEvent(new Event("authStateChanged"));
 
         toast.success("✅ Login successful!");
         
-        // TODO: Redirect to /admin in Phase 6
-        console.log("Admin logged in successfully");
+        // Redirect to admin dashboard
+        console.log("Redirecting to /admin");
+        router.push("/admin");
       } else {
+        console.error("Login failed:", data.message);
         toast.error(data.message || "Login failed");
       }
     } catch (error) {

@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { ShoppingCart } from "lucide-react";
 import { toast } from "sonner";
 import { addToCart } from "@/lib/api";
+import { useAuthStore } from "@/lib/authStore";
 
 interface ProductActionsProps {
   productId: string;
@@ -17,8 +18,16 @@ export default function ProductActions({
   stock,
 }: ProductActionsProps) {
   const router = useRouter();
+  const { user, isLoggedIn, hasInitialized, initializeFromStorage } = useAuthStore();
   const [quantity, setQuantity] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
+
+  // Initialize auth on mount
+  useEffect(() => {
+    if (!hasInitialized) {
+      initializeFromStorage();
+    }
+  }, [hasInitialized, initializeFromStorage]);
 
   const handleAddToCart = async () => {
     // Check if user is logged in
@@ -47,6 +56,20 @@ export default function ProductActions({
       setIsLoading(false);
     }
   };
+
+  // Don't show add to cart for admins
+  if (user?.is_admin) {
+    return (
+      <div className="flex flex-col gap-4 mt-auto">
+        <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 text-center">
+          <p className="text-gray-600 font-semibold">Admin View Only</p>
+          <p className="text-gray-500 text-sm mt-1">
+            Purchase functionality is not available for admin accounts
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col gap-4 mt-auto">

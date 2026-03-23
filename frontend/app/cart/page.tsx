@@ -7,14 +7,31 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
 import { fetchCart, updateCartItem, removeCartItem } from "@/lib/api";
+import { useAuthStore } from "@/lib/authStore";
 
 export default function CartPage() {
   const router = useRouter();
+  const { user, isLoggedIn, hasInitialized, initializeFromStorage } = useAuthStore();
 
   const [cartItems, setCartItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [updating, setUpdating] = useState<number | null>(null);
+
+  // Initialize auth on mount
+  useEffect(() => {
+    if (!hasInitialized) {
+      initializeFromStorage();
+    }
+  }, []);
+
+  // Check if user is admin - redirect if so
+  useEffect(() => {
+    if (hasInitialized && isLoggedIn && user?.is_admin) {
+      router.push("/admin");
+      return;
+    }
+  }, [hasInitialized, isLoggedIn, user?.is_admin, router]);
 
   // Fetch cart data on component mount
   useEffect(() => {

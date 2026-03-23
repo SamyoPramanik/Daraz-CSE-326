@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
-import { Search, ShoppingCart, User as UserIcon } from "lucide-react";
+import { Search, ShoppingCart, User as UserIcon, LayoutDashboard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuthStore } from "@/lib/authStore";
@@ -11,39 +11,20 @@ import { useAuthStore } from "@/lib/authStore";
 export default function Navbar() {
   const router = useRouter();
   const pathname = usePathname();
+  const { user, isLoggedIn, hasInitialized, initializeFromStorage } = useAuthStore();
   const [searchQuery, setSearchQuery] = useState("");
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [cartItemsCount, setCartItemsCount] = useState(0);
   const [mounted, setMounted] = useState(false);
 
-  // Check auth state on mount and when it changes
+  // Initialize auth on mount
   useEffect(() => {
-    // Mark component as mounted to prevent hydration mismatches
+    if (!hasInitialized) {
+      initializeFromStorage();
+    }
+  }, [hasInitialized, initializeFromStorage]);
+
+  // Mark as mounted for hydration
+  useEffect(() => {
     setMounted(true);
-
-    const checkAuthState = () => {
-      if (typeof window !== "undefined") {
-        const token = localStorage.getItem("token");
-        setIsLoggedIn(!!token);
-      }
-    };
-
-    // Check on initial load
-    checkAuthState();
-
-    // Listen for storage changes (when logged in/out in another tab)
-    window.addEventListener("storage", checkAuthState);
-
-    // Also listen for custom auth change event (from login/register)
-    const handleAuthChange = () => {
-      checkAuthState();
-    };
-    window.addEventListener("authStateChanged", handleAuthChange);
-
-    return () => {
-      window.removeEventListener("storage", checkAuthState);
-      window.removeEventListener("authStateChanged", handleAuthChange);
-    };
   }, []);
 
   const handleSearch = (e: React.FormEvent) => {
@@ -56,20 +37,33 @@ export default function Navbar() {
   return (
     <nav className="sticky top-0 z-50 w-full border-b bg-white shadow-sm">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between gap-4">
-        {/* Logo */}
-        <Link href="/" className="flex items-center gap-2">
-          <span className="text-2xl font-bold text-primary tracking-tight">
-            Daraz
-          </span>
-        </Link>
+        {/* Admin Dashboard Button - Top Left for admins */}
+        <div className="flex items-center gap-2">
+          {user?.is_admin && (
+            <Link href="/admin">
+              <Button variant="default" size="icon" className="bg-orange-600 hover:bg-orange-700" title="Go to Admin Dashboard">
+                <LayoutDashboard className="h-5 w-5" />
+              </Button>
+            </Link>
+          )}
+          
+          {/* Logo - Hidden for admins, show for regular users */}
+          {!user?.is_admin && (
+            <Link href="/" className="flex items-center gap-2">
+              <span className="text-2xl font-bold text-primary tracking-tight">
+                Daraz
+              </span>
+            </Link>
+          )}
+        </div>
 
-        {/* Search Bar - Hidden on search page */}
+        {/* Search Bar - Centered */}
         {pathname !== "/search" && (
           <form
             onSubmit={handleSearch}
-            className="flex-1 max-w-2xl flex items-center"
+            className="flex-1 flex justify-center"
           >
-            <div className="relative w-full flex">
+            <div className="relative w-full max-w-2xl flex">
               <Input
                 type="text"
                 placeholder="Search in Daraz..."
@@ -88,30 +82,29 @@ export default function Navbar() {
           </form>
         )}
 
-        {/* User Controls */}
+        {/* User Controls - Right Side */}
         <div className="flex items-center gap-4">
           {!mounted ? (
             // Show nothing while mounting to prevent hydration flicker
             <div className="w-32 h-10" />
           ) : isLoggedIn ? (
             <>
-              {/* Cart */}
-              <Link href="/cart">
-                <Button variant="ghost" size="icon" className="relative">
-                  <ShoppingCart className="h-5 w-5" />
-                  {cartItemsCount > 0 && (
-                    <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-white">
-                      {cartItemsCount}
-                    </span>
-                  )}
-                </Button>
-              </Link>
-              {/* Profile */}
-              <Link href="/profile/orders">
-                <Button variant="ghost" size="icon">
-                  <UserIcon className="h-5 w-5" />
-                </Button>
-              </Link>
+              {/* Cart - Only for regular users */}
+              {!user?.is_admin && (
+                <Link href="/cart">
+                  <Button variant="ghost" size="icon" className="relative">
+                    <ShoppingCart className="h-5 w-5" />
+                  </Button>
+                </Link>
+              )}
+              {/* Profile - Only for regular users */}
+              {!user?.is_admin && (
+                <Link href="/profile/orders">
+                  <Button variant="ghost" size="icon">
+                    <UserIcon className="h-5 w-5" />
+                  </Button>
+                </Link>
+              )}
             </>
           ) : (
             <div className="flex gap-2">
