@@ -11,44 +11,44 @@ VALUES ('Electronics'),
     ('Beauty & Personal Care') ON CONFLICT DO NOTHING;
 
 -- Insert Users
-INSERT INTO
-    users (name, email, password, phone)
-VALUES (
-        'Ahmed Hassan',
-        'ahmed@example.com',
-        'hashed_password_123',
-        '01812345678'
-    ),
-    (
-        'Fatima Khan',
-        'fatima@example.com',
-        'hashed_password_456',
-        '01712345679'
-    ),
-    (
-        'Karim Ali',
-        'karim@example.com',
-        'hashed_password_789',
-        '01612345680'
-    ),
-    (
-        'Nadia Amin',
-        'nadia@example.com',
-        'hashed_password_012',
-        '01512345681'
-    ),
-    (
-        'Intesar Tahmid',
-        'payel@gmail.com',
-        'alam',
-        '01812345678'
-    ),
-    (
-        'Rashed Mahmud',
-        'rashed@example.com',
-        'hashed_password_345',
-        '01412345682'
-    ) ON CONFLICT DO NOTHING;
+-- INSERT INTO
+--     users (name, email, password, phone)
+-- VALUES (
+--         'Ahmed Hassan',
+--         'ahmed@example.com',
+--         'hashed_password_123',
+--         '01812345678'
+--     ),
+--     (
+--         'Fatima Khan',
+--         'fatima@example.com',
+--         'hashed_password_456',
+--         '01712345679'
+--     ),
+--     (
+--         'Karim Ali',
+--         'karim@example.com',
+--         'hashed_password_789',
+--         '01612345680'
+--     ),
+--     (
+--         'Nadia Amin',
+--         'nadia@example.com',
+--         'hashed_password_012',
+--         '01512345681'
+--     ),
+--     (
+--         'Intesar Tahmid',
+--         'payel@gmail.com',
+--         'alam',
+--         '01812345678'
+--     ),
+--     (
+--         'Rashed Mahmud',
+--         'rashed@example.com',
+--         'hashed_password_345',
+--         '01412345682'
+--     ) ON CONFLICT DO NOTHING;
 
 -- Insert Products (with descriptions)
 INSERT INTO
