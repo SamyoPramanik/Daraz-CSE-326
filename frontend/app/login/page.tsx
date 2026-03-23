@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Lock } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -113,6 +114,16 @@ export default function LoginPage() {
                 Sign up
               </Link>
             </div>
+            <Link href="/admin-login" className="w-full">
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full border-orange-600 text-orange-600 hover:bg-orange-50"
+              >
+                <Lock className="mr-2 h-4 w-4" />
+                Admin Login
+              </Button>
+            </Link>
           </CardFooter>
         </form>
       </Card>
