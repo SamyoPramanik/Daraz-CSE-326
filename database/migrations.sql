@@ -2,23 +2,24 @@
 -- Enable pgcrypto extension for UUID generation
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
--- ✅ Users Table
+-- Users Table
 CREATE TABLE IF NOT EXISTS users (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid (),
     name VARCHAR(255) NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
     phone VARCHAR(20),
-    created_at TIMESTAMPTZ DEFAULT NOW()
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    is_admin BOOLEAN DEFAULT FALSE
 );
 
--- ✅ Categories Table
+-- Categories Table
 CREATE TABLE IF NOT EXISTS categories (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL
 );
 
--- ✅ Products Table
+-- Products Table
 CREATE TABLE IF NOT EXISTS products (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid (),
     name VARCHAR(255) NOT NULL,
@@ -33,7 +34,7 @@ CREATE TABLE IF NOT EXISTS products (
     FOREIGN KEY (category_id) REFERENCES categories (id) ON DELETE CASCADE
 );
 
--- ✅ Carts Table
+-- Carts Table
 CREATE TABLE IF NOT EXISTS carts (
     id SERIAL PRIMARY KEY,
     user_id UUID NOT NULL UNIQUE,
@@ -41,7 +42,7 @@ CREATE TABLE IF NOT EXISTS carts (
     FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 );
 
--- ✅ CartItems Table
+-- CartItems Table
 CREATE TABLE IF NOT EXISTS cart_items (
     id SERIAL PRIMARY KEY,
     cart_id INT NOT NULL,
@@ -51,7 +52,7 @@ CREATE TABLE IF NOT EXISTS cart_items (
     FOREIGN KEY (product_id) REFERENCES products (id) ON DELETE CASCADE
 );
 
--- ✅ Orders Table
+-- Orders Table
 CREATE TABLE IF NOT EXISTS orders (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid (),
     user_id UUID NOT NULL,
@@ -64,7 +65,7 @@ CREATE TABLE IF NOT EXISTS orders (
     FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 );
 
--- ✅ OrderItems Table
+-- OrderItems Table
 CREATE TABLE IF NOT EXISTS order_items (
     id SERIAL PRIMARY KEY,
     order_id UUID NOT NULL,
@@ -93,14 +94,9 @@ CREATE TABLE IF NOT EXISTS bookings (
     UNIQUE (user_id, product_id)
 );
 
--- 📊 Performance Indexes
 CREATE INDEX IF NOT EXISTS idx_products_category ON products (category_id);
 
 CREATE INDEX IF NOT EXISTS idx_carts_user ON carts (user_id);
-
--- ✅ Phase 4: Add is_admin column to users table for admin authentication
-ALTER TABLE users 
-ADD COLUMN IF NOT EXISTS is_admin BOOLEAN DEFAULT FALSE;
 
 CREATE INDEX IF NOT EXISTS idx_cart_items_cart ON cart_items (cart_id);
 
