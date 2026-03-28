@@ -24,6 +24,8 @@ type AdminProduct = {
   price: number;
   discount_price: number | null;
   stock: number;
+  sold_count?: number;
+  review_count?: number;
   flash_sale: boolean;
   category_id: number;
   category_name?: string;
@@ -294,6 +296,8 @@ export default function AdminProductsPage() {
                     <th className="p-3 font-semibold">Price</th>
                     <th className="p-3 font-semibold">Discount</th>
                     <th className="p-3 font-semibold">Stock</th>
+                    <th className="p-3 font-semibold">Sold</th>
+                    <th className="p-3 font-semibold">Reviews</th>
                     <th className="p-3 font-semibold">Flash Sale</th>
                     <th className="p-3 font-semibold">Actions</th>
                   </tr>
@@ -412,6 +416,14 @@ export default function AdminProductsPage() {
                         </td>
 
                         <td className="p-3">
+                          <span>{Number(product.sold_count || 0)}</span>
+                        </td>
+
+                        <td className="p-3">
+                          <span>{Number(product.review_count || 0)}</span>
+                        </td>
+
+                        <td className="p-3">
                           {isEditing ? (
                             <label className="flex items-center gap-2">
                               <input
@@ -469,7 +481,7 @@ export default function AdminProductsPage() {
                   })}
                   {filteredProducts.length === 0 && (
                     <tr>
-                      <td colSpan={8} className="p-6 text-center text-gray-500">
+                      <td colSpan={10} className="p-6 text-center text-gray-500">
                         No products match your current filters.
                       </td>
                     </tr>
