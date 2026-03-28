@@ -1,5 +1,17 @@
 const pool = require("../config/db");
 
+const buildFallbackScore = (avgRating, reviewCount) => ({
+  reliability_score: Math.round((avgRating / 5) * 100),
+  confidence: reviewCount >= 5 ? "medium" : "low",
+  reasoning: `[BASIC CALCULATION] Score based on ${reviewCount} reviews averaging ${avgRating}/5 stars. AI analysis unavailable.`,
+  strengths: `Average customer rating is ${avgRating}/5 stars.`,
+  concerns:
+    reviewCount < 3
+      ? "[LIMITED DATA] Very few reviews available for analysis"
+      : "[AI UNAVAILABLE] Basic score only - detailed analysis not performed",
+  recommendation: `Review ${reviewCount} customer feedback directly for detailed insights.`,
+});
+
 const getProductReliabilityScore = async (req, res) => {
   try {
     const { productId } = req.params;
@@ -63,23 +75,30 @@ const getProductReliabilityScore = async (req, res) => {
       )
       .join("\n");
 
-    // Call OpenRouter API with Nemotron 3 Super
-    const openrouterResponse = await fetch(
-      "https://openrouter.ai/api/v1/chat/completions",
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
-          "HTTP-Referer": "https://daraz.com",
-          "X-Title": "Daraz AI Reliability",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: "nvidia/nemotron-3-super-120b-a12b:free",
-          messages: [
-            {
-              role: "user",
-              content: `Analyze the following product reviews and provide a reliability score (0-100) based on:
+    // Call OpenRouter API with timeout so production never hangs on slow upstreams.
+    const controller = new AbortController();
+    const timeoutMs = Number(process.env.AI_TIMEOUT_MS || 9000);
+    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+    let openrouterResponse;
+    try {
+      openrouterResponse = await fetch(
+        "https://openrouter.ai/api/v1/chat/completions",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+            "HTTP-Referer": "https://daraz.com",
+            "X-Title": "Daraz AI Reliability",
+            "Content-Type": "application/json",
+          },
+          signal: controller.signal,
+          body: JSON.stringify({
+            model: "nvidia/nemotron-3-super-120b-a12b:free",
+            messages: [
+              {
+                role: "user",
+                content: `Analyze the following product reviews and provide a reliability score (0-100) based on:
 1. Average rating (avg: ${avg_rating}/5)
 2. Number of reviews (${review_count} reviews)
 3. Review text quality and detail
@@ -97,30 +116,49 @@ Provide your response in this exact JSON format (no markdown, plain JSON only):
   "concerns": "<one sentence about any concerns, or 'None' if all good>",
   "recommendation": "<one sentence recommendation>"
 }`,
-            },
-          ],
-          temperature: 0.7,
-          max_tokens: 400,
-        }),
-      },
-    );
+              },
+            ],
+            temperature: 0.3,
+            max_tokens: 220,
+          }),
+        },
+      );
+    } catch (error) {
+      clearTimeout(timeoutId);
+      const scoreData = buildFallbackScore(
+        Number(avg_rating),
+        Number(review_count),
+      );
+      return res.json({
+        status: "success",
+        data: {
+          ...scoreData,
+          metadata: {
+            total_reviews: review_count,
+            average_rating: Number(avg_rating),
+            reviews_with_text: review_text_count,
+            generated_at: new Date().toISOString(),
+            analysis_type: "fallback_calculation",
+            note:
+              error.name === "AbortError"
+                ? `LLM request timed out after ${timeoutMs}ms. Fallback score returned.`
+                : "LLM request failed. Fallback score returned.",
+          },
+        },
+      });
+    } finally {
+      clearTimeout(timeoutId);
+    }
 
     if (!openrouterResponse.ok) {
-      const error = await openrouterResponse.json();
+      const error = await openrouterResponse.json().catch(() => ({}));
       console.error("OpenRouter API Error:", error);
 
       // If API call fails, use fallback calculation based on reviews
-      const scoreData = {
-        reliability_score: Math.round((avg_rating / 5) * 100),
-        confidence: review_count >= 5 ? "medium" : "low",
-        reasoning: `[BASIC CALCULATION] Score based on ${review_count} reviews averaging ${avg_rating}/5 stars. AI analysis unavailable.`,
-        strengths: `Average customer rating is ${avg_rating}/5 stars.`,
-        concerns:
-          review_count < 3
-            ? "[LIMITED DATA] Very few reviews available for analysis"
-            : "[AI UNAVAILABLE] Basic score only - detailed analysis not performed",
-        recommendation: `Review ${review_count} customer feedback directly for detailed insights.`,
-      };
+      const scoreData = buildFallbackScore(
+        Number(avg_rating),
+        Number(review_count),
+      );
 
       return res.json({
         status: "success",
@@ -129,6 +167,8 @@ Provide your response in this exact JSON format (no markdown, plain JSON only):
           metadata: {
             total_reviews: review_count,
             average_rating: Number(avg_rating),
+            reviews_with_text: review_text_count,
+            generated_at: new Date().toISOString(),
             analysis_type: "fallback_calculation",
             note: "AI-powered analysis could not be performed. Score is calculated from review ratings only.",
           },
@@ -161,11 +201,34 @@ Provide your response in this exact JSON format (no markdown, plain JSON only):
       }
     }
 
+    // Ensure required response fields are always present.
+    const fallbackScore = buildFallbackScore(
+      Number(avg_rating),
+      Number(review_count),
+    );
+    const normalizedScore = {
+      reliability_score:
+        Number(scoreData?.reliability_score) >= 0 &&
+        Number(scoreData?.reliability_score) <= 100
+          ? Number(scoreData.reliability_score)
+          : fallbackScore.reliability_score,
+      confidence:
+        scoreData?.confidence === "high" ||
+        scoreData?.confidence === "medium" ||
+        scoreData?.confidence === "low"
+          ? scoreData.confidence
+          : fallbackScore.confidence,
+      reasoning: scoreData?.reasoning || fallbackScore.reasoning,
+      strengths: scoreData?.strengths || fallbackScore.strengths,
+      concerns: scoreData?.concerns || fallbackScore.concerns,
+      recommendation: scoreData?.recommendation || fallbackScore.recommendation,
+    };
+
     // Return the reliability score with metadata
     res.json({
       status: "success",
       data: {
-        ...scoreData,
+        ...normalizedScore,
         metadata: {
           total_reviews: review_count,
           average_rating: Number(avg_rating),
