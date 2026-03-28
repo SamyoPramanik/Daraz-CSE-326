@@ -16,7 +16,6 @@ const getProductReliabilityScore = async (req, res) => {
   try {
     const { productId } = req.params;
 
-    // Validate product ID
     if (!productId) {
       return res.status(400).json({
         status: "error",
@@ -24,37 +23,38 @@ const getProductReliabilityScore = async (req, res) => {
       });
     }
 
-    // Fetch product and its reviews from database
+    // Fetch reviews
     const reviewsResult = await pool.query(
       `SELECT 
-                oi.rating,
-                oi.review,
-                oi.review_date,
-                u.name as user_name
-            FROM order_items oi
-            JOIN orders o ON oi.order_id = o.id
-            JOIN users u ON o.user_id = u.id
-            WHERE oi.product_id = $1 AND oi.rating IS NOT NULL
-            ORDER BY oi.review_date DESC
-            LIMIT 50`,
-      [productId],
+        oi.rating,
+        oi.review,
+        oi.review_date,
+        u.name as user_name
+      FROM order_items oi
+      JOIN orders o ON oi.order_id = o.id
+      JOIN users u ON o.user_id = u.id
+      WHERE oi.product_id = $1 AND oi.rating IS NOT NULL
+      ORDER BY oi.review_date DESC
+      LIMIT 50`,
+      [productId]
     );
 
+    // Get stats
     const ratingResult = await pool.query(
       `SELECT 
-                ROUND(AVG(oi.rating), 2) as avg_rating,
-                COUNT(oi.id) as review_count,
-                COUNT(CASE WHEN oi.review IS NOT NULL THEN 1 END) as review_text_count
-            FROM order_items oi
-            WHERE oi.product_id = $1 AND oi.rating IS NOT NULL`,
-      [productId],
+        ROUND(AVG(oi.rating), 2) as avg_rating,
+        COUNT(oi.id) as review_count,
+        COUNT(CASE WHEN oi.review IS NOT NULL THEN 1 END) as review_text_count
+      FROM order_items oi
+      WHERE oi.product_id = $1 AND oi.rating IS NOT NULL`,
+      [productId]
     );
 
     const { avg_rating, review_count, review_text_count } =
       ratingResult.rows[0];
+
     const reviews = reviewsResult.rows;
 
-    // If no reviews, return default score
     if (review_count === 0) {
       return res.json({
         status: "success",
@@ -67,168 +67,127 @@ const getProductReliabilityScore = async (req, res) => {
       });
     }
 
-    // Prepare review summary for AI analysis
     const reviewSummary = reviews
       .map(
         (r, idx) =>
-          `Review ${idx + 1} (${r.rating}⭐): ${r.review || "No text"} - by ${r.user_name}`,
+          `Review ${idx + 1} (${r.rating}⭐): ${r.review || "No text"} - by ${r.user_name}`
       )
       .join("\n");
 
-    // Call OpenRouter API with timeout so production never hangs on slow upstreams.
+    // ⏱ Timeout setup
     const controller = new AbortController();
-    const timeoutMs = Number(process.env.AI_TIMEOUT_MS || 9000);
+    const timeoutMs = Number(process.env.AI_TIMEOUT_MS || 5000);
     const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
-    let openrouterResponse;
+    let aiResponseRaw;
+
     try {
-      openrouterResponse = await fetch(
-        "https://openrouter.ai/api/v1/chat/completions",
+      const aiResponse = await fetch(
+        "https://api.groq.com/openai/v1/chat/completions",
         {
           method: "POST",
           headers: {
-            Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
-            "HTTP-Referer": "https://daraz.com",
-            "X-Title": "Daraz AI Reliability",
+            Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
             "Content-Type": "application/json",
           },
           signal: controller.signal,
           body: JSON.stringify({
-            model: "nvidia/nemotron-3-super-120b-a12b:free",
+            model: "llama-3.1-8b-instant",
             messages: [
               {
                 role: "user",
-                content: `Analyze the following product reviews and provide a reliability score (0-100) based on:
-1. Average rating (avg: ${avg_rating}/5)
-2. Number of reviews (${review_count} reviews)
-3. Review text quality and detail
-4. Sentiment and consistency
+                content: `Analyze the following product reviews and provide a reliability score (0-100):
+
+Average rating: ${avg_rating}/5  
+Total reviews: ${review_count}
 
 Customer Reviews:
 ${reviewSummary}
 
-Provide your response in this exact JSON format (no markdown, plain JSON only):
+Return ONLY valid JSON:
 {
-  "reliability_score": <number 0-100>,
-  "confidence": "<low|medium|high>",
-  "reasoning": "<one sentence explaining the score>",
-  "strengths": "<one sentence about positive aspects>",
-  "concerns": "<one sentence about any concerns, or 'None' if all good>",
-  "recommendation": "<one sentence recommendation>"
+  "reliability_score": number,
+  "confidence": "low|medium|high",
+  "reasoning": "one sentence",
+  "strengths": "one sentence",
+  "concerns": "one sentence",
+  "recommendation": "one sentence"
 }`,
               },
             ],
             temperature: 0.3,
-            max_tokens: 220,
+            max_tokens: 200,
           }),
-        },
+        }
       );
+
+      clearTimeout(timeoutId);
+
+      if (!aiResponse.ok) throw new Error("Groq API failed");
+
+      const data = await aiResponse.json();
+      aiResponseRaw = data.choices[0].message.content;
     } catch (error) {
       clearTimeout(timeoutId);
-      const scoreData = buildFallbackScore(
+
+      const fallback = buildFallbackScore(
         Number(avg_rating),
-        Number(review_count),
+        Number(review_count)
       );
+
       return res.json({
         status: "success",
         data: {
-          ...scoreData,
+          ...fallback,
           metadata: {
             total_reviews: review_count,
             average_rating: Number(avg_rating),
             reviews_with_text: review_text_count,
             generated_at: new Date().toISOString(),
-            analysis_type: "fallback_calculation",
+            analysis_type: "fallback",
             note:
               error.name === "AbortError"
-                ? `LLM request timed out after ${timeoutMs}ms. Fallback score returned.`
-                : "LLM request failed. Fallback score returned.",
-          },
-        },
-      });
-    } finally {
-      clearTimeout(timeoutId);
-    }
-
-    if (!openrouterResponse.ok) {
-      const error = await openrouterResponse.json().catch(() => ({}));
-      console.error("OpenRouter API Error:", error);
-
-      // If API call fails, use fallback calculation based on reviews
-      const scoreData = buildFallbackScore(
-        Number(avg_rating),
-        Number(review_count),
-      );
-
-      return res.json({
-        status: "success",
-        data: {
-          ...scoreData,
-          metadata: {
-            total_reviews: review_count,
-            average_rating: Number(avg_rating),
-            reviews_with_text: review_text_count,
-            generated_at: new Date().toISOString(),
-            analysis_type: "fallback_calculation",
-            note: "AI-powered analysis could not be performed. Score is calculated from review ratings only.",
+                ? "Groq timeout"
+                : "Groq failed",
           },
         },
       });
     }
 
-    const openrouterData = await openrouterResponse.json();
-    const aiResponse = openrouterData.choices[0].message.content;
-
-    // Parse AI response - handle both JSON and text responses
+    // Parse response
     let scoreData;
     try {
-      scoreData = JSON.parse(aiResponse);
-    } catch (e) {
-      // If response isn't pure JSON, try to extract JSON from it
-      const jsonMatch = aiResponse.match(/\{[\s\S]*\}/);
-      if (jsonMatch) {
-        scoreData = JSON.parse(jsonMatch[0]);
-      } else {
-        // Fallback if parsing fails
-        scoreData = {
-          reliability_score: Math.round((avg_rating / 5) * 100),
-          confidence: "medium",
-          reasoning: "AI analysis temporarily unavailable",
-          strengths: `Average rating of ${avg_rating}/5 stars`,
-          concerns: "None",
-          recommendation: "Check detailed reviews for more info",
-        };
-      }
+      scoreData = JSON.parse(aiResponseRaw);
+    } catch {
+      const match = aiResponseRaw.match(/\{[\s\S]*\}/);
+      scoreData = match ? JSON.parse(match[0]) : {};
     }
 
-    // Ensure required response fields are always present.
-    const fallbackScore = buildFallbackScore(
+    const fallback = buildFallbackScore(
       Number(avg_rating),
-      Number(review_count),
+      Number(review_count)
     );
-    const normalizedScore = {
+
+    const normalized = {
       reliability_score:
         Number(scoreData?.reliability_score) >= 0 &&
         Number(scoreData?.reliability_score) <= 100
           ? Number(scoreData.reliability_score)
-          : fallbackScore.reliability_score,
-      confidence:
-        scoreData?.confidence === "high" ||
-        scoreData?.confidence === "medium" ||
-        scoreData?.confidence === "low"
-          ? scoreData.confidence
-          : fallbackScore.confidence,
-      reasoning: scoreData?.reasoning || fallbackScore.reasoning,
-      strengths: scoreData?.strengths || fallbackScore.strengths,
-      concerns: scoreData?.concerns || fallbackScore.concerns,
-      recommendation: scoreData?.recommendation || fallbackScore.recommendation,
+          : fallback.reliability_score,
+      confidence: ["low", "medium", "high"].includes(scoreData?.confidence)
+        ? scoreData.confidence
+        : fallback.confidence,
+      reasoning: scoreData?.reasoning || fallback.reasoning,
+      strengths: scoreData?.strengths || fallback.strengths,
+      concerns: scoreData?.concerns || fallback.concerns,
+      recommendation:
+        scoreData?.recommendation || fallback.recommendation,
     };
 
-    // Return the reliability score with metadata
-    res.json({
+    return res.json({
       status: "success",
       data: {
-        ...normalizedScore,
+        ...normalized,
         metadata: {
           total_reviews: review_count,
           average_rating: Number(avg_rating),
@@ -238,7 +197,7 @@ Provide your response in this exact JSON format (no markdown, plain JSON only):
       },
     });
   } catch (error) {
-    console.error("Error generating reliability score:", error);
+    console.error("Error:", error);
     res.status(500).json({
       status: "error",
       message: "Failed to generate reliability score",
