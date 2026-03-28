@@ -139,6 +139,8 @@ export default function AdminDashboard() {
         category_id: Number(formData.category_id),
       });
 
+      window.dispatchEvent(new Event("adminProductsUpdated"));
+
       toast.success("Product created successfully");
       setFormData(initialFormState);
     } catch (error) {

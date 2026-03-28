@@ -84,6 +84,7 @@ export default function AdminProductsPage() {
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [searchText, setSearchText] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
+  const [sortBy, setSortBy] = useState("sold_desc");
 
   useEffect(() => {
     if (!hasInitialized) {
@@ -117,6 +118,16 @@ export default function AdminProductsPage() {
     };
 
     void loadData();
+
+    const handleProductsUpdated = () => {
+      void loadData();
+    };
+
+    window.addEventListener("adminProductsUpdated", handleProductsUpdated);
+
+    return () => {
+      window.removeEventListener("adminProductsUpdated", handleProductsUpdated);
+    };
   }, [hasInitialized, isLoggedIn, router, user?.is_admin]);
 
   const categoryNameMap = useMemo(() => {
@@ -128,7 +139,7 @@ export default function AdminProductsPage() {
   const filteredProducts = useMemo(() => {
     const normalizedSearch = searchText.trim().toLowerCase();
 
-    return products.filter((product) => {
+    const matched = products.filter((product) => {
       const categoryMatch =
         categoryFilter === "all" || String(product.category_id) === categoryFilter;
 
@@ -146,7 +157,30 @@ export default function AdminProductsPage() {
         description.includes(normalizedSearch)
       );
     });
-  }, [products, searchText, categoryFilter]);
+
+    return matched.sort((a, b) => {
+      switch (sortBy) {
+        case "sold_asc":
+          return Number(a.sold_count || 0) - Number(b.sold_count || 0);
+        case "sold_desc":
+          return Number(b.sold_count || 0) - Number(a.sold_count || 0);
+        case "reviews_asc":
+          return Number(a.review_count || 0) - Number(b.review_count || 0);
+        case "reviews_desc":
+          return Number(b.review_count || 0) - Number(a.review_count || 0);
+        case "price_asc":
+          return Number(a.price || 0) - Number(b.price || 0);
+        case "price_desc":
+          return Number(b.price || 0) - Number(a.price || 0);
+        case "name_asc":
+          return String(a.name || "").localeCompare(String(b.name || ""));
+        case "name_desc":
+          return String(b.name || "").localeCompare(String(a.name || ""));
+        default:
+          return 0;
+      }
+    });
+  }, [products, searchText, categoryFilter, sortBy]);
 
   const startEdit = (product: AdminProduct) => {
     setEditingId(product.id);
@@ -266,7 +300,7 @@ export default function AdminProductsPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="mb-4 grid gap-3 md:grid-cols-2">
+            <div className="mb-4 grid gap-3 md:grid-cols-3">
               <Input
                 value={searchText}
                 onChange={(e) => setSearchText(e.target.value)}
@@ -283,6 +317,20 @@ export default function AdminProductsPage() {
                     {category.name}
                   </option>
                 ))}
+              </select>
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+              >
+                <option value="sold_desc">Sort: Sold (High to Low)</option>
+                <option value="sold_asc">Sort: Sold (Low to High)</option>
+                <option value="reviews_desc">Sort: Reviews (High to Low)</option>
+                <option value="reviews_asc">Sort: Reviews (Low to High)</option>
+                <option value="price_desc">Sort: Price (High to Low)</option>
+                <option value="price_asc">Sort: Price (Low to High)</option>
+                <option value="name_asc">Sort: Name (A-Z)</option>
+                <option value="name_desc">Sort: Name (Z-A)</option>
               </select>
             </div>
 

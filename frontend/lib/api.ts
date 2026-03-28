@@ -15,9 +15,12 @@ export async function fetchProducts(
 
   const url = `${BASE_URL}/products?${query.toString()}`;
 
-  const res = await fetch(url, {
-    next: { revalidate: 1 },
-  });
+  const fetchOptions =
+    typeof window === "undefined"
+      ? { next: { revalidate: 1 as const } }
+      : { cache: "no-store" as const };
+
+  const res = await fetch(url, fetchOptions);
 
   if (!res.ok) {
     throw new Error("Failed to fetch products");
