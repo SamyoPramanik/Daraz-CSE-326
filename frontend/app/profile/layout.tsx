@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { Package, Star, LogOut } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useAuthStore } from "@/lib/authStore";
+import { logoutCurrentUser } from "@/lib/api";
 
 interface User {
   name: string;
@@ -37,7 +38,8 @@ export default function ProfileLayout({
         { label: "My Reviews", href: "/profile/reviews", icon: Star },
       ];
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await logoutCurrentUser();
     clearAuth();
     window.location.href = "/";
   };

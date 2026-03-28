@@ -33,6 +33,24 @@ const markUserOnline = async (userId) => {
     );
 };
 
+const markUserOffline = async (userId) => {
+    await pool.query(`
+        CREATE TABLE IF NOT EXISTS user_presence (
+            user_id UUID PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+            last_seen_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+            is_online BOOLEAN NOT NULL DEFAULT FALSE
+        )
+    `);
+
+    await pool.query(
+        `INSERT INTO user_presence (user_id, last_seen_at, is_online)
+         VALUES ($1, NOW(), FALSE)
+         ON CONFLICT (user_id)
+         DO UPDATE SET last_seen_at = NOW(), is_online = FALSE`,
+        [userId]
+    );
+};
+
 const registerUser = async (req, res) => {
     try {
         const { name, email, password, phone } = req.body;
@@ -215,8 +233,25 @@ const adminLogin = async (req, res) => {
     }
 };
 
+const logoutUser = async (req, res) => {
+    try {
+        await markUserOffline(req.user.id);
+        return res.status(200).json({
+            status: 'success',
+            message: 'Logged out successfully'
+        });
+    } catch (error) {
+        return res.status(500).json({
+            status: 'error',
+            message: 'Logout failed',
+            error: error.message
+        });
+    }
+};
+
 module.exports = {
     registerUser,
     userLogin,
-    adminLogin
+    adminLogin,
+    logoutUser
 };

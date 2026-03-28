@@ -9,7 +9,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useAuthStore } from "@/lib/authStore";
 import { LogOut, BarChart3, Users, ShoppingCart, TrendingUp } from "lucide-react";
 import { toast } from "sonner";
-import { createProduct, fetchCategories, type Category } from "@/lib/api";
+import {
+  createProduct,
+  fetchAdminDashboardStats,
+  fetchCategories,
+  logoutCurrentUser,
+  type AdminDashboardStats,
+  type Category,
+} from "@/lib/api";
 
 type ProductFormState = {
   name: string;
@@ -35,6 +42,13 @@ const initialFormState: ProductFormState = {
   flash_sale: false,
 };
 
+const initialDashboardStats: AdminDashboardStats = {
+  total_users: 0,
+  total_orders: 0,
+  total_products: 0,
+  total_revenue: 0,
+};
+
 export default function AdminDashboard() {
   const router = useRouter();
   const { user, isLoggedIn, clearAuth, hasInitialized, initializeFromStorage } = useAuthStore();
@@ -42,6 +56,7 @@ export default function AdminDashboard() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
   const [formData, setFormData] = useState<ProductFormState>(initialFormState);
+  const [stats, setStats] = useState<AdminDashboardStats>(initialDashboardStats);
 
   // Initialize from storage on mount only
   useEffect(() => {
@@ -68,7 +83,8 @@ export default function AdminDashboard() {
     }
   }, [hasInitialized, isLoggedIn, user?.is_admin, router]);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await logoutCurrentUser();
     clearAuth();
     toast.success("Logged out successfully");
     router.push("/");
@@ -76,10 +92,13 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     if (!isLoading) {
-      fetchCategories()
-        .then((items) => setCategories(items))
+      Promise.all([fetchCategories(), fetchAdminDashboardStats()])
+        .then(([items, dashboardStats]) => {
+          setCategories(items);
+          setStats(dashboardStats);
+        })
         .catch(() => {
-          toast.error("Failed to load product categories");
+          toast.error("Failed to load admin dashboard data");
         });
     }
   }, [isLoading]);
@@ -171,8 +190,7 @@ export default function AdminDashboard() {
               <Users className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">1,234</div>
-              <p className="text-xs text-gray-600">+12% from last month</p>
+              <div className="text-2xl font-bold">{stats.total_users.toLocaleString()}</div>
             </CardContent>
           </Card>
 
@@ -183,8 +201,8 @@ export default function AdminDashboard() {
               <ShoppingCart className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">5,678</div>
-              <p className="text-xs text-gray-600">+8% from last month</p>
+              <div className="text-2xl font-bold">{stats.total_orders.toLocaleString()}</div>
+              <p className="text-xs text-gray-600">All orders placed</p>
             </CardContent>
           </Card>
 
@@ -195,8 +213,7 @@ export default function AdminDashboard() {
               <TrendingUp className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">৳ 2.5M</div>
-              <p className="text-xs text-gray-600">+15% from last month</p>
+              <div className="text-2xl font-bold">৳ {stats.total_revenue.toLocaleString()}</div>
             </CardContent>
           </Card>
 
@@ -207,8 +224,8 @@ export default function AdminDashboard() {
               <BarChart3 className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">342</div>
-              <p className="text-xs text-gray-600">+5 new this month</p>
+              <div className="text-2xl font-bold">{stats.total_products.toLocaleString()}</div>
+              <p className="text-xs text-gray-600">Current product catalog size</p>
             </CardContent>
           </Card>
         </div>
@@ -382,7 +399,7 @@ export default function AdminDashboard() {
 
                 <div className="md:col-span-2">
                   <Button type="submit" disabled={isSubmitting} className="w-full md:w-auto">
-                    {isSubmitting ? "Creating Product..." : "Create Product"}
+                    {isSubmitting ? "Adding Product..." : "Add Product"}
                   </Button>
                 </div>
               </form>
