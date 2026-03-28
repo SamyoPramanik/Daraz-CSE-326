@@ -6,7 +6,7 @@ const aiRoute = require("./routes/aiRoute");
 const authRoute = require("./routes/authRoute");
 const orderRoute = require("./routes/orderRoute");
 const cartRoute = require("./routes/cartRoute");
-const adminRoute = require('./routes/adminRoute');
+const adminRoute = require("./routes/adminRoute");
 
 const app = express();
 const port = process.env.PORT || 4000;
