@@ -743,3 +743,18 @@ export async function submitReview(
 
   return res.json();
 }
+
+export async function fetchProductReliabilityScore(productId: string) {
+  const url = `${BASE_URL}/ai/reliability/${productId}`;
+
+  const res = await fetch(url, {
+    method: "GET",
+    cache: "no-store",
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch reliability score");
+  }
+
+  return res.json();
+}

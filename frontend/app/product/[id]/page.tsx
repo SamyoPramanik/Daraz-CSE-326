@@ -3,6 +3,7 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import { fetchProduct } from "@/lib/api";
 import ProductActions from "@/components/ProductActions";
+import ProductReliability from "@/components/ProductReliability";
 import ProductReviews from "@/components/ProductReviews";
 import { Star, Truck, ShieldCheck } from "lucide-react";
 
@@ -172,6 +173,11 @@ export default async function ProductPage({
             <ProductActions productId={id} stock={product.stock ?? 99} />
           </div>
         </div>
+      </div>
+
+      {/* AI Reliability Analysis */}
+      <div className="mt-8">
+        <ProductReliability productId={id} />
       </div>
 
       {/* Reviews Section */}
