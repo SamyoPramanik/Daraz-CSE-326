@@ -18,6 +18,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Daraz",
   description: "Discover the best deals on millions of products",
+  icons: {
+    icon: "/daraz-logo.png",
+  },
 };
 
 export default function RootLayout({
