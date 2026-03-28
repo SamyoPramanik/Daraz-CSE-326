@@ -45,6 +45,18 @@ export interface Category {
   name: string;
 }
 
+export interface CreateProductPayload {
+  name: string;
+  image_url: string;
+  brand?: string | null;
+  description?: string | null;
+  price: number;
+  discount_price?: number | null;
+  stock: number;
+  flash_sale?: boolean;
+  category_id: number;
+}
+
 export async function fetchCategories(): Promise<Category[]> {
   const url = `${BASE_URL}/products/categories`;
 
@@ -82,6 +94,33 @@ export async function fetchProduct(id: string) {
 
   const json = await res.json();
   return json.data;
+}
+
+export async function createProduct(payload: CreateProductPayload) {
+  const url = `${BASE_URL}/products`;
+  const token =
+    typeof window !== "undefined" ? localStorage.getItem("token") : null;
+
+  if (!token) {
+    throw new Error("Unauthorized - Please login as admin");
+  }
+
+  const res = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(payload),
+    cache: "no-store",
+  });
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.message || "Failed to create product");
+  }
+
+  return res.json();
 }
 
 // ============ CART API FUNCTIONS ============

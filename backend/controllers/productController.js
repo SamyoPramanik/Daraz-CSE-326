@@ -10,6 +10,142 @@ const toNumberOrNull = (value) => {
   return Number(value);
 };
 
+const createProduct = async (req, res) => {
+  try {
+    const {
+      name,
+      image_url,
+      brand,
+      description,
+      price,
+      discount_price,
+      stock,
+      flash_sale,
+      category_id,
+    } = req.body;
+
+    if (!name || !image_url || price === undefined || category_id === undefined) {
+      return res.status(400).json({
+        status: "error",
+        message: "name, image_url, price, and category_id are required",
+      });
+    }
+
+    const numericPrice = Number(price);
+    const numericDiscountPrice =
+      discount_price === null || discount_price === undefined || discount_price === ""
+        ? null
+        : Number(discount_price);
+    const numericStock = stock === undefined || stock === null || stock === "" ? 0 : Number(stock);
+    const numericCategoryId = Number(category_id);
+
+    if (!Number.isFinite(numericPrice) || numericPrice < 0) {
+      return res.status(400).json({
+        status: "error",
+        message: "price must be a valid non-negative number",
+      });
+    }
+
+    if (
+      numericDiscountPrice !== null &&
+      (!Number.isFinite(numericDiscountPrice) || numericDiscountPrice < 0)
+    ) {
+      return res.status(400).json({
+        status: "error",
+        message: "discount_price must be a valid non-negative number",
+      });
+    }
+
+    if (
+      numericDiscountPrice !== null &&
+      numericDiscountPrice > numericPrice
+    ) {
+      return res.status(400).json({
+        status: "error",
+        message: "discount_price cannot be greater than price",
+      });
+    }
+
+    if (!Number.isInteger(numericStock) || numericStock < 0) {
+      return res.status(400).json({
+        status: "error",
+        message: "stock must be a valid non-negative integer",
+      });
+    }
+
+    if (!Number.isInteger(numericCategoryId) || numericCategoryId <= 0) {
+      return res.status(400).json({
+        status: "error",
+        message: "category_id must be a valid category id",
+      });
+    }
+
+    const categoryExists = await pool.query(
+      "SELECT id FROM categories WHERE id = $1",
+      [numericCategoryId],
+    );
+
+    if (categoryExists.rows.length === 0) {
+      return res.status(404).json({
+        status: "error",
+        message: "Category not found",
+      });
+    }
+
+    const existingProduct = await pool.query(
+      `SELECT id
+       FROM products
+       WHERE LOWER(TRIM(name)) = LOWER(TRIM($1))
+         AND category_id = $2
+         AND COALESCE(LOWER(TRIM(brand)), '') = COALESCE(LOWER(TRIM($3)), '')
+       LIMIT 1`,
+      [name, numericCategoryId, brand || null],
+    );
+
+    if (existingProduct.rows.length > 0) {
+      return res.status(409).json({
+        status: "error",
+        message: "This product is already available for users",
+      });
+    }
+
+    const result = await pool.query(
+      `INSERT INTO products
+        (name, image_url, brand, description, price, discount_price, stock, flash_sale, category_id)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+       RETURNING id, name, image_url, brand, description, price, discount_price, stock, flash_sale, category_id`,
+      [
+        name,
+        image_url,
+        brand || null,
+        description || null,
+        numericPrice,
+        numericDiscountPrice,
+        numericStock,
+        Boolean(flash_sale),
+        numericCategoryId,
+      ],
+    );
+
+    const createdProduct = result.rows[0];
+    res.status(201).json({
+      status: "success",
+      message: "Product created successfully",
+      data: {
+        ...createdProduct,
+        price: Number(createdProduct.price),
+        discount_price: toNumberOrNull(createdProduct.discount_price),
+      },
+    });
+  } catch (err) {
+    res.status(500).json({
+      status: "error",
+      message: "Failed to create product",
+      error: err.message,
+    });
+  }
+};
+
 const getProducts = async (req, res) => {
   try {
     const {
@@ -339,6 +475,7 @@ const getTrendingProducts = async (req, res) => {
 };
 
 module.exports = {
+  createProduct,
   getProducts,
   getProductWithReviews,
   getProductCategories,
