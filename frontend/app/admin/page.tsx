@@ -221,9 +221,9 @@ export default function AdminDashboard() {
               <CardDescription>Manage your store</CardDescription>
             </CardHeader>
             <CardContent className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-              <Link href="/admin">
+              <Link href="/admin/products">
                 <Button variant="outline" className="w-full">
-                  View Products
+                  Manage Products
                 </Button>
               </Link>
               <Link href="/admin">

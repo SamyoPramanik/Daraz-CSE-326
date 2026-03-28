@@ -123,6 +123,61 @@ export async function createProduct(payload: CreateProductPayload) {
   return res.json();
 }
 
+export async function updateProductByAdmin(
+  productId: string,
+  payload: CreateProductPayload,
+) {
+  const url = `${BASE_URL}/products/${productId}`;
+  const token =
+    typeof window !== "undefined" ? localStorage.getItem("token") : null;
+
+  if (!token) {
+    throw new Error("Unauthorized - Please login as admin");
+  }
+
+  const res = await fetch(url, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(payload),
+    cache: "no-store",
+  });
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.message || "Failed to update product");
+  }
+
+  return res.json();
+}
+
+export async function deleteProductByAdmin(productId: string) {
+  const url = `${BASE_URL}/products/${productId}`;
+  const token =
+    typeof window !== "undefined" ? localStorage.getItem("token") : null;
+
+  if (!token) {
+    throw new Error("Unauthorized - Please login as admin");
+  }
+
+  const res = await fetch(url, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    cache: "no-store",
+  });
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.message || "Failed to delete product");
+  }
+
+  return res.json();
+}
+
 // ============ CART API FUNCTIONS ============
 
 export async function fetchCart() {
