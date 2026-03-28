@@ -139,6 +139,8 @@ export default function AdminDashboard() {
         category_id: Number(formData.category_id),
       });
 
+      window.dispatchEvent(new Event("adminProductsUpdated"));
+
       toast.success("Product created successfully");
       setFormData(initialFormState);
     } catch (error) {
@@ -251,6 +253,11 @@ export default function AdminDashboard() {
               <Link href="/admin/users">
                 <Button variant="outline" className="w-full">
                   View Users
+                </Button>
+              </Link>
+              <Link href="/admin/analytics">
+                <Button variant="outline" className="w-full">
+                  Sales Analytics
                 </Button>
               </Link>
             </CardContent>
