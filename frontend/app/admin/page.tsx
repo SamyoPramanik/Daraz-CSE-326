@@ -226,19 +226,14 @@ export default function AdminDashboard() {
                   Manage Products
                 </Button>
               </Link>
-              <Link href="/admin">
+              <Link href="/admin/orders">
                 <Button variant="outline" className="w-full">
                   View Orders
                 </Button>
               </Link>
-              <Link href="/admin">
+              <Link href="/admin/users">
                 <Button variant="outline" className="w-full">
                   View Users
-                </Button>
-              </Link>
-              <Link href="/admin">
-                <Button variant="outline" className="w-full">
-                  Settings
                 </Button>
               </Link>
             </CardContent>

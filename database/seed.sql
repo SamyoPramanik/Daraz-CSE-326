@@ -353,7 +353,7 @@ VALUES (
 
 ('Knife Set', 'https://m.media-amazon.com/images/I/81dIS4ecWfL._AC_UF894,1000_QL80_.jpg', 'Victorinox', 'Professional 5-piece stainless steel knife set.', 7999.00, 6499.00, 30, FALSE, 3),
 
-('Bamboo Cutting Board Set', 'https://images-cdn.ubuy.com.sa/634ed49f124d62741b4d28fc-royalhouse-bamboo-cutting-board-set-of.jpg', 'OXO', 'Set of 3 bamboo cutting boards in different sizes.', 1999.00, 1599.00, 100, TRUE, 3),
+('Bamboo Cutting Board Set', 'https://livingtoday.com.au/cdn/shop/files/1_6eac956d-452c-4690-8583-d7e3fe85748c.jpg?v=1752471030&width=1445', 'OXO', 'Set of 3 bamboo cutting boards in different sizes.', 1999.00, 1599.00, 100, TRUE, 3),
 
 ('Vacuum Cleaner', 'https://ebestsupply.com.bd/wp-content/uploads/2023/12/1b377ac5cc8283acad30735d503300c5.jpg', 'Dyson', 'Cordless vacuum cleaner with powerful suction.', 29999.00, 24999.00, 20, FALSE, 3),
 

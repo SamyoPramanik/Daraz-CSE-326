@@ -57,6 +57,85 @@ export interface CreateProductPayload {
   category_id: number;
 }
 
+export interface AdminOrderSummary {
+  id: string;
+  user_id: string;
+  user_name: string;
+  user_email: string;
+  total_amount: number;
+  payment_method: string;
+  payment_status: string;
+  order_status: string;
+  shipping_address: string;
+  created_at: string;
+  total_items: number;
+}
+
+export interface AdminOrderDetails {
+  id: string;
+  user: {
+    id: string;
+    name: string;
+    email: string;
+    phone?: string | null;
+  };
+  total_amount: number;
+  payment_method: string;
+  payment_status: string;
+  order_status: string;
+  shipping_address: string;
+  created_at: string;
+  order_items: Array<{
+    id: number;
+    product_id: string;
+    product_name: string;
+    brand?: string | null;
+    image_url?: string | null;
+    quantity: number;
+    price: number;
+    rating?: number | null;
+    review?: string | null;
+    review_date?: string | null;
+  }>;
+}
+
+export interface AdminUserInfo {
+  id: string;
+  name: string;
+  email: string;
+  phone?: string | null;
+  is_admin?: boolean;
+  created_at: string;
+  total_orders: number;
+  total_spent: number;
+  last_order_at?: string | null;
+  last_cart_at?: string | null;
+  last_activity_at: string;
+  status: "Online" | "Offline";
+}
+
+export interface AdminUserDetails {
+  id: string;
+  name: string;
+  email: string;
+  phone?: string | null;
+  created_at: string;
+  last_seen_at?: string | null;
+  status: "Online" | "Offline";
+  total_orders: number;
+  total_spent: number;
+  last_order_at?: string | null;
+  last_cart_at?: string | null;
+  recent_orders: Array<{
+    id: string;
+    total_amount: number;
+    payment_status: string;
+    order_status: string;
+    created_at: string;
+    total_items: number;
+  }>;
+}
+
 export async function fetchCategories(): Promise<Category[]> {
   const url = `${BASE_URL}/products/categories`;
 
@@ -176,6 +255,116 @@ export async function deleteProductByAdmin(productId: string) {
   }
 
   return res.json();
+}
+
+export async function fetchAdminCompletedOrders(nameFilter?: string) {
+  const token =
+    typeof window !== "undefined" ? localStorage.getItem("token") : null;
+
+  if (!token) {
+    throw new Error("Unauthorized - Please login as admin");
+  }
+
+  const params = new URLSearchParams();
+  if (nameFilter?.trim()) {
+    params.set("name", nameFilter.trim());
+  }
+
+  const url = `${BASE_URL}/admin/orders${params.toString() ? `?${params.toString()}` : ""}`;
+
+  const res = await fetch(url, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    cache: "no-store",
+  });
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.message || "Failed to fetch admin orders");
+  }
+
+  const json = await res.json();
+  return json.data as AdminOrderSummary[];
+}
+
+export async function fetchAdminOrderById(orderId: string) {
+  const token =
+    typeof window !== "undefined" ? localStorage.getItem("token") : null;
+
+  if (!token) {
+    throw new Error("Unauthorized - Please login as admin");
+  }
+
+  const url = `${BASE_URL}/admin/orders/${orderId}`;
+  const res = await fetch(url, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    cache: "no-store",
+  });
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.message || "Failed to fetch order details");
+  }
+
+  const json = await res.json();
+  return json.data as AdminOrderDetails;
+}
+
+export async function fetchAdminUsers() {
+  const token =
+    typeof window !== "undefined" ? localStorage.getItem("token") : null;
+
+  if (!token) {
+    throw new Error("Unauthorized - Please login as admin");
+  }
+
+  const url = `${BASE_URL}/admin/users`;
+  const res = await fetch(url, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    cache: "no-store",
+  });
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.message || "Failed to fetch users");
+  }
+
+  const json = await res.json();
+  return json.data as AdminUserInfo[];
+}
+
+export async function fetchAdminUserById(userId: string) {
+  const token =
+    typeof window !== "undefined" ? localStorage.getItem("token") : null;
+
+  if (!token) {
+    throw new Error("Unauthorized - Please login as admin");
+  }
+
+  const url = `${BASE_URL}/admin/users/${userId}`;
+  const res = await fetch(url, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    cache: "no-store",
+  });
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.message || "Failed to fetch user details");
+  }
+
+  const json = await res.json();
+  return json.data as AdminUserDetails;
 }
 
 // ============ CART API FUNCTIONS ============
