@@ -57,399 +57,197 @@ INSERT INTO
         flash_sale,
         category_id
     )
-VALUES (
-        'Samsung Galaxy S24',
-        'https://app-area.riointernational.com.bd/productImages/QklAT1732037791.webp',
-        'Samsung',
-        'Latest flagship smartphone with advanced camera system and 5G connectivity.',
-        89999.00,
-        79999.00,
-        50,
-        TRUE,
-        1
-    ),
-    (
-        'iPhone 15 Pro',
-        'https://ddfndelma2gpn.cloudfront.net/color/682/iphone_15_pro__Natural_Titanium_3__2.webp',
-        'Apple',
-        'Premium Apple smartphone with A17 Pro chip and titanium design.',
-        129999.00,
-        119999.00,
-        30,
-        FALSE,
-        1
-    ),
-    (
-        'Sony WH-1000XM5 Headphones',
-        'https://ddfndelma2gpn.cloudfront.net/color/3538/Sony_WH-CH720_Wireless_Noise_Canceling_Headphone_-_Blue.webp',
-        'Sony',
-        'Industry-leading noise-canceling wireless headphones with superior sound quality.',
-        34999.00,
-        29999.00,
-        25,
-        FALSE,
-        1
-    ),
-    (
-        'Cotton T-Shirt',
-        'https://fabrilife.com/products/6465ff10c753e-square.jpg?v=20',
-        'Local Brand',
-        'Comfortable 100% organic cotton T-shirt, perfect for everyday wear.',
-        599.00,
-        499.00,
-        200,
-        TRUE,
-        2
-    ),
-    (
-        'Denim Jeans',
-        'https://fabrilife.com/products/69a9109a0b893-square.jpg?v=20',
-        'Levi''s',
-        'Classic durable denim jeans with timeless style.',
-        3999.00,
-        2999.00,
-        80,
-        FALSE,
-        2
-    ),
-    (
-        'Winter Jacket',
-        'https://fabrilife.com/products/695b8d50c3f8d-square.jpg?v=20',
-        'North Face',
-        'Insulated winter jacket with waterproof shell and warmth insulation.',
-        12999.00,
-        9999.00,
-        40,
-        FALSE,
-        2
-    ),
-    (
-        'Non-stick Frying Pan',
-        'https://img.drz.lazcdn.com/static/bd/p/4ae85bdea7eea80a842c00a9cf4cabb0.jpg_720x720q80.jpg',
-        'Tefal',
-        'Durable non-stick frying pan for healthy cooking.',
-        1999.00,
-        1499.00,
-        120,
-        FALSE,
-        3
-    ),
-    (
-        'Stainless Steel Utensil Set',
-        'https://img.drz.lazcdn.com/static/bd/p/440b66c3d09e158ba862d96fe4a3fb7f.jpg_720x720q80.jpg',
-        'Delcasa',
-        'Complete kitchen utensil set with professional-grade stainless steel.',
-        2499.00,
-        1999.00,
-        90,
-        TRUE,
-        3
-    ),
-    (
-        'The Midnight Library',
-        'https://cdn.othoba.com/images/thumbs/1544445_the-midnight-library-a-novel.jpeg',
-        'Matt Haig',
-        'Bestselling fiction novel exploring infinite possibilities and life choices.',
-        799.00,
-        599.00,
-        150,
-        FALSE,
-        4
-    ),
-    (
-        'Educated',
-        'https://fridaysgarden.sg/cdn/shop/files/IMG_6438_1100x.jpg?v=1693042915',
-        'Tara Westover',
-        'Memoir about a woman who leaves her survivalist family to pursue education.',
-        699.00,
-        549.00,
-        100,
-        FALSE,
-        4
-    ),
-    (
-        'Yoga Mat',
-        'https://img.drz.lazcdn.com/static/bd/p/8aa67c0d51a40864ad2633e1703ee04b.png_720x720q80.png',
-        'Decathlon',
-        'Non-slip exercise yoga mat with carrying strap.',
-        1499.00,
-        1099.00,
-        60,
-        TRUE,
-        5
-    ),
-    (
-        'Running Shoes',
-        'https://img.drz.lazcdn.com/static/bd/p/22036e7ab635c5c1f0b824384c6cc192.jpg_720x720q80.jpg',
-        'Nike',
-        'High-performance running shoes with advanced cushioning technology.',
-        7999.00,
-        5999.00,
-        45,
-        FALSE,
-        5
-    ),
-    (
-        'Face Moisturizer',
-        'https://img.drz.lazcdn.com/static/bd/p/fa4a3528f4961e539fc43f0737cdf0f2.png_720x720q80.png',
-        'Cetaphil',
-        'Hypoallergenic facial moisturizer suitable for all skin types.',
-        1299.00,
-        999.00,
-        200,
-        FALSE,
-        6
-    ),
-    (
-        'Samsung Galaxy A55', 
-        'https://images.samsung.com/is/image/samsung/p6pim/levant/feature/165062223/levant-feature--nbsp-540234962?$FB_TYPE_A_JPG$', 
-        'Samsung', 'Mid-range smartphone with AMOLED display and long battery.', 
-        45999.00, 
-        39999.00, 
-        80, 
-        TRUE,
-        1
-    ),
+VALUES ('Samsung Galaxy S24', 'https://app-area.riointernational.com.bd/productImages/QklAT1732037791.webp', 'Samsung', 'The Samsung Galaxy S24 is the latest flagship smartphone featuring a powerful Snapdragon 8 Gen 3 processor and an advanced triple-camera system with 50MP main sensor. It supports 5G connectivity for blazing-fast speeds and offers a stunning 6.2-inch Dynamic AMOLED 2X display with 120Hz refresh rate. The phone comes with 8GB RAM and up to 256GB storage, making it perfect for multitasking and media consumption. With a long-lasting 4000mAh battery and 25W fast charging, you stay powered all day.', 89999.00, 79999.00, 50, TRUE, 1),
+ 
+('iPhone 15 Pro', 'https://ddfndelma2gpn.cloudfront.net/color/682/iphone_15_pro__Natural_Titanium_3__2.webp', 'Apple', 'The iPhone 15 Pro features Apple''s most powerful A17 Pro chip built on 3nm technology, delivering console-quality gaming and pro-level performance. Crafted from aerospace-grade titanium, it is lighter yet stronger than ever before. The 48MP main camera with second-generation sensor-shift OIS captures stunning photos and 4K ProRes video. USB-C with USB 3 speeds enables lightning-fast data transfer and charging. Available with up to 1TB storage for all your needs.', 129999.00, 119999.00, 30, FALSE, 1),
+ 
+('Sony WH-1000XM5 Headphones', 'https://ddfndelma2gpn.cloudfront.net/color/3538/Sony_WH-CH720_Wireless_Noise_Canceling_Headphone_-_Blue.webp', 'Sony', 'The Sony WH-1000XM5 sets the industry standard for noise cancellation with 8 microphones and two processors working together to block out unwanted noise. The 30-hour battery life with quick charge gives you 3 hours of playback from just 3 minutes of charging. Multipoint connection lets you pair with two devices simultaneously. The new V1 processor delivers exceptional sound quality with LDAC support for high-resolution audio streaming. The lightweight design with soft-fit leather ear pads provides all-day comfort.', 34999.00, 29999.00, 25, FALSE, 1),
+ 
+('Samsung Galaxy A55', 'https://images.samsung.com/is/image/samsung/p6pim/levant/feature/165062223/levant-feature--nbsp-540234962?$FB_TYPE_A_JPG$', 'Samsung', 'The Samsung Galaxy A55 brings flagship-level features to the mid-range segment with its stunning 6.6-inch Super AMOLED display with 120Hz refresh rate. Powered by the Exynos 1480 processor with 8GB RAM, it handles gaming and multitasking with ease. The 50MP triple camera system with OIS captures sharp, stable shots in any lighting condition. With a massive 5000mAh battery and 25W fast charging, you get all-day power. The IP67 rating ensures protection against water and dust.', 45999.00, 39999.00, 80, TRUE, 1),
+ 
+('Xiaomi Redmi Note 13', 'https://i02.appmifile.com/mi-com-product/fly-birds/redmi-note-13/PC/bac9e4d29124ae838486e7f567d14361.jpg?f=webp', 'Xiaomi', 'The Xiaomi Redmi Note 13 packs an impressive 200MP main camera that captures incredibly detailed photos even in low light conditions. The 6.67-inch AMOLED display with 120Hz refresh rate provides a smooth and vibrant viewing experience. Powered by the Snapdragon 7s Gen 2 processor with up to 12GB RAM, it delivers smooth performance for everyday tasks and gaming. The 5000mAh battery with 67W turbo charging gets you from 0 to 100% in just 46 minutes. IP54 splash resistance provides basic protection against water.', 24999.00, 21999.00, 120, FALSE, 1),
+ 
+('OnePlus 12', 'https://www.oneplus.com/content/dam/oasis/page/waffle-en/images-design-bottom1-1-95.jpg.avif', 'OnePlus', 'The OnePlus 12 is powered by the cutting-edge Snapdragon 8 Gen 3 processor paired with up to 16GB LPDDR5X RAM for unmatched performance. The Hasselblad-tuned triple camera system with 50MP main sensor delivers professional-grade photography. The 6.82-inch LTPO AMOLED display adapts from 1Hz to 120Hz for the perfect balance of smoothness and battery efficiency. The massive 5400mAh battery with 100W SUPERVOOC charging fills up in under 30 minutes. AlertSlider for quick switching between notification modes is a unique OnePlus feature.', 79999.00, 72999.00, 40, FALSE, 1),
+ 
+('Apple AirPods Pro 2', 'https://ddfndelma2gpn.cloudfront.net/product-image/855/apple_airpods_pro_2nd_gen_1.webp', 'Apple', 'The AirPods Pro 2nd generation features Apple''s H2 chip for up to 2x more Active Noise Cancellation than the previous generation. Adaptive Transparency lets in outside sound while reducing loud environmental noise like sirens or power tools. Personalized Spatial Audio with dynamic head tracking places sound all around you for an immersive listening experience. The new touch controls on the stem let you adjust volume with a swipe. With the MagSafe Charging Case, you get up to 30 hours of total listening time.', 29999.00, 26999.00, 45, FALSE, 1),
+ 
+('Samsung 55" 4K Smart TV', 'https://img.drz.lazcdn.com/static/bd/p/e33a1b3e5faea12d2cdbd5d07f2acbad.png_720x720q80.png', 'Samsung', 'The Samsung 55-inch Crystal UHD 4K Smart TV delivers breathtaking picture quality with PurColor technology that expands the color spectrum for more vivid and lifelike images. The Crystal Processor 4K upscales all your content to stunning 4K resolution. With the Tizen smart TV platform, you get easy access to Netflix, YouTube, Disney+, and more. The Object Tracking Sound+ creates multidimensional audio that moves with the on-screen action. The slim design with virtually no bezel maximizes screen space for an immersive viewing experience.', 74999.00, 64999.00, 20, TRUE, 1),
+ 
+('LG 43" 4K Smart TV', 'https://www.lg.com/bd/images/tvs/md07542180/gallery/43UP7550PTC-uhd-4k-tvs-D1-1.jpg', 'LG', 'The LG 43-inch UHD 4K TV powered by the alpha5 Gen4 AI processor intelligently enhances picture and sound quality automatically. ThinQ AI with built-in Google Assistant and Amazon Alexa lets you control your TV and smart home devices with your voice. The IPS panel delivers consistent, accurate colors from any viewing angle. webOS 6.0 provides a personalized content recommendation system and quick access to all your favorite streaming services. The Magic Remote with point, click, scroll, and voice makes navigation effortless.', 44999.00, 39999.00, 30, FALSE, 1),
+ 
+('Dell XPS 15 Laptop', 'https://adminapi.vertech.com.bd/storage/media/large/XPS-15-9530-d-2553.jpg', 'Dell', 'The Dell XPS 15 is the ultimate creator laptop featuring a stunning 15.6-inch OLED InfinityEdge display with 100% DCI-P3 color coverage and factory-calibrated accuracy. Powered by the 13th Gen Intel Core i7 processor with NVIDIA GeForce RTX 4060 graphics, it handles everything from video editing to 3D rendering. The precision-crafted CNC aluminum chassis with carbon fiber palm rest feels luxurious and durable. With 16GB DDR5 RAM and 512GB NVMe SSD, performance is always blazing fast. The compact design fits in any bag for the ultimate mobile workstation experience.', 149999.00, 139999.00, 15, FALSE, 1),
+ 
+('HP Pavilion 15 Laptop', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQYPKJ9CA-6rDUX-9XtbzTCZQmkEZznYARFdw&s', 'HP', 'The HP Pavilion 15 is the perfect everyday laptop powered by the 12th Gen Intel Core i5 processor for smooth multitasking and productivity. The 15.6-inch Full HD IPS display with micro-edge bezels and anti-glare coating delivers clear, comfortable viewing for long work sessions. With 8GB DDR4 RAM and 512GB SSD, you get plenty of speed and storage for all your files, photos, and applications. The backlit keyboard and integrated fingerprint reader add convenience and security. Battery life of up to 8.5 hours keeps you productive all day without searching for an outlet.', 64999.00, 57999.00, 25, FALSE, 1),
+ 
+('Asus ROG Gaming Laptop', 'https://dazzle.sgp1.cdn.digitaloceanspaces.com/99040/ASUS-ROG-Strix-G16-G614FR-AMD-Ryzen-9-9955HX-RTX-5070-Ti-12GB-Graphics-FHD-Plus-Gaming-Laptop-price-in-bangladesh.jpg', 'Asus', 'The Asus ROG Strix G16 is built for serious gamers with the AMD Ryzen 9 processor and NVIDIA GeForce RTX 4060 GPU delivering exceptional frame rates in the latest AAA titles. The 16-inch FHD+ 165Hz display with 3ms response time ensures buttery-smooth visuals without motion blur. The advanced thermal system with liquid metal compound on the CPU reduces temperatures for sustained peak performance. ROG Armoury Crate software lets you customize RGB lighting, performance profiles, and system settings from one place. Per-key RGB keyboard with anti-ghosting ensures every keystroke registers accurately.', 119999.00, 109999.00, 10, TRUE, 1),
+ 
+('iPad Pro 12.9"', 'https://cdn.mos.cms.futurecdn.net/WYcLEj53eZAjjFvTepmCxB-970-80.jpg.webp', 'Apple', 'The iPad Pro 12.9-inch with M2 chip delivers desktop-class performance in an incredibly thin and light design. The Liquid Retina XDR display with ProMotion technology adapts from 10Hz to 120Hz for the smoothest scrolling and the most precise Apple Pencil response. With up to 2TB of storage and Wi-Fi 6E connectivity, you can store and access massive files at incredible speeds. The Center Stage feature automatically keeps you in frame during video calls. Works seamlessly with Apple Pencil 2 and Magic Keyboard for a complete professional creative workflow.', 114999.00, 104999.00, 20, FALSE, 1),
+ 
+('Samsung Tab S9', 'https://www.startech.com.bd/image/cache/catalog/tablet/samsung/galaxy-tab-a11/galaxy-tab-a11-002-silver-228x228.webp', 'Samsung', 'The Samsung Galaxy Tab S9 is powered by the Snapdragon 8 Gen 2 processor, making it the fastest Samsung tablet ever. The 11-inch Dynamic AMOLED 2X display with 120Hz refresh rate delivers vibrant colors and smooth scrolling with Vision Booster certification for outdoor visibility. With IP68 water and dust resistance, it is built to handle everyday life. The included S Pen with 2.8ms latency responds instantly to your creative ideas. DeX mode transforms the tablet into a desktop-like experience for productive multitasking.', 79999.00, 71999.00, 25, FALSE, 1),
+ 
+('Canon EOS R50 Camera', 'https://www.startech.com.bd/image/cache/catalog/camera/mirriorless/canon/eos-r50/eos-r50-01-500x500.webp', 'Canon', 'The Canon EOS R50 is the perfect mirrorless camera for photography enthusiasts stepping up from a smartphone. The 24.2MP APS-C CMOS sensor with DIGIC X image processor delivers sharp, detailed images in any lighting condition. Dual Pixel CMOS AF II with subject detection automatically tracks people, animals, and vehicles so you never miss a moment. It records 4K 30p video with movie digital IS for smooth handheld footage. The lightweight compact body and intuitive touchscreen controls make it easy to take everywhere and learn quickly.', 89999.00, 79999.00, 15, FALSE, 1),
+ 
+('Sony Alpha ZV-E10 Camera', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQJI03M3odw7D8CjovQXByqHBFF9AqLe3t5ZQ&s', 'Sony', 'The Sony ZV-E10 is designed specifically for vloggers and content creators who want interchangeable lens versatility in a compact body. The 24.2MP APS-C Exmor CMOS sensor delivers exceptional image quality in all lighting conditions. Real-time Eye AF with human and animal detection ensures your subjects are always in sharp focus. The side-opening vari-angle LCD touchscreen makes it easy to film yourself from any angle. The directional 3-capsule mic captures clear audio while the background defocus button instantly creates a cinematic shallow depth-of-field look.', 64999.00, 57999.00, 20, TRUE, 1),
+ 
+('Logitech MX Master 3 Mouse', 'https://adminapi.applegadgetsbd.com/storage/media/large/4127-72278.jpg', 'Logitech', 'The Logitech MX Master 3 is the ultimate productivity mouse designed for power users who demand precision and comfort. The MagSpeed electromagnetic scrolling wheel moves 1000 lines per second with near-silent operation, perfect for navigating long documents and web pages. The 4000 DPI optical sensor with any-surface tracking works flawlessly even on glass. With Logi Flow, you can seamlessly control up to 3 computers and copy-paste between them. The ergonomic shape with customizable thumb buttons and gesture controls reduce fatigue during long work sessions.', 9999.00, 8499.00, 50, FALSE, 1),
+ 
+('Logitech MK470 Keyboard Mouse', 'https://vibegaming.com.bd/wp-content/uploads/2023/02/Screenshot-2023-02-18-143126-1.png.webp', 'Logitech', 'The Logitech MK470 Slim Wireless Combo delivers a quiet, comfortable typing and navigation experience for your home office setup. The ultra-slim keyboard with low-profile keys reduces noise by 90% compared to standard keyboards without sacrificing tactile feedback. The compact mouse fits comfortably in hand with a precise optical sensor for smooth cursor control. Both devices connect via a single Unifying USB receiver with a wireless range up to 10 meters. The long battery life gives you up to 36 months on the keyboard and 18 months on the mouse.', 5999.00, 4999.00, 70, FALSE, 1),
+ 
+('Samsung Galaxy Watch 6', 'https://gadgetbreeze.com.bd/wp-content/uploads/2023/11/SAMSUNG-Galaxy-Watch-6-Classic-47mm.jpg', 'Samsung', 'The Samsung Galaxy Watch 6 Classic brings back the iconic rotating bezel for intuitive navigation combined with advanced health monitoring features. The improved BioActive Sensor tracks your heart rate, blood oxygen, body composition, and skin temperature throughout the day and night. Advanced sleep coaching with Sleep Score and personalized tips helps you understand and improve your sleep quality. Running analysis provides real-time coaching on stride length, vertical oscillation, and ground contact time. The durable sapphire crystal glass and 10ATM water resistance make it built for any adventure.', 34999.00, 29999.00, 40, FALSE, 1),
+ 
+('Xiaomi Smart Band 8', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSIMAvxLjb6LBW-xCGMtZ-Zb2RZtJtdFT0Pew&s', 'Xiaomi', 'The Xiaomi Smart Band 8 features a vibrant 1.62-inch AMOLED display with up to 500 nits brightness for clear visibility even in direct sunlight. With 16 days of battery life on a single charge, you spend less time charging and more time tracking. It monitors your heart rate 24/7, blood oxygen saturation, stress levels, and sleep quality including REM stages. Over 150 workout modes with professional data analysis help you train smarter and recover better. The 5ATM water resistance lets you wear it while swimming without any worry.', 3999.00, 2999.00, 150, TRUE, 1),
+ 
+('Apple Watch Series 9', 'https://www.custommacbd.com/cdn/shop/files/Watch-s9-midnight-Custom-Mac-BD.jpg?v=1696082496', 'Apple', 'The Apple Watch Series 9 is powered by the new S9 SiP chip making it the most powerful Apple Watch ever with up to 60% faster on-device machine learning. The innovative Double Tap gesture lets you control your watch with just two fingers without touching the screen, perfect for when your hands are full. The always-on Retina display is 2000 nits bright, making it two times brighter outdoors than Series 8. Advanced health sensors track your heart rate, blood oxygen, ECG, and even wrist skin temperature for comprehensive health monitoring. Crash Detection and Emergency SOS keep you safe in unexpected situations.', 54999.00, 49999.00, 30, FALSE, 1),
+ 
+('Anker 65W GaN Charger', 'https://gadgetnmusic.com/wp-content/uploads/2022/09/A2668111_TD01_V1.webp', 'Anker', 'The Anker 65W GaN charger uses Gallium Nitride technology to deliver more power in a smaller package than traditional silicon chargers. With one USB-C port delivering up to 65W, you can charge a MacBook Pro, iPad, or smartphone at full speed. The two additional ports allow simultaneous charging of three devices with intelligent power distribution that detects your device and adjusts output accordingly. ActiveShield 2.0 technology monitors temperature over 3 million times per day to keep your devices safe. It is 50% smaller than the original Apple 61W charger making it perfect for travel.', 3499.00, 2999.00, 200, TRUE, 1),
+ 
+('Baseus 20000mAh Power Bank', 'https://static-01.daraz.com.bd/p/62e12f7bf9a272564acaae58e8db01b1.jpg', 'Baseus', 'The Baseus 20000mAh Blade Power Bank features a sleek ultra-thin design at just 13.2mm thick making it incredibly portable despite its massive capacity. The 65W maximum output through USB-C can charge a MacBook Pro from 0 to 50% in just 45 minutes. With two USB-C and one USB-A port, you can simultaneously charge three devices at full speed. The intelligent digital display shows remaining battery percentage at a glance. Baseus advanced safety system with 12 protection features guards against overcharging, overheating, and short circuits for complete peace of mind.', 4999.00, 3999.00, 100, FALSE, 1),
+ 
+('Samsung 1TB SSD', 'https://ddfndelma2gpn.cloudfront.net/product-image/1898/Samsung_T7_Shield_2TB_USB_3.2_Type-C_Portable_SSD_2.webp', 'Samsung', 'The Samsung T7 Shield portable SSD delivers exceptional performance with read speeds up to 1050MB/s through USB 3.2 Gen 2 interface. The rugged design with IP65 rating protects against dust and water jets while the shock-resistant structure withstands drops from up to 3 meters. AES 256-bit hardware encryption keeps your sensitive data secure with password protection. Compatible with PC, Mac, Android smartphones, and gaming consoles for universal versatility. The included USB-C to C and USB-C to A cables ensure connectivity with all your devices right out of the box.', 12999.00, 10999.00, 60, FALSE, 1),
+ 
+('Seagate 2TB External HDD', 'https://www.perennial.com.bd/image/cache/catalog/Pc%20components/Portable%20Hard%20disk%20Drive%20/Seagate/1-228x228.jpeg', 'Seagate', 'The Seagate Expansion 2TB portable hard drive provides instant storage expansion for your laptop or desktop computer with plug-and-play USB 3.0 connectivity requiring no additional software or power adapter. The slim, lightweight design fits easily in your pocket or bag so you can take your entire digital library wherever you go. With 2TB of storage, you can backup thousands of photos, hundreds of hours of video, and millions of songs. Compatible with both Windows and Mac out of the box for universal convenience. The included USB 3.0 cable also works with USB 2.0 ports for backward compatibility.', 5999.00, 4999.00, 80, FALSE, 1),
+ 
+('TP-Link WiFi 6 Router', 'https://www.startech.com.bd/image/cache/catalog/router/tp-link/archer-c6-ac1200/archer-c6-ac1200-5-500x500.jpg', 'TP-Link', 'The TP-Link Archer AX3000 Wi-Fi 6 router delivers ultra-fast wireless speeds of up to 3000Mbps across both bands simultaneously. Wi-Fi 6 technology with OFDMA and MU-MIMO enables 4x more capacity and allows more devices to connect at once without speed degradation. The 1.5GHz tri-core processor with 512MB RAM handles even the most demanding network loads with ease. HomeShield security provides real-time IoT protection, parental controls, and QoS to prioritize your most important devices. Six high-gain antennas provide strong, stable coverage throughout every corner of your home.', 8999.00, 7499.00, 45, TRUE, 1),
+ 
+('Xiaomi Mi Projector 2 Pro', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQuk0zxIKch-LuSZWCoV9b0WRwqhYejWVCm6Q&s', 'Xiaomi', 'The Xiaomi Mi Smart Projector 2 Pro transforms any wall into a massive cinematic display with its Full HD 1080p resolution and 1300 ANSI lumens brightness for a clear image even in well-lit rooms. The Android TV operating system gives you direct access to Netflix, YouTube, Disney+, and thousands of other apps without any additional streaming device. Dolby Audio and DTS-HD create immersive, theater-quality sound from the built-in speakers. The laser autofocus adjusts sharpness in less than 2 seconds while keystone correction automatically squares the image on any surface. Bluetooth 5.0 lets you connect wireless speakers or headphones.', 49999.00, 43999.00, 15, FALSE, 1),
+ 
+('PlayStation 5 Console', 'https://www.startech.com.bd/image/cache/catalog/gaming-console/playstation/playstation-5-digital-edition/ps5-digital-edition-01-500x500.webp', 'Sony', 'The PlayStation 5 Digital Edition delivers the ultimate next-generation gaming experience with its ultra-high-speed SSD that virtually eliminates load times so you spend more time playing and less time waiting. The custom AMD Zen 2 CPU and RDNA 2 GPU enable true 4K gaming at up to 120 frames per second for breathtakingly smooth gameplay. The Tempest 3D AudioTech creates an immersive soundscape where you can pinpoint every footstep and environmental sound. The DualSense wireless controller features haptic feedback and adaptive triggers that make you feel every action in your games. Ray tracing support brings stunning visual fidelity to compatible titles.', 69999.00, 64999.00, 10, FALSE, 1),
+ 
+('Xbox Series X', 'https://www.startech.com.bd/image/cache/catalog/gaming-console/microsoft/xbox-series-x/xbox-series-x-white-01-500x500.webp', 'Microsoft', 'The Xbox Series X is the most powerful Xbox console ever built, capable of delivering true 4K gaming at up to 120 frames per second with DirectX 12 Ultimate support for stunning visual effects. The custom 1TB NVMe SSD with Xbox Velocity Architecture virtually eliminates load times and enables Quick Resume which lets you switch between multiple games in seconds exactly where you left off. Smart Delivery automatically gives you the best version of a game whether on Xbox One or Series X at no extra cost. With Xbox Game Pass Ultimate, you get access to hundreds of high-quality games including all new Xbox Game Studios titles on day one.', 64999.00, 59999.00, 12, FALSE, 1),
+ 
+('Rode NT-USB Microphone', 'https://www.startech.com.bd/image/cache/catalog/microphone/rode/nt-usb-plus/nt-usb-plus-01-500x500.webp', 'Rode', 'The Rode NT-USB+ is a studio-quality USB condenser microphone that captures broadcast-grade audio for podcasting, streaming, voiceover, and music recording right from your computer. The precision-engineered 1-inch condenser capsule delivers a warm, rich sound with a natural frequency response that flatters vocals and instruments. The built-in high-resolution 24-bit 48kHz converter ensures your recordings are captured with exceptional clarity and dynamic range. The zero-latency headphone monitoring with mix control lets you blend your microphone with computer audio in real-time while recording. Shock mount and pop filter included for professional results.', 15999.00, 13999.00, 30, FALSE, 1),
+ 
+('Elgato Stream Deck MK.2', 'https://www.startech.com.bd/image/cache/catalog/stream-deck/corsair/elgato-stream-deck-mk2%20/elgato-stream-deck-mk2%20-03-500x500.webp', 'Elgato', 'The Elgato Stream Deck MK.2 is the ultimate live production controller with 15 customizable LCD keys that trigger unlimited actions at the touch of a button during live streams or content creation. Launch media, adjust audio, switch scenes in OBS or Streamlabs, control Spotify, send tweets, and much more with a single press. The keys display custom icons and animated GIFs so you always know what each button does at a glance. Plugins for popular apps like Twitter, Twitch, YouTube, Spotify, and Adobe products extend functionality endlessly. The detachable USB-C cable and adjustable stand offer flexible desk setup options.', 17999.00, 15999.00, 20, FALSE, 1),
+ 
+('Cotton T-Shirt', 'https://fabrilife.com/products/6465ff10c753e-square.jpg?v=20', 'Local Brand', 'This premium 100% organic cotton T-shirt is crafted from sustainably sourced GOTS-certified cotton for a soft, breathable feel that gets better with every wash. The relaxed fit with ribbed crew neck provides all-day comfort whether you are at home, the gym, or out running errands. Reinforced double-needle stitching at the hem and sleeves ensures long-lasting durability that withstands repeated washing without losing shape. Available in a wide range of classic and trending colors to match any outfit. Pre-shrunk fabric means the size you order is the size you get, every time.', 599.00, 499.00, 200, TRUE, 2),
+ 
+('Denim Jeans', 'https://fabrilife.com/products/69a9109a0b893-square.jpg?v=20', 'Levi''s', 'These Levi''s classic denim jeans are crafted from premium 12oz selvedge denim for superior durability and a distinctive vintage aesthetic that develops beautiful fades over time. The slim tapered fit flatters all body types while the 2% elastane blend provides just enough stretch for comfortable movement throughout the day. Five-pocket styling with copper rivets and a signature leather patch add to the authentic heritage look. Machine washable and built to last for years of daily wear. Available in multiple washes from raw indigo to light stonewash to suit every personal style preference.', 3999.00, 2999.00, 80, FALSE, 2),
+ 
+('Winter Jacket', 'https://fabrilife.com/products/695b8d50c3f8d-square.jpg?v=20', 'North Face', 'The North Face Winter Jacket features 550-fill goose down insulation that traps body heat efficiently while remaining incredibly lightweight and packable. The waterproof DryVent outer shell repels rain and snow while the taped seams prevent any moisture from seeping through in wet conditions. The adjustable hood with wire brim provides full coverage against wind and precipitation during outdoor adventures. Zippered hand pockets and an interior chest pocket keep your essentials secure and accessible throughout the day. The helmet-compatible hood and underarm gussets allow full range of motion for active outdoor pursuits.', 12999.00, 9999.00, 40, FALSE, 2),
+ 
+('Formal Dress Shirt', 'https://anthonysinclair.com/cdn/shop/products/SkyBlueFineTwillCocktailCuffShirt-1_800x.jpg?v=1664623810', 'Arrow', 'This premium Arrow formal dress shirt is crafted from 100% premium cotton with a wrinkle-resistant finish that keeps you looking sharp from morning meetings to evening events without ironing. The classic point collar and single button cuffs provide a clean, professional appearance that pairs perfectly with suits or dress trousers for any formal occasion. The slim fit silhouette is tailored to flatter without being restrictive, allowing comfortable movement throughout even the longest workday. Mother-of-pearl buttons add a touch of elegance to the overall design. Machine washable for easy care and maintenance at home.', 1999.00, 1499.00, 150, FALSE, 2),
+ 
+('Polo T-Shirt', 'https://fabrilife.com/products/64944f852b247-square.jpg?v=20', 'Ralph Lauren', 'The Ralph Lauren Classic Polo is an enduring style icon crafted from breathable mesh pique cotton that keeps you cool and comfortable in warm weather throughout the day. The embroidered pony logo on the left chest is a hallmark of quality and sophistication that has defined the brand for decades of fashion leadership. The three-button placket with a ribbed collar creates a clean, polished look appropriate for both casual and semi-formal occasions. Reinforced stitching at key stress points ensures long-lasting wear and the split hem allows for tucked or untucked styling to suit the occasion.', 2999.00, 2499.00, 100, FALSE, 2),
+ 
+('Slim Fit Chinos', 'https://www.lerevecraze.com/wp-content/uploads/2025/12/e14f9db1-fdad-4f50-a5db-8ab9d52df714.jpg', 'Dockers', 'Dockers Slim Fit Chinos are crafted from a premium cotton-elastane blend that provides the clean, tailored look of traditional chinos with added stretch for unrestricted movement throughout the day. The Slim Fit silhouette sits at the waist and tapers through the hip and thigh for a modern, streamlined appearance suitable for both work and weekend wear. The Signature Khaki fabric with Stain Defender technology repels spills and stains, keeping you looking great longer without frequent dry cleaning. Five-pocket styling with a zip fly provides classic functionality that never goes out of style.', 2499.00, 1999.00, 90, TRUE, 2),
+ 
+('Hoodie Sweatshirt', 'https://bdmanja.com/wp-content/uploads/2020/11/20250925_1429_Gray-Hoodie-Design_remix_01k5zzr4z4ff190hdbksxt8pg7-300x300.jpg', 'Champion', 'The Champion Reverse Weave Hoodie is made from heavyweight 12oz fleece that resists shrinkage horizontally so it maintains its original length wash after wash without becoming shorter over time. The ribbed side panels are sewn perpendicular to the body panels to maintain the width of the sweatshirt and prevent unwanted stretching during wear and washing. The spacious kangaroo pocket keeps your hands warm or securely stores your phone and keys during outdoor activities. The adjustable drawstring hood provides extra coverage against cold wind and light rain. The embroidered C logo on the left sleeve is a symbol of authentic American athletic heritage.', 1999.00, 1599.00, 120, FALSE, 2),
+ 
+('Floral Kurti', 'https://saffronthreadsclothing.com/cdn/shop/files/4538.jpg?v=1756478709', 'Rang Bangladesh', 'This beautiful Rang Bangladesh floral kurti is handcrafted from premium soft cotton fabric with a vibrant digital print that features intricate floral patterns inspired by traditional Bengali textile art forms. The comfortable A-line silhouette with a flattering princess cut drapes gracefully on all body types providing both comfort and style. The round neck with subtle thread embroidery and three-quarter sleeves add elegant detailing to the overall design for a refined look. The knee-length hem provides modest coverage while remaining light and breezy for warm weather wear throughout the day. Machine washable and colorfast fabric retains its vibrancy after multiple washes.', 999.00, 799.00, 200, TRUE, 2),
+ 
+('Salwar Kameez Set', 'https://flickere.com.bd/public/uploads/all/sIFCuVnuLUsHlai45h4DU0h9DxPY0MvbbtdV4ZzV.webp', 'Aarong', 'This Aarong handloom salwar kameez set is a celebration of Bangladesh''s rich textile heritage, woven by skilled artisans using traditional techniques passed down through generations of master craftspeople. The premium cotton fabric with natural dyes features intricate geometric patterns and floral motifs characteristic of authentic Bangladeshi handloom work that cannot be replicated by machines. The set includes a long kameez with delicate thread embroidery at the neckline and cuffs, matching salwar, and an organza dupatta with hand-finished edges. Each piece is unique due to the handcrafted nature, making it a truly special and one-of-a-kind garment.', 3999.00, 3299.00, 60, FALSE, 2),
+ 
+('Tangail Saree', 'https://5.imimg.com/data5/SELLER/Default/2025/2/485483308/WI/RY/EO/186069263/royal-blue-tangail-saree.png', 'Tangail Saree Kuthi', 'This authentic Tangail saree is woven on traditional hand looms by master weavers in the Tangail district using the finest quality pure cotton yarn sourced from local suppliers. The distinctive jamdani weaving technique creates subtle geometric patterns within the fabric that catch the light beautifully as the wearer moves. The contrasting border features intricate woven motifs that are characteristic of genuine Tangail craftsmanship and cannot be replicated by power looms. The soft, breathable cotton fabric drapes elegantly and becomes even softer and more comfortable with each wash over time. A timeless piece of Bengali cultural heritage that never goes out of fashion.', 2499.00, 1999.00, 50, FALSE, 2),
+ 
+('Panjabi', 'https://www.vibrantbd.com/cdn/shop/files/24190041.jpg?v=1771924574&width=2000', 'Yellow', 'This classic Yellow panjabi is crafted from premium Egyptian cotton with a subtle texture that feels luxuriously soft against the skin while maintaining a crisp, formal appearance suitable for special occasions. The timeless design with a Mandarin collar, hidden button placket, and delicate embroidery at the neckline makes it perfect for Eid celebrations, weddings, and religious occasions throughout the year. The knee-length cut with side slits allows comfortable movement and pairs beautifully with matching pyjama or dress pants for a complete traditional look. The fabric is pre-washed to minimize shrinkage and has been treated to resist wrinkles for easy maintenance.', 1499.00, 1199.00, 80, TRUE, 2),
+ 
+('Sports Jersey', 'https://diamu.com.bd/wp-content/uploads/2026/01/Chelsea-Third-Authentic-Jersey-2025-26-Best-Price-in-Bangladesh-300x300.jpg', 'Nike', 'This Nike Dri-FIT sports jersey is engineered with advanced moisture-wicking technology that pulls sweat away from your body and evaporates it quickly to keep you cool and dry during intense training sessions and competitive matches. The lightweight, breathable mesh fabric with strategic ventilation zones provides optimal airflow where you need it most during physical activity. Flatlock seam construction eliminates chafing and irritation during high-movement activities for comfortable extended wear. The athletic fit provides freedom of movement without excess fabric getting in the way of performance. Machine washable and colorfast to maintain its vibrant appearance throughout the entire season.', 2499.00, 1999.00, 100, FALSE, 2),
+ 
+('Track Pants', 'https://img.drz.lazcdn.com/static/bd/p/d162d0cb3317e3653bad16c298cfe730.jpg_960x960q80.jpg_.webp', 'Adidas', 'These Adidas track pants feature the iconic three stripes down the leg and are crafted from a smooth polyester tricot fabric that feels comfortable against the skin during both athletic and casual activities. The elastic waistband with internal drawstring provides a secure, adjustable fit for any activity from warm-ups to casual daily wear. Zippered side pockets keep your phone and keys safe while the back patch pocket adds convenient extra storage. The tapered leg opening with snap buttons along the lower leg allows easy on and off over sneakers without removing your footwear.', 2999.00, 2499.00, 80, FALSE, 2),
+ 
+('Shorts', 'https://hips.hearstapps.com/hmg-prod/images/mhl-shorts-octobre-547-67f416b1a6ccd.jpg?crop=0.6666666666666667xw:1xh;center,top&resize=1200:*', 'Puma', 'These Puma training shorts are made from a lightweight cotton-polyester blend that provides the comfort of natural fiber with the durability and quick-drying properties of synthetic fabric for versatile use. The 7-inch inseam provides good coverage during dynamic movements while the mesh-lined interior eliminates the need for a separate underlayer during workouts. The wide elastic waistband with internal drawstring sits comfortably without digging in during extended wear and high-intensity exercise sessions. Two side seam pockets with secure zipper closures keep your essentials safe during runs, gym sessions, and outdoor activities.', 1299.00, 999.00, 150, FALSE, 2),
+ 
+('Cargo Pants', 'https://gorurghash.com/wp-content/uploads/2024/09/605A0076-copy.jpg', 'Lee', 'These Lee cargo pants are constructed from a rugged 100% cotton canvas fabric that can withstand the demands of outdoor work, hiking, and adventure activities without showing excessive wear. The relaxed fit through the seat and thigh provides comfortable freedom of movement while the tapered leg maintains a modern silhouette that does not look overly baggy. Six spacious cargo pockets with reinforced bar tacks at stress points provide ample storage for tools, gear, and everyday essentials without the pockets looking cluttered. YKK zipper fly with button closure and belt loops ensure a secure, adjustable fit throughout the day.', 3499.00, 2799.00, 70, TRUE, 2),
+ 
+('Leather Belt', 'https://img.drz.lazcdn.com/g/kf/S4c55e0c81e244f319089a6b08d6ce2eea.jpg_720x720q80.jpg', 'Tommy Hilfiger', 'This Tommy Hilfiger leather belt is crafted from genuine full-grain leather that develops a rich patina over time, becoming more beautiful with age and wear rather than deteriorating like lower-quality alternatives. The classic rectangular buckle in polished silver-tone hardware adds a refined touch to any outfit from casual jeans to formal dress trousers for any occasion. The precisely cut leather with smooth edges and clean finish reflects the brand''s commitment to quality craftsmanship that has defined the brand for decades. Available in multiple widths to suit different trouser styles and personal preferences for a truly customized look.', 1999.00, 1599.00, 100, FALSE, 2),
+ 
+('Necktie Set', 'https://img.drz.lazcdn.com/static/bd/p/c953192afd3f938cdbf741ad09fd31be.jpg_720x720q80.jpg', 'Van Heusen', 'This Van Heusen premium necktie set includes three expertly crafted silk blend ties in versatile colors and patterns that complement any professional wardrobe for work and formal occasions. Each tie features a hand-finished construction with an interlining that provides the perfect weight and drape for a confident, polished knot every time you wear it. The superior fabric quality means the ties recover their shape quickly after being knotted and unknotted throughout the day without becoming stretched or misshapen. Comes in a beautiful gift box making it an excellent present for fathers, husbands, and colleagues on special occasions.', 2499.00, 1999.00, 60, FALSE, 2),
+ 
+('Socks Pack', 'https://levin.com.bd/cdn/shop/files/web-1_ed9d5bc5-e233-477c-b0e4-ccaf088a5fab.jpg?v=1767092927&width=2048', 'Puma', 'This Puma six-pack of performance sports socks is engineered with a cushioned footbed that absorbs impact during running, training, and everyday activities to reduce foot fatigue over long periods. The arch compression band provides targeted support to reduce foot fatigue and improve blood circulation during long periods of wear. Moisture-wicking yarn keeps your feet dry and comfortable throughout the day while the antimicrobial treatment prevents odor-causing bacteria from developing. The reinforced heel and toe zones extend the life of the socks significantly compared to regular cotton socks for better value over time.', 799.00, 599.00, 300, TRUE, 2),
+ 
+('Blazer', 'https://www.jny.com/cdn/shop/files/10826460-K64-F.jpg?v=1758060865&width=422', 'Raymond', 'This Raymond slim fit blazer is tailored from a premium wool-polyester blend fabric that provides the warmth and drape of wool with the wrinkle resistance and easy care of synthetic fiber for practical everyday use. The precise tailoring with a two-button front closure, notched lapels, and structured shoulders creates a sharp, authoritative silhouette suitable for business meetings, formal events, and special occasions. The fully lined interior with interior pockets provides a smooth, polished appearance when the blazer is worn open or closed. The double-vent back allows comfortable movement and sits well whether you are standing or seated throughout the day.', 8999.00, 7499.00, 30, FALSE, 2),
+ 
+('Winter Sweater', 'https://smartdeal.com.bd/public/uploads/all/TD9Gu80wzqykH5OT0zmyeARxMhUOV5gDq0IcBFya.jpg', 'Woolrich', 'This Woolrich pure merino wool sweater is knitted from extra-fine 17.5 micron merino wool that is exceptionally soft against the skin without any of the scratchiness associated with regular wool garments. Merino wool naturally regulates body temperature, keeping you warm in cold weather and cool when you heat up, making it versatile across a wide temperature range for year-round comfort. The classic ribbed crew neck, cuffs, and hem maintain their shape and elasticity even after repeated washing in a machine on the gentle cycle. The midweight construction provides substantial warmth without excessive bulk under jackets and coats.', 2999.00, 2499.00, 80, FALSE, 2),
+ 
+('Rain Jacket', 'https://stonz.com/cdn/shop/files/RAINJACKET_SUMMERHAZE_MAIN.png?v=1753215748&width=1946', 'Columbia', 'The Columbia rain jacket features Omni-Tech waterproof breathable technology that creates a sealed barrier against rain and wind while allowing moisture vapor from perspiration to escape, keeping you dry from both inside and out during active use. The fully sealed seams with waterproof tape prevent any moisture from seeping through even in heavy downpours during extended outdoor activities. The adjustable storm hood with wire brim provides full face coverage when the weather turns nasty during hiking or commuting. Underarm zip vents allow quick temperature regulation during high-output activities to prevent overheating. Packable into its own chest pocket for compact storage.', 5999.00, 4999.00, 40, TRUE, 2),
+ 
+('Kids T-Shirt Pack', 'https://xcdn.next.co.uk/common/items/default/default/itemimages/3_4Ratio/product/lge/736344s.jpg', 'H&M Kids', 'This H&M Kids pack of three colorful T-shirts is made from 100% OEKO-TEX certified organic cotton that is gentle on children''s sensitive skin and free from harmful chemicals and dyes. Each T-shirt features a different fun print or solid color so kids can express their personality and have variety in their wardrobe every day of the week. The crew neck with a reinforced placket makes dressing easy for toddlers while the tagless construction eliminates scratching and irritation during active playtime. Pre-shrunk fabric and reinforced seams ensure the shirts maintain their shape and vibrant colors through countless washes and energetic playtimes.', 999.00, 799.00, 150, FALSE, 2),
+ 
+('Kids Jeans', 'https://www.nameit.com/dw/image/v2/BDTC_PRD/on/demandware.static/-/Sites-pim-catalog/default/dw018423b2/pim-static/NI/13248484/13248484_MediumBlueDenim_008.jpg?sw=900&sh=1200&strip=false', 'Zara Kids', 'These Zara Kids denim jeans are crafted from a soft stretch denim that moves with children during play, sports, and everyday adventures without restricting their movement or causing discomfort. The adjustable elastic waistband with interior drawstring grows with your child and accommodates different body shapes for a comfortable, personalized fit that eliminates the need for frequent size changes. Reinforced knees with extra fabric layers protect against the inevitable wear and tear from active play on rough surfaces. Five-pocket styling with a zip fly teaches children the same functional design used in adult jeans for a grown-up look.', 1499.00, 1199.00, 100, FALSE, 2),
+ 
+('School Uniform Shirt', 'https://static-01.daraz.com.bd/p/10dc019e907ea6fd6168d3269d021311.png', 'Local Brand', 'This school uniform shirt is tailored from a premium poly-cotton blend fabric that maintains a crisp, bright white appearance throughout the entire school day without excessive wrinkling or yellowing even after multiple washes. The pointed collar with a button-down closure creates a neat, tidy look that meets school dress code requirements and looks sharp in class photos. The relaxed fit with a straight hem provides comfortable coverage that stays neatly tucked in during classes, lunch, and physical activities. Durable flat-felled seams resist opening under the stress of active children who are hard on their clothing. Easy-care fabric washes and dries quickly making it practical for busy school mornings.', 499.00, 399.00, 300, TRUE, 2),
+ 
+('Leather Sandal', 'https://myzoo.asia/public/uploads/all/MlX1yBRV2EH4DiIU4FU7u2f4HQ2vX6stk0XLyPyp.png', 'Bata', 'These Bata leather sandals are handcrafted from genuine full-grain leather uppers that conform to the shape of your foot over time for a truly personalized fit that becomes more comfortable with each wearing. The cushioned EVA footbed with memory foam padding provides exceptional comfort for all-day walking on hard surfaces without causing foot fatigue or soreness. The non-slip rubber outsole with a textured pattern provides reliable traction on both dry and slightly wet surfaces for confident walking in any weather. Double adjustable straps with metal buckles allow precise fit customization to accommodate different foot widths and preferences.', 1999.00, 1499.00, 100, FALSE, 2),
+ 
+('Formal Shoes', 'https://orionfootwearltd.com/images/media/2023/12/medium1702983426TLHPl19304.jpg', 'Clarks', 'These Clarks formal leather shoes are crafted using the brand''s traditional Goodyear welt construction, a method that creates a durable, repairable shoe that can last for decades with proper care and periodic resoling. The premium calf leather upper develops a beautiful patina over time while the OrthoLite footbed provides superior cushioning and moisture management for comfortable all-day wear in the office. The classic Oxford silhouette with cap toe detailing is appropriate for the most formal business meetings, interviews, and social occasions requiring professional dress. Resoleable construction means you can extend the life of these shoes indefinitely with periodic visits to a cobbler.', 5999.00, 4999.00, 50, FALSE, 2),
+ 
+('Sneakers', 'https://www.vibrantbd.com/cdn/shop/files/88000101.jpg?v=1730351022', 'Adidas', 'These Adidas Originals canvas sneakers draw inspiration from the brand''s rich archive of classic basketball and training shoes from the 1970s and 1980s that defined an era of street culture. The vulcanized rubber outsole with herringbone tread pattern provides reliable grip on indoor and outdoor surfaces for confident everyday movement. The canvas upper with leather accents offers breathable comfort and casual style that pairs with jeans, shorts, or joggers for any laid-back occasion. The cushioned OrthoLite sockliner provides plush underfoot comfort for extended periods of walking and standing throughout the day.', 4999.00, 3999.00, 80, TRUE, 2),
+ 
+('Flip Flops', 'https://nationaltoday.com/wp-content/uploads/2021/06/Flip-Flop.jpg', 'Havaianas', 'Havaianas are the original Brazilian flip flop crafted from a proprietary natural rubber compound that is softer, more durable, and more comfortable than regular foam or plastic alternatives found in the market. The textured rice pattern footbed prevents slipping even when feet are wet from the beach or pool for safe walking on slippery surfaces. The thong strap is soft and flexible, eliminating the break-in period and blisters associated with inferior flip flops from the very first wearing. Resistant to salt water, chlorine, sand, and sunscreen so they maintain their appearance and flexibility throughout the entire summer season.', 799.00, 599.00, 200, FALSE, 2),
+ 
+('Hijab', 'https://veiled.com/cdn/shop/files/modal-hijab-deep-taupe-386257.jpg?crop=center&height=1200&v=1754844466&width=1200', 'Modanisa', 'This Modanisa premium modal hijab is crafted from a buttery-soft modal fabric made from beech wood pulp that is naturally breathable, moisture-wicking, and gentle on sensitive skin throughout the day. The generous 180cm x 70cm dimensions provide ample fabric for various styling methods from simple draping to elaborate wrapped styles that suit different occasions and preferences. The fabric falls beautifully and maintains its shape throughout the day without slipping or requiring constant readjustment during busy activities. Available in a curated palette of classic and trending colors that complement a wide range of outfits for daily wear and special occasions.', 599.00, 449.00, 200, FALSE, 2),
+ 
+('Abaya', 'https://basmastour.com/cdn/shop/files/IMG-2627.jpg?v=1696239604&width=2948', 'Modanisa', 'This Modanisa elegant abaya is designed by expert modest fashion designers using premium crepe fabric that drapes luxuriously and maintains a beautiful silhouette throughout the day without wrinkling or losing its shape. The subtle embroidery at the cuffs and collar adds refined detailing that elevates the garment from everyday wear to special occasions including Eid, weddings, and formal gatherings. The full-length design with a comfortable A-line cut provides complete coverage while remaining light and comfortable even in warm weather conditions. Hidden snap closures along the front opening allow easy dressing while maintaining a clean, seamless appearance from the outside.', 3499.00, 2799.00, 60, FALSE, 2),
+ 
+('Sunglasses', 'https://img.freepik.com/free-psd/elegant-black-gold-sunglasses-stylish-accessory_191095-79382.jpg?semt=ais_hybrid&w=740&q=80', 'Ray-Ban', 'These Ray-Ban Wayfarer sunglasses feature the iconic trapezoidal frame design that has been a symbol of cool and timeless style since 1956 when they were first introduced to the world. The acetate frame is lightweight yet incredibly durable and comes in a variety of classic and modern color combinations to suit every personal style preference. The G-15 glass lenses provide superior optical clarity with 100% UV400 protection that blocks all harmful UVA and UVB rays for eye health. The lenses also filter 85% of visible light for comfortable viewing in the brightest outdoor conditions. Every pair comes with a case, cleaning cloth, and certificate of authenticity.', 4999.00, 3999.00, 70, TRUE, 2),
+ 
+('Baseball Cap', 'https://img.drz.lazcdn.com/static/bd/p/932e5c77da936b271dcab48502b20c21.jpg_720x720q80.jpg', 'New Era', 'This New Era 9FORTY baseball cap features the brand''s signature curved brim and relaxed fit crown that has made it the cap of choice for professional sports teams, athletes, and streetwear enthusiasts worldwide. The breathable cotton twill fabric with an adjustable snapback closure fits head sizes from 54cm to 60cm comfortably for most adults. The moisture-absorbing sweatband keeps perspiration away from your eyes during outdoor activities, sports, and sunny day adventures. The embroidered team or brand logo on the front is stitched with high-density thread for a sharp, raised appearance that maintains its quality through years of wear.', 999.00, 799.00, 150, FALSE, 2),
+ 
+('Electric Rice Cooker', 'https://www.haegergroup.com/wp-content/uploads/RC-18L.001A_1-1.jpg', 'Panasonic', 'The Panasonic 1.8L automatic electric rice cooker uses fuzzy logic technology to automatically adjust cooking time and temperature based on the amount of rice for perfectly cooked results every time without monitoring. The non-stick inner pot with a thick aluminum base distributes heat evenly to prevent burning or unevenly cooked rice at the bottom or sides. The automatic keep-warm function maintains rice at the optimal serving temperature for up to 12 hours without drying it out or losing quality. The steam vent cap and inner lid are removable and dishwasher safe for easy cleaning after every use. Includes a measuring cup, serving spatula, and steaming basket for vegetables.', 3499.00, 2999.00, 80, FALSE, 3),
+ 
+('Blender', 'https://www.sunbeam.com.au/media/catalog/product/0/6/06-pbt3000bk-blender-black-lifestyle_flat_1.jpg?width=735&height=735&store=sunbeam_au_view&image-type=image', 'Philips', 'The Philips ProBlend series blender features a powerful 700W motor that easily crushes ice, blends frozen fruits, and processes tough vegetables for smooth, lump-free smoothies and soups. The unique Twist2Release technology allows quick and easy removal of the blade unit from the 1.5L BPA-free jar for safe and convenient cleaning without risk of cuts. ProBlend 6 3D blade technology creates a powerful vortex that pulls ingredients toward the blades from all directions for faster, more consistent blending results. The pulse function gives you precise manual control for chopping and crushing tasks. Dishwasher-safe jar and lid make cleanup completely effortless after every use.', 4999.00, 3999.00, 60, TRUE, 3),
+ 
+('Microwave Oven', 'https://img.drz.lazcdn.com/static/bd/p/97212ede0edeb0200a59b41089a89925.jpg_720x720q80.jpg', 'Samsung', 'The Samsung 23L solo microwave oven features a ceramic enamel interior that is much harder than standard enamel coatings, making it scratch resistant, easy to wipe clean, and odor resistant even after years of daily use. The Triple Distribution System with three microwave emission points distributes microwaves more evenly throughout the cavity for consistent heating from edge to edge without cold spots. Quick Defrost uses multiple sensor readings to determine the optimal defrosting time and power level for different food types and quantities. The intuitive LED display and dial control make operation simple for all family members of any age. Ten power levels with preset cooking functions for popular foods.', 9999.00, 7999.00, 30, FALSE, 3),
+ 
+('Electric Kettle', 'https://cdn.waltonplaza.com.bd/70a30fd8-ad5d-4e30-b6b0-d9a72ca9f6f1.jpeg', 'Philips', 'The Philips 1.7L electric kettle with a premium stainless steel interior boils water faster than any stovetop kettle using its 2400W concealed heating element that is completely hidden for easy cleaning and a hygienic interior. The 360-degree swivel base allows left or right-handed operation and the ergonomic handle with soft-touch grip stays cool to the touch during boiling for safe handling. The automatic shut-off and boil-dry protection provide complete peace of mind even when you get distracted during busy mornings. The water level indicator with maximum and minimum markings prevents overfilling or accidentally boiling on empty. The removable limescale filter ensures clean, pure water reaches your cup every time.', 2499.00, 1999.00, 100, FALSE, 3),
+ 
+('Air Fryer', 'https://www.iferi.com/cdn/shop/files/701_9b426d7f-dd4b-430a-9708-f3efbd348e31.jpg?v=1764233419&width=1100', 'Xiaomi', 'The Xiaomi 4.5L smart air fryer uses Rapid Air Circulation technology to circulate superheated air at high speed around your food, creating the crispy golden exterior of deep-fried food with up to 85% less fat for healthier eating. The digital touchscreen with 8 preset cooking programs takes the guesswork out of preparing popular dishes like french fries, chicken wings, fish, vegetables, and even baked goods. The non-stick basket and drawer are dishwasher safe for quick, easy cleaning after every cooking session without scrubbing. The Mi Home app integration allows remote control and access to hundreds of recipes directly from your smartphone. The large 4.5L capacity is perfect for families of up to 4 people.', 7999.00, 6499.00, 40, TRUE, 3),
+ 
+('Pressure Cooker', 'https://static-01.daraz.com.bd/p/ebda2856dc41f270cd70da0b13cadc0c.jpg', 'Prestige', 'The Prestige 5L stainless steel pressure cooker is crafted from premium 304 stainless steel that is resistant to rust, corrosion, and food odors for hygienic, safe cooking that preserves the natural flavors of ingredients. The gasket release system automatically vents steam if the internal pressure exceeds safe limits, providing multiple layers of safety protection for worry-free cooking. The unique deep lid design and controlled pressure means food cooks up to 70% faster than conventional cooking while retaining more nutrients and natural flavors in every meal. The ergonomic stay-cool handles with a secure locking mechanism ensure safe handling when the cooker is full of hot food.', 3999.00, 3299.00, 70, FALSE, 3),
+ 
+('Dinner Set 24pcs', 'https://img.drz.lazcdn.com/static/bd/p/8f127c8d9e0f1a2b3c4d5e6f.jpg_720x720q80.jpg', 'Corelle', 'This Corelle 24-piece dinner set is made from Vitrelle glass, a unique three-layer laminated glass material that is remarkably light yet extraordinarily strong compared to regular ceramic or porcelain dinnerware. Each piece is chip and break resistant up to 3 times more than ordinary ceramic, making it a practical and long-lasting choice for everyday family use and special occasions alike. The Livingware design features a clean white background with a subtle pattern that complements any table setting from casual breakfasts to formal dinner parties with equal elegance. Microwave and dishwasher safe for convenient reheating and effortless cleanup after every meal. The complete set includes dinner plates, salad plates, soup bowls, and mugs for 6 people.', 5999.00, 4999.00, 50, FALSE, 3),
+ 
+('Glass Storage Jar Set', 'https://eternalceramicsbd.com/cdn/shop/files/2_2-3_2_2-3.jpg?v=1770757197', 'Bormioli Rocco', 'This Bormioli Rocco set of 6 airtight glass storage jars is made from premium Fido glass that creates a hermetic seal to keep food fresher for significantly longer than plastic containers or standard glass jars with regular lids. The iconic swing-top lid with rubber gasket creates a perfect airtight seal without any tools or special technique, and the gaskets are easily replaceable for extended product life over many years of use. Clear glass lets you see contents at a glance for quick pantry organization and easy inventory management. Oven, microwave, freezer, and dishwasher safe for maximum versatility in the kitchen. Available in multiple sizes to accommodate everything from spices to pasta, cereals, and preserves.', 2999.00, 2499.00, 80, FALSE, 3),
+ 
+('Knife Set', 'https://m.media-amazon.com/images/I/81dIS4ecWfL._AC_UF894,1000_QL80_.jpg', 'Victorinox', 'This Victorinox 5-piece professional knife set is forged from a single piece of high-carbon stainless steel for superior edge retention, strength, and hygiene that meets the demands of both professional and home kitchens. The Fibrox Pro handles are made from thermoplastic elastomer that is slip-resistant even when wet and ergonomically designed to reduce hand fatigue during extended cutting and preparation sessions. Each knife is individually balanced to provide precise control and reduce the effort required for cutting, chopping, slicing, and dicing different ingredients. NSF certified and used by professional chefs worldwide in commercial restaurant kitchens every day. The set includes a chef knife, bread knife, boning knife, paring knife, and honing steel.', 7999.00, 6499.00, 30, FALSE, 3),
+ 
+('Bamboo Cutting Board Set', 'https://livingtoday.com.au/cdn/shop/files/1_6eac956d-452c-4690-8583-d7e3fe85748c.jpg?v=1752471030&width=1445', 'OXO', 'This OXO Good Grips set of 3 bamboo cutting boards is crafted from Moso bamboo, one of the world''s most sustainable and fast-growing materials that requires no pesticides or irrigation to grow abundantly. Bamboo is naturally antimicrobial, so bacteria from meat, fish, and produce cannot penetrate the surface as easily as on plastic or wood boards for safer food preparation. The juice groove around the perimeter of the larger boards catches meat juices and fruit liquids to prevent messy countertops and reduce cleanup time. Non-slip rubber feet keep the boards firmly in place during vigorous chopping for safe and confident cutting. The graduated sizes accommodate different tasks from mincing garlic to carving a whole chicken.', 1999.00, 1599.00, 100, TRUE, 3),
+ 
+('Vacuum Cleaner', 'https://ebestsupply.com.bd/wp-content/uploads/2023/12/1b377ac5cc8283acad30735d503300c5.jpg', 'Dyson', 'The Dyson V11 cordless vacuum cleaner features the most powerful Dyson digital motor ever, spinning at up to 125,000 RPM to generate powerful suction for deep cleaning of carpets, hard floors, upholstery, and hard-to-reach areas. The intelligent LCD screen displays remaining battery life in minutes, current cleaning mode, and performance alerts in real-time so you always know how much cleaning time remains. The High Torque XL cleaner head automatically adapts between carpet and hard floor, optimizing suction and brush bar speed for the specific surface being cleaned at each moment. Whole-machine HEPA filtration captures 99.97% of particles as small as 0.3 microns for cleaner indoor air quality.', 29999.00, 24999.00, 20, FALSE, 3),
+ 
+('Washing Machine 7kg', 'https://www.lg.com/bd/images/washing-machines/md07537004/gallery/T70SNSF3Z-Washing-Machines-Front-View-DM-01.jpg', 'Samsung', 'This Samsung 7kg front-load washing machine features AI-powered Ecobubble technology that dissolves detergent into a rich foam before it enters the drum, allowing it to penetrate fabrics faster and more effectively even in cold water cycles to save energy. The Digital Inverter Motor operates quietly at just 47dBa, whisper-quiet enough to run at night without disturbing sleep or ongoing conversations in the household. Steam wash function removes 99.9% of bacteria and allergens without harsh chemicals, making it perfect for baby clothes, bedding, and sensitive items. Smart Control via the SmartThings app lets you start, monitor, and receive cycle-complete alerts from anywhere.', 39999.00, 34999.00, 15, FALSE, 3),
+ 
+('Refrigerator 300L', 'https://image.made-in-china.com/202f0j00mZIhqfkbABzp/300L-Double-Door-Refrigerator-Fridge-Bc-328.webp', 'Walton', 'This Walton 300L frost-free double door refrigerator uses an inverter compressor that automatically adjusts its speed based on the cooling demand, reducing electricity consumption by up to 36% compared to conventional compressors for significant energy savings. The No Frost technology with multi-airflow system circulates cold air throughout all compartments, preventing ice buildup and maintaining consistent temperatures in every corner without manual defrosting. The large vegetable crisper with humidity control keeps produce fresh for up to twice as long as regular refrigerators through precise moisture regulation. The door alarm alerts you if the door is left open for more than 60 seconds to prevent energy waste and food spoilage.', 44999.00, 39999.00, 10, TRUE, 3),
+ 
+('Steam Iron', 'https://adminapi.applegadgetsbd.com/storage/media/large/Panasonic-NI-M300T-Steam-Iron-blue-4162.jpg', 'Philips', 'The Philips steam iron features 2400W Optimal TEMP technology that automatically sets the right temperature for any fabric type, eliminating the need to manually adjust settings and preventing accidental scorching or burning of delicate materials like silk and wool. The non-stick ceramic soleplate glides effortlessly over all fabrics while powerful steam shots of up to 180g per minute blast through even the most stubborn wrinkles in a single stroke. The anti-drip system prevents water droplets from staining fabrics when ironing at low temperatures for delicate items. The auto shut-off feature turns the iron off automatically after 8 minutes when left upright or 30 seconds when left flat for complete fire safety.', 2999.00, 2499.00, 80, FALSE, 3),
+ 
+('Ceiling Fan', 'https://img.drz.lazcdn.com/static/bd/p/20734dbe66cd56997e785ddb0b6c8f75.png_720x720q80.png', 'Vision', 'This Vision 56-inch premium ceiling fan features an energy-efficient motor that consumes up to 35% less electricity than conventional ceiling fans while delivering powerful, consistent airflow to cool rooms up to 400 square feet effectively. The aerodynamically designed blades are crafted from high-quality wood composite that resists warping and wobbling for smooth, nearly silent operation throughout its entire lifespan. The included remote control with sleep timer, multiple speed settings, and light control makes it convenient to operate from anywhere in the room without getting up. Compatible with standard ceiling junction boxes and includes all hardware needed for straightforward installation.', 4999.00, 3999.00, 50, FALSE, 3),
+ 
+('LED Table Lamp', 'https://img.drz.lazcdn.com/static/bd/p/deab1a68a48d60f5bf1a11fa5b02dc79.jpg_720x720q80.jpg', 'Ikea', 'This Ikea LED table lamp features a flexible gooseneck arm that can be bent and positioned to direct light exactly where you need it for reading, studying, or working at a desk without straining your eyes. The LED light source is highly energy-efficient, consuming 85% less energy than a traditional incandescent bulb while producing the same amount of useful light for your tasks. With a color temperature of 4000K, it provides clean, neutral white light that is ideal for detailed work, studying, and reading without causing eye strain over long sessions. The touch-sensitive base with multiple brightness levels allows personalized lighting preferences for different tasks and times of day.', 1999.00, 1499.00, 100, FALSE, 3),
+ 
+('King Bed Sheet Set', 'https://onlineshop.com.bd/frd-data/img/product/2024/07/_914_frd_1719994824.jpg', 'Raymond Home', 'This Raymond Home king-size bed sheet set is woven from 400-thread-count 100% long-staple cotton using a sateen weave that creates a silky-smooth surface feeling luxurious against your skin for a better night''s sleep. The deep pocket elastic fitted sheet accommodates mattresses up to 40cm deep and stays securely in place throughout the night without bunching, slipping, or needing readjustment. The flat sheet and two pillowcases are generously sized with double-folded hems that add durability and a hotel-quality finishing touch to your bedroom. Pre-washed fabric minimizes shrinkage and becomes even softer with each subsequent washing for improved comfort over time.', 2999.00, 2399.00, 80, TRUE, 3),
+ 
+('Memory Foam Pillow Pair', 'https://lamarvel.ae/cdn/shop/files/memory-foam2.png?v=1705070628&width=1080', 'Sleepsia', 'This Sleepsia pair of memory foam pillows uses CertiPUR-US certified shredded memory foam that conforms to the exact shape of your head, neck, and shoulders to provide personalized support that eliminates pressure points and reduces morning neck stiffness and headaches. The adjustable fill allows you to add or remove foam to customize the loft and firmness to your personal preference and preferred sleep position whether you sleep on your back, side, or stomach. The bamboo-derived rayon cover is naturally breathable, moisture-wicking, and temperature-regulating to keep you cool and comfortable throughout the night without waking up hot. The zippered cover is removable and machine washable for easy hygiene maintenance.', 2499.00, 1999.00, 100, FALSE, 3),
+ 
+('Winter Blanket', 'https://www.smartguds.com/cdn/shop/products/HTB1JuqeaMmH3KVjSZKzq6z2OXXaK_00c9940f-6b78-4873-ac15-a8ec59cd2622.jpg?v=1655810891', 'Bombay Dyeing', 'This Bombay Dyeing premium winter blanket is filled with high-loft polyester fiber that mimics the warmth and softness of natural down at a fraction of the cost and without any animal welfare concerns for conscientious shoppers. The anti-pilling technology applied to the outer fabric prevents the formation of small fiber balls on the surface that make blankets look worn, old, and unattractive after repeated washing. The box stitch quilting pattern distributes the fill evenly throughout the blanket to prevent cold spots from developing and ensure consistent warmth across the entire surface area. The wide binding along all four edges is double-stitched for durability that prevents fraying even after many machine washes.', 1999.00, 1599.00, 120, FALSE, 3),
+ 
+('Blackout Curtain Pair', 'https://www.jysk.ca/media/catalog/product/o/m/omegna-blackout-curtain-black-01.jpg?quality=80&fit=bounds&height=520&width=520&canvas=520:520', 'Story@Home', 'This Story@Home pair of blackout curtains uses triple-weave technology with three layers of tightly woven fabric that blocks 99% of outside light to create a pitch-dark sleeping environment even during bright daylight hours for improved sleep quality and duration. The thermal insulation properties reduce heat gain in summer by up to 25% and heat loss in winter by up to 24%, lowering your heating and cooling costs noticeably throughout the year. The noise-dampening fabric reduces outside noise by several decibels for a quieter, more peaceful interior environment perfect for light sleepers and urban apartments. The premium rust-resistant grommets are sized to fit standard curtain rods for easy installation without special tools or expertise.', 2499.00, 1999.00, 70, FALSE, 3),
+ 
+('Silent Wall Clock', 'https://www.pshomeandliving.com.au/assets/full/23043.jpg?20230609154407', 'Seiko', 'This Seiko wall clock features the brand''s precision Sweep Movement that eliminates the loud ticking sound of conventional quartz movements by moving the second hand in a smooth, continuous motion rather than the standard step-by-step action that disturbs light sleepers and study sessions. The clock maintains time accuracy to within 15 seconds per month, far more precise than regular wall clocks that can drift significantly over time without adjustment. The natural wood frame with a glass lens and clean white dial complements both modern and traditional interior design styles for versatile placement throughout the home. The large Arabic numerals provide excellent legibility from across the room without needing to approach the clock closely.', 1499.00, 1199.00, 80, TRUE, 3),
+ 
+('Photo Frame Set', 'https://artstreet.in/cdn/shop/files/61Q46qy3LLL._SX522_522x522.jpg?v=1686979748', 'Ikea', 'This Ikea set of 6 minimalist photo frames is designed in a clean Scandinavian aesthetic that allows your photos and artwork to take center stage without competing with decorative embellishments or distracting design elements. The powder-coated aluminum frames are lightweight yet rigid, maintaining their shape and finish for years without bending, warping, or discoloring in humid environments. The crystal-clear acrylic glazing is shatterproof and provides UV protection that prevents photo colors from fading over time when displayed in sunny locations. The versatile easel back allows both wall hanging and freestanding display on shelves and mantels for flexible arrangement options. The graduated set includes frames for multiple standard photo sizes in both portrait and landscape orientations.', 1999.00, 1599.00, 100, FALSE, 3),
+ 
+('Sensor Trash Can', 'https://image.made-in-china.com/2f0j00aBLkoVDZbsct/Automatic-Smart-Trash-Can-with-Sensor-Big-Capacity-Bin.webp', 'Joseph Joseph', 'The Joseph Joseph sensor trash can uses infrared motion sensing technology to open the lid automatically when you approach within 25cm, allowing completely hands-free operation during cooking and food preparation when your hands are messy with food. The soft-close lid descends slowly and quietly after 3 seconds to effectively contain odors and maintain a clean kitchen appearance without slamming shut noisily. The fingerprint-resistant brushed stainless steel exterior wipes clean easily and maintains its sleek appearance without visible smudges or water marks. The removable inner bucket with handles makes bag removal and thorough cleaning straightforward without getting your hands dirty. The sensor requires 4 AA batteries that last approximately 6 months of normal daily use.', 3999.00, 3299.00, 50, FALSE, 3),
+ 
+('Laundry Basket', 'https://bengal.com.bd/wp-content/uploads/2019/06/Square-Laundry-Basket-500x500.jpg', 'Sterilite', 'This Sterilite large laundry basket features an open-weave design that allows air circulation to prevent musty odors from developing in damp clothes between wash days when laundry accumulates over several days. The durable polypropylene construction is surprisingly lightweight yet strong enough to carry a full load of laundry without flexing, cracking, or breaking at the handles even when heavily loaded. The built-in handles on both sides provide a secure, comfortable grip when carrying a heavy load from the bedroom to the laundry room on another floor. The removable lid keeps contents hidden for a neater bedroom appearance and doubles as a separate hamper for sorting different types of laundry before washing.', 1499.00, 1199.00, 80, FALSE, 3),
+ 
+('RO Water Purifier', 'https://www.kent.co.in/images/ro/ro-water-purifiers-banner.png', 'Kent', 'The Kent RO+UV water purifier uses a multi-stage purification process that combines reverse osmosis, ultraviolet irradiation, and ultrafiltration to remove dissolved solids, heavy metals, bacteria, viruses, and cysts from tap water for truly safe drinking water. The patented Save Water Technology recovers up to 50% of water that traditional RO systems waste during the purification process, making it environmentally responsible and cost-effective over time. The TDS controller retains essential minerals like calcium and magnesium in the purified water to maintain natural taste and nutritional value that pure RO water lacks. The 8-liter storage tank ensures a ready supply of purified water even during power outages throughout the day and night.', 14999.00, 12999.00, 25, TRUE, 3),
+ 
+('Smart Humidifier', 'https://extremegadgets.com.bd/wp-content/uploads/2023/12/description-image-13.jpeg', 'Xiaomi', 'The Xiaomi Smart Humidifier 2 uses ultrasonic nebulization technology to produce a fine, cool mist that raises indoor humidity levels quickly and quietly without any heating elements that could pose a burn risk to children or pets. The built-in humidity sensor with auto mode automatically adjusts mist output to maintain your target humidity level between 40% and 70% for optimal health, comfort, and protection of wooden furniture and musical instruments. The Mi Home app provides remote control, scheduling, humidity history graphs, and voice control through Google Assistant and Amazon Alexa for effortless smart home integration. UV-C sterilization kills 99.9% of bacteria in the water before it is dispersed into the air for clean, healthy mist.', 4999.00, 3999.00, 40, FALSE, 3),
+ 
+('Smart Air Purifier', 'https://gadgetbreeze.com.bd/wp-content/uploads/2024/12/Xiaomi-MIJIA-Air-Purifier-5_Main.jpg', 'Xiaomi', 'The Xiaomi MIJIA Air Purifier 5 features a three-layer filtration system with a pre-filter, H13 True HEPA filter, and activated carbon filter that captures 99.97% of particles as small as 0.3 microns including PM2.5, pollen, pet dander, mold spores, and bacteria for truly clean indoor air. The laser particle sensor combined with a CO2 sensor provides real-time air quality monitoring displayed on the OLED screen and in the Mi Home app with historical trend data. The CADR of 550 cubic meters per hour allows it to purify the air in a 40 square meter room in just 8 minutes for rapid improvement. The whisper-quiet sleep mode operates at just 33dBa for completely undisturbed rest in the bedroom throughout the night.', 12999.00, 10999.00, 20, FALSE, 3),
+ 
+('Spin Mop Bucket Set', 'https://enfield-bd.com/wp-content/uploads/2022/04/High-Quality-Floor-Cleaner-With-Steel-Spin-Head-Multi-Color-Spin-Mop-Bucket-Portable-Magic-Double-Drive-Stainless-Steel-1-1.jpg', 'Scotch-Brite', 'The Scotch-Brite spin mop and bucket set makes floor cleaning faster and more effective than traditional mops with its foot-pedal activated spinning mechanism that wrings the mop head to your desired dryness level without touching dirty mop water. The 360-degree rotating mop head reaches under furniture, into corners, and around obstacles that conventional flat mops cannot access for comprehensive floor coverage. The microfiber mop head is more effective than cotton at trapping and removing dirt, bacteria, and germs from hard floor surfaces including tile, hardwood, and laminate. Machine washable mop head is reusable hundreds of times, saving significant money on replacement heads over the product lifetime.', 2499.00, 1999.00, 60, FALSE, 3),
+ 
+('Bathroom Accessories Set', 'https://market99.com/cdn/shop/files/WW10005014_1.jpg?v=1750931236', 'Neatly', 'This Neatly 5-piece bathroom accessories set includes a soap dispenser, toothbrush holder, tumbler, soap dish, and waste bin, all designed with a coordinated contemporary aesthetic that transforms any bathroom into a stylish, organized space. The premium stainless steel construction with a brushed finish is rust-resistant and easy to wipe clean, maintaining its elegant appearance in the constantly humid bathroom environment for many years. The soap dispenser features a pump that delivers a controlled, precise amount of liquid soap, hand wash, or shampoo to minimize product waste over time. The weighted base on each piece prevents tipping and keeps accessories stable on wet or slippery bathroom surfaces during daily use.', 1999.00, 1599.00, 70, TRUE, 3),
+ 
+('4-Slice Toaster', 'https://m.media-amazon.com/images/S/aplus-media-library-service-media/a3df8160-afd7-4645-846f-c2c221e94607.__CR0,0,970,600_PT0_SX970_V1___.jpg', 'Philips', 'The Philips 4-slice toaster features 7 browning settings ranging from barely warm to deep golden brown, giving you precise control over the level of toasting for different types of bread and personal preferences every morning. The extra-wide slots accommodate thick artisan bread, bagels, crumpets, and Texas toast that cannot fit in standard narrow toasters. The defrost function automatically adjusts toasting time and power for frozen bread to produce perfectly toasted slices without the need for thawing in advance. The removable stainless steel crumb tray prevents burnt crumbs from accumulating in the toaster and causing smoke or fire hazards during use. The high-lift lever safely raises small bread items for easy, burn-free removal without reaching into the hot slots.', 3499.00, 2799.00, 50, FALSE, 3),
+ 
+('Hand Mixer', 'https://rokbucket.rokomari.io/ProductNew20190903/260X372/Scarlett_Super_Hand_Mixer_260w-Non_Brand-b8a2a-440827.png', 'Kenwood', 'The Kenwood HM series hand mixer delivers 300W of powerful, consistent mixing through 5 speed settings plus a turbo boost function for the most demanding mixing tasks like stiff cookie dough and heavy cake batters. The lightweight ergonomic body fits comfortably in hand during extended mixing sessions without causing wrist or arm fatigue even during lengthy baking projects. The two stainless steel beaters and two dough hooks cover all common baking tasks from whipping cream and egg whites to beating butter and kneading bread dough for complete versatility. The eject button releases attachments instantly for quick changing between beaters and hooks and easy dishwasher cleaning after each use.', 3999.00, 3299.00, 40, FALSE, 3),
+ 
+('Shampoo Bundle', 'https://img.drz.lazcdn.com/static/bd/p/73598bde01dcbc3e1eddf941ce07cdde.png_720x720q80.png', 'Loreal', 'The L''Oreal Professional shampoo and conditioner bundle is formulated with a proprietary Pro-Keratin and ceramide complex that rebuilds damaged hair fiber from the inside out while sealing the cuticle for a smooth, frizz-free finish that lasts all day. The sulfate-free shampoo gently cleanses without stripping natural oils, making it safe for color-treated, chemically processed, and bleached hair that requires delicate care. The intensive conditioner with amino acids and lightweight oils deeply nourishes and detangles even the most knotted and damaged hair, reducing breakage during combing by up to 93% according to lab testing. Suitable for all hair types and textures from fine and straight to thick and curly. The complete bundle provides a professional hair care routine at home for salon-quality results every wash day.', 2999.00, 1999.00, 80, TRUE, 6) ON CONFLICT DO NOTHING;
 
-    (
-        'Xiaomi Redmi Note 13',
-        'https://i02.appmifile.com/mi-com-product/fly-birds/redmi-note-13/PC/bac9e4d29124ae838486e7f567d14361.jpg?f=webp',
-        'Xiaomi',
-        'Feature-packed budget smartphone with 200MP camera.',
-        24999.00,
-        21999.00,
-        120,
-        FALSE,
-        1
-    ),
-    (
-        'OnePlus 12',
-        'https://www.oneplus.com/content/dam/oasis/page/waffle-en/images-design-bottom1-1-95.jpg.avif',
-        'OnePlus',
-        'Flagship killer with Snapdragon 8 Gen 3 and 100W fast charging.',
-        79999.00,
-        72999.00,
-        40,
-        FALSE,
-        1
-    ),
-('Apple AirPods Pro 2', 'https://ddfndelma2gpn.cloudfront.net/product-image/855/apple_airpods_pro_2nd_gen_1.webp', 'Apple', 'Advanced ANC earbuds with adaptive transparency and H2 chip.', 29999.00, 26999.00, 45, FALSE, 1),
-('Samsung 55" 4K Smart TV', 'https://img.drz.lazcdn.com/static/bd/p/e33a1b3e5faea12d2cdbd5d07f2acbad.png_720x720q80.png', 'Samsung', '55-inch Crystal UHD 4K Smart TV with PurColor technology.', 74999.00, 64999.00, 20, TRUE, 1),
 
-
-('LG 43" 4K Smart TV', 'https://www.lg.com/bd/images/tvs/md07542180/gallery/43UP7550PTC-uhd-4k-tvs-D1-1.jpg', 'LG', '43-inch UHD 4K Smart TV with ThinQ AI and webOS.', 44999.00, 39999.00, 30, FALSE, 1),
-('Dell XPS 15 Laptop', 'https://adminapi.vertech.com.bd/storage/media/large/XPS-15-9530-d-2553.jpg', 'Dell', 'Premium ultrabook with Intel Core i7 and OLED display.', 149999.00, 139999.00, 15, FALSE, 1),
-('HP Pavilion 15 Laptop', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQYPKJ9CA-6rDUX-9XtbzTCZQmkEZznYARFdw&s', 'HP', 'Everyday laptop with Intel Core i5 and Full HD display.', 64999.00, 57999.00, 25, FALSE, 1),
-('Asus ROG Gaming Laptop', 'https://dazzle.sgp1.cdn.digitaloceanspaces.com/99040/ASUS-ROG-Strix-G16-G614FR-AMD-Ryzen-9-9955HX-RTX-5070-Ti-12GB-Graphics-FHD-Plus-Gaming-Laptop-price-in-bangladesh.jpg', 'Asus', 'Gaming laptop with RTX 4060 and 144Hz display.', 119999.00, 109999.00, 10, TRUE, 1),
-('iPad Pro 12.9"', 'https://cdn.mos.cms.futurecdn.net/WYcLEj53eZAjjFvTepmCxB-970-80.jpg.webp', 'Apple', 'Professional iPad with M2 chip and Liquid Retina XDR display.', 114999.00, 104999.00, 20, FALSE, 1),
-('Samsung Tab S9', 'https://www.startech.com.bd/image/cache/catalog/tablet/samsung/galaxy-tab-a11/galaxy-tab-a11-002-silver-228x228.webp', 'Samsung', 'Android tablet with Snapdragon 8 Gen 2 and Dynamic AMOLED.', 79999.00, 71999.00, 25, FALSE, 1),
-('Canon EOS R50 Camera', 'https://www.startech.com.bd/image/cache/catalog/camera/mirriorless/canon/eos-r50/eos-r50-01-500x500.webp', 'Canon', 'Mirrorless camera with 24.2MP sensor and 4K video.', 89999.00, 79999.00, 15, FALSE, 1),
-('Sony Alpha ZV-E10 Camera', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQJI03M3odw7D8CjovQXByqHBFF9AqLe3t5ZQ&s', 'Sony', 'Vlog camera with interchangeable lens and real-time Eye AF.', 64999.00, 57999.00, 20, TRUE, 1),
-('Logitech MX Master 3 Mouse', 'https://adminapi.applegadgetsbd.com/storage/media/large/4127-72278.jpg', 'Logitech', 'Advanced wireless mouse with MagSpeed scrolling.', 9999.00, 8499.00, 50, FALSE, 1),
-('Logitech MK470 Keyboard Mouse', 'https://vibegaming.com.bd/wp-content/uploads/2023/02/Screenshot-2023-02-18-143126-1.png.webp', 'Logitech', 'Slim wireless keyboard and mouse combo.', 5999.00, 4999.00, 70, FALSE, 1),
-('Samsung Galaxy Watch 6', 'https://gadgetbreeze.com.bd/wp-content/uploads/2023/11/SAMSUNG-Galaxy-Watch-6-Classic-47mm.jpg', 'Samsung', 'Advanced smartwatch with health monitoring and Wear OS.', 34999.00, 29999.00, 40, FALSE, 1),
-
-
-('Sony Alpha ZV-E10 Camera', 'https://www.startech.com.bd/image/cache/catalog/camera/digital-camera/sony/zv-e10/zv-e10-01-500x500.jpg', 'Sony', 'Vlog camera with interchangeable lens and real-time Eye AF.', 64999.00, 57999.00, 20, TRUE, 1),
-
-('Xiaomi Smart Band 8', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSIMAvxLjb6LBW-xCGMtZ-Zb2RZtJtdFT0Pew&s', 'Xiaomi', 'Fitness tracker with heart rate monitor and 16-day battery.', 3999.00, 2999.00, 150, TRUE, 1),   
-
-('Apple Watch Series 9', 'https://www.custommacbd.com/cdn/shop/files/Watch-s9-midnight-Custom-Mac-BD.jpg?v=1696082496', 'Apple', 'Most powerful Apple Watch with S9 chip and double tap gesture.', 54999.00, 49999.00, 30, FALSE, 1),
-
-('Anker 65W GaN Charger', 'https://gadgetnmusic.com/wp-content/uploads/2022/09/A2668111_TD01_V1.webp', 'Anker', 'Compact 65W GaN charger with 3 ports for multiple devices.', 3499.00, 2999.00, 200, TRUE, 1),
-
-('Baseus 20000mAh Power Bank', 'https://static-01.daraz.com.bd/p/62e12f7bf9a272564acaae58e8db01b1.jpg', 'Baseus', 'High-capacity power bank with 65W fast charging support.', 4999.00, 3999.00, 100, FALSE, 1),
-
-('Samsung 1TB SSD', 'https://ddfndelma2gpn.cloudfront.net/product-image/1898/Samsung_T7_Shield_2TB_USB_3.2_Type-C_Portable_SSD_2.webp', 'Samsung', '970 EVO Plus NVMe SSD with read speeds up to 3500MB/s.', 12999.00, 10999.00, 60, FALSE, 1),
-
-('Seagate 2TB External HDD', 'https://www.perennial.com.bd/image/cache/catalog/Pc%20components/Portable%20Hard%20disk%20Drive%20/Seagate/1-228x228.jpeg', 'Seagate', 'Portable 2TB external hard drive for backup and storage.', 5999.00, 4999.00, 80, FALSE, 1),
-
-('TP-Link WiFi 6 Router', 'https://www.startech.com.bd/image/cache/catalog/router/tp-link/archer-c6-ac1200/archer-c6-ac1200-5-500x500.jpg', 'TP-Link', 'AX3000 dual-band WiFi 6 router for faster connectivity.', 8999.00, 7499.00, 45, TRUE, 1),
-
-('Xiaomi Mi Projector 2 Pro', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQuk0zxIKch-LuSZWCoV9b0WRwqhYejWVCm6Q&s', 'Xiaomi', '1080p laser projector with Dolby Audio and Android TV.', 49999.00, 43999.00, 15, FALSE, 1),
-
-('PlayStation 5 Console', 'https://www.startech.com.bd/image/cache/catalog/gaming-console/playstation/playstation-5-digital-edition/ps5-digital-edition-01-500x500.webp', 'Sony', 'Next-gen gaming console with ultra-high speed SSD.', 69999.00, 64999.00, 10, FALSE, 1),
-
-('Xbox Series X', 'https://www.startech.com.bd/image/cache/catalog/gaming-console/microsoft/xbox-series-x/xbox-series-x-white-01-500x500.webp', 'Microsoft', 'Most powerful Xbox with 4K gaming at 120fps.', 64999.00, 59999.00, 12, FALSE, 1),
-
-('Rode NT-USB Microphone', 'https://www.startech.com.bd/image/cache/catalog/microphone/rode/nt-usb-plus/nt-usb-plus-01-500x500.webp', 'Rode', 'Studio-quality USB microphone for podcasting and streaming.', 15999.00, 13999.00, 30, FALSE, 1),
-
-('Elgato Stream Deck MK.2', 'https://www.startech.com.bd/image/cache/catalog/stream-deck/corsair/elgato-stream-deck-mk2%20/elgato-stream-deck-mk2%20-03-500x500.webp', 'Elgato', 'Live production controller with 15 customizable LCD keys.', 17999.00, 15999.00, 20, FALSE, 1),
-
-('Formal Dress Shirt', 'https://anthonysinclair.com/cdn/shop/products/SkyBlueFineTwillCocktailCuffShirt-1_800x.jpg?v=1664623810', 'Arrow', 'Premium wrinkle-resistant formal shirt for office wear.', 1999.00, 1499.00, 150, FALSE, 2),
-
-('Polo T-Shirt', 'https://fabrilife.com/products/64944f852b247-square.jpg?v=20', 'Ralph Lauren', 'Classic polo shirt with embroidered logo.', 2999.00, 2499.00, 100, FALSE, 2),
-
-('Slim Fit Chinos', 'https://www.lerevecraze.com/wp-content/uploads/2025/12/e14f9db1-fdad-4f50-a5db-8ab9d52df714.jpg', 'Dockers', 'Slim fit cotton chino pants with stretch fabric.', 2499.00, 1999.00, 90, TRUE, 2),
-
-('Hoodie Sweatshirt', 'https://bdmanja.com/wp-content/uploads/2020/11/20250925_1429_Gray-Hoodie-Design_remix_01k5zzr4z4ff190hdbksxt8pg7-300x300.jpg', 'Champion', 'Cozy fleece hoodie with kangaroo pocket.', 1999.00, 1599.00, 120, FALSE, 2),
-
-('Floral Kurti', 'https://saffronthreadsclothing.com/cdn/shop/files/4538.jpg?v=1756478709', 'Rang Bangladesh', 'Beautiful floral print kurti in soft cotton fabric.', 999.00, 799.00, 200, TRUE, 2),
-
-('Salwar Kameez Set', 'https://flickere.com.bd/public/uploads/all/sIFCuVnuLUsHlai45h4DU0h9DxPY0MvbbtdV4ZzV.webp', 'Aarong', 'Traditional handloom salwar kameez with embroidery.', 3999.00, 3299.00, 60, FALSE, 2),
-
-
-('Tangail Saree', 'https://5.imimg.com/data5/SELLER/Default/2025/2/485483308/WI/RY/EO/186069263/royal-blue-tangail-saree.png', 'Tangail Saree Kuthi', 'Elegant pure cotton Tangail saree with beautiful border.', 2499.00, 1999.00, 50, FALSE, 2),
-
-('Panjabi', 'https://www.vibrantbd.com/cdn/shop/files/24190041.jpg?v=1771924574&width=2000', 'Yellow', 'Classic white cotton panjabi for Eid and events.', 1499.00, 1199.00, 80, TRUE, 2),
-
-('Sports Jersey', 'https://diamu.com.bd/wp-content/uploads/2026/01/Chelsea-Third-Authentic-Jersey-2025-26-Best-Price-in-Bangladesh-300x300.jpg', 'Nike', 'Moisture-wicking sports jersey for training.', 2499.00, 1999.00, 100, FALSE, 2),
-
-('Track Pants', 'https://img.drz.lazcdn.com/static/bd/p/d162d0cb3317e3653bad16c298cfe730.jpg_960x960q80.jpg_.webp', 'Adidas', 'Comfortable track pants with three stripes design.', 2999.00, 2499.00, 80, FALSE, 2),
-
-('Shorts', 'https://hips.hearstapps.com/hmg-prod/images/mhl-shorts-octobre-547-67f416b1a6ccd.jpg?crop=0.6666666666666667xw:1xh;center,top&resize=1200:*', 'Puma', 'Lightweight cotton blend shorts for gym and casual wear.', 1299.00, 999.00, 150, FALSE, 2),
-
-('Cargo Pants', 'https://gorurghash.com/wp-content/uploads/2024/09/605A0076-copy.jpg', 'Lee', 'Durable cargo pants with multiple pockets.', 3499.00, 2799.00, 70, TRUE, 2),
-
-('Leather Belt', 'https://img.drz.lazcdn.com/g/kf/S4c55e0c81e244f319089a6b08d6ce2eea.jpg_720x720q80.jpg', 'Tommy Hilfiger', 'Genuine leather belt with classic buckle design.', 1999.00, 1599.00, 100, FALSE, 2),
-
-('Necktie Set', 'https://img.drz.lazcdn.com/static/bd/p/c953192afd3f938cdbf741ad09fd31be.jpg_720x720q80.jpg', 'Van Heusen', 'Set of 3 premium silk neckties for formal occasions.', 2499.00, 1999.00, 60, FALSE, 2),
-
-('Socks Pack', 'https://levin.com.bd/cdn/shop/files/web-1_ed9d5bc5-e233-477c-b0e4-ccaf088a5fab.jpg?v=1767092927&width=2048', 'Puma', 'Pack of 6 cotton sport socks with cushioned sole.', 799.00, 599.00, 300, TRUE, 2),
-
-('Blazer', 'https://www.jny.com/cdn/shop/files/10826460-K64-F.jpg?v=1758060865&width=422', 'Raymond', 'Slim fit formal blazer in premium wool blend.', 8999.00, 7499.00, 30, FALSE, 2),
-
-('Winter Sweater', 'https://smartdeal.com.bd/public/uploads/all/TD9Gu80wzqykH5OT0zmyeARxMhUOV5gDq0IcBFya.jpg', 'Woolrich', 'Warm knitted sweater with round neck for winter.', 2999.00, 2499.00, 80, FALSE, 2),
-
-('Rain Jacket', 'https://stonz.com/cdn/shop/files/RAINJACKET_SUMMERHAZE_MAIN.png?v=1753215748&width=1946', 'Columbia', 'Waterproof rain jacket with sealed seams and adjustable hood.', 5999.00, 4999.00, 40, TRUE, 2),
-
-('Kids T-Shirt Pack', 'https://xcdn.next.co.uk/common/items/default/default/itemimages/3_4Ratio/product/lge/736344s.jpg', 'H&M Kids', 'Pack of 3 colorful cotton T-shirts for kids.', 999.00, 799.00, 150, FALSE, 2),
-
-('Kids Jeans', 'https://www.nameit.com/dw/image/v2/BDTC_PRD/on/demandware.static/-/Sites-pim-catalog/default/dw018423b2/pim-static/NI/13248484/13248484_MediumBlueDenim_008.jpg?sw=900&sh=1200&strip=false', 'Zara Kids', 'Comfortable stretch denim jeans for kids.', 1499.00, 1199.00, 100, FALSE, 2),
-
-('School Uniform Shirt', 'https://static-01.daraz.com.bd/p/10dc019e907ea6fd6168d3269d021311.png', 'Local Brand', 'Pure white cotton school uniform shirt.', 499.00, 399.00, 300, TRUE, 2),
-
-('Leather Sandal', 'https://myzoo.asia/public/uploads/all/MlX1yBRV2EH4DiIU4FU7u2f4HQ2vX6stk0XLyPyp.png', 'Bata', 'Comfortable leather sandals for everyday casual wear.', 1999.00, 1499.00, 100, FALSE, 2),
-
-('Formal Shoes', 'https://orionfootwearltd.com/images/media/2023/12/medium1702983426TLHPl19304.jpg', 'Clarks', 'Premium leather formal shoes with cushioned insole.', 5999.00, 4999.00, 50, FALSE, 2),
-
-('Sneakers', 'https://www.vibrantbd.com/cdn/shop/files/88000101.jpg?v=1730351022', 'Adidas', 'Classic canvas sneakers for casual everyday wear.', 4999.00, 3999.00, 80, TRUE, 2),
-
-('Flip Flops', 'https://nationaltoday.com/wp-content/uploads/2021/06/Flip-Flop.jpg', 'Havaianas', 'Lightweight rubber flip flops for beach and home.', 799.00, 599.00, 200, FALSE, 2),
-
-('Hijab', 'https://veiled.com/cdn/shop/files/modal-hijab-deep-taupe-386257.jpg?crop=center&height=1200&v=1754844466&width=1200', 'Modanisa', 'Premium chiffon hijab in pastel colors.', 599.00, 449.00, 200, FALSE, 2),
-
-('Abaya', 'https://basmastour.com/cdn/shop/files/IMG-2627.jpg?v=1696239604&width=2948', 'Modanisa', 'Elegant black abaya with embroidered cuffs.', 3499.00, 2799.00, 60, FALSE, 2),
-
-('Sunglasses', 'https://img.freepik.com/free-psd/elegant-black-gold-sunglasses-stylish-accessory_191095-79382.jpg?semt=ais_hybrid&w=740&q=80', 'Ray-Ban', 'Classic Wayfarer sunglasses with UV400 protection.', 4999.00, 3999.00, 70, TRUE, 2),
-
-('Baseball Cap', 'https://img.drz.lazcdn.com/static/bd/p/932e5c77da936b271dcab48502b20c21.jpg_720x720q80.jpg', 'New Era', 'Adjustable cotton baseball cap for sun protection.', 999.00, 799.00, 150, FALSE, 2),
-
-('Electric Rice Cooker', 'https://www.haegergroup.com/wp-content/uploads/RC-18L.001A_1-1.jpg', 'Panasonic', 'Automatic 1.8L electric rice cooker with keep-warm.', 3499.00, 2999.00, 80, FALSE, 3),
-
-('Blender', 'https://www.sunbeam.com.au/media/catalog/product/0/6/06-pbt3000bk-blender-black-lifestyle_flat_1.jpg?width=735&height=735&store=sunbeam_au_view&image-type=image', 'Philips', '700W blender with stainless steel blades and 1.5L jar.', 4999.00, 3999.00, 60, TRUE, 3),
-
-('Microwave Oven', 'https://img.drz.lazcdn.com/static/bd/p/97212ede0edeb0200a59b41089a89925.jpg_720x720q80.jpg', 'Samsung', '23L solo microwave oven with ceramic inside.', 9999.00, 7999.00, 30, FALSE, 3),
-
-('Electric Kettle', 'https://cdn.waltonplaza.com.bd/70a30fd8-ad5d-4e30-b6b0-d9a72ca9f6f1.jpeg', 'Philips', '1.7L stainless steel electric kettle with auto shut-off.', 2499.00, 1999.00, 100, FALSE, 3),
-
-('Air Fryer', 'https://www.iferi.com/cdn/shop/files/701_9b426d7f-dd4b-430a-9708-f3efbd348e31.jpg?v=1764233419&width=1100', 'Xiaomi', '4.5L digital air fryer with 8 preset cooking programs.', 7999.00, 6499.00, 40, TRUE, 3),
-
-('Pressure Cooker', 'https://static-01.daraz.com.bd/p/ebda2856dc41f270cd70da0b13cadc0c.jpg', 'Prestige', '5L stainless steel pressure cooker with safety valve.', 3999.00, 3299.00, 70, FALSE, 3),
-
-('Dinner Set 24pcs', 'https://img.drz.lazcdn.com/static/bd/p/8f127c8d9e0f1a2b3c4d5e6f.jpg_720x720q80.jpg', 'Corelle', '24-piece dinner set with plates, bowls and mugs.', 5999.00, 4999.00, 50, FALSE, 3),
-
-('Glass Storage Jar Set', 'https://eternalceramicsbd.com/cdn/shop/files/2_2-3_2_2-3.jpg?v=1770757197', 'Bormioli Rocco', 'Set of 6 airtight glass storage jars.', 2999.00, 2499.00, 80, FALSE, 3),
-
-('Knife Set', 'https://m.media-amazon.com/images/I/81dIS4ecWfL._AC_UF894,1000_QL80_.jpg', 'Victorinox', 'Professional 5-piece stainless steel knife set.', 7999.00, 6499.00, 30, FALSE, 3),
-
-('Bamboo Cutting Board Set', 'https://livingtoday.com.au/cdn/shop/files/1_6eac956d-452c-4690-8583-d7e3fe85748c.jpg?v=1752471030&width=1445', 'OXO', 'Set of 3 bamboo cutting boards in different sizes.', 1999.00, 1599.00, 100, TRUE, 3),
-
-('Vacuum Cleaner', 'https://ebestsupply.com.bd/wp-content/uploads/2023/12/1b377ac5cc8283acad30735d503300c5.jpg', 'Dyson', 'Cordless vacuum cleaner with powerful suction.', 29999.00, 24999.00, 20, FALSE, 3),
-
-('Washing Machine 7kg', 'https://www.lg.com/bd/images/washing-machines/md07537004/gallery/T70SNSF3Z-Washing-Machines-Front-View-DM-01.jpg', 'Samsung', '7kg fully automatic front-load washing machine.', 39999.00, 34999.00, 15, FALSE, 3),
-
-('Refrigerator 300L', 'https://image.made-in-china.com/202f0j00mZIhqfkbABzp/300L-Double-Door-Refrigerator-Fridge-Bc-328.webp', 'Walton', '300L frost-free double door refrigerator.', 44999.00, 39999.00, 10, TRUE, 3),
-
-('Steam Iron', 'https://adminapi.applegadgetsbd.com/storage/media/large/Panasonic-NI-M300T-Steam-Iron-blue-4162.jpg', 'Philips', 'Steam iron with non-stick soleplate and anti-drip system.', 2999.00, 2499.00, 80, FALSE, 3),
-
-('Ceiling Fan', 'https://img.drz.lazcdn.com/static/bd/p/20734dbe66cd56997e785ddb0b6c8f75.png_720x720q80.png', 'Vision', '56-inch energy-efficient ceiling fan with remote.', 4999.00, 3999.00, 50, FALSE, 3),
-
-('LED Table Lamp', 'https://img.drz.lazcdn.com/static/bd/p/deab1a68a48d60f5bf1a11fa5b02dc79.jpg_720x720q80.jpg', 'Ikea', 'Modern LED table lamp with adjustable brightness.', 1999.00, 1499.00, 100, FALSE, 3),
-
-('King Bed Sheet Set', 'https://onlineshop.com.bd/frd-data/img/product/2024/07/_914_frd_1719994824.jpg', 'Raymond Home', 'King-size 100% cotton bed sheet set with 2 pillow covers.', 2999.00, 2399.00, 80, TRUE, 3),
-
-('Memory Foam Pillow Pair', 'https://lamarvel.ae/cdn/shop/files/memory-foam2.png?v=1705070628&width=1080', 'Sleepsia', 'Pack of 2 memory foam pillows with removable covers.', 2499.00, 1999.00, 100, FALSE, 3),
-
-('Winter Blanket', 'https://www.smartguds.com/cdn/shop/products/HTB1JuqeaMmH3KVjSZKzq6z2OXXaK_00c9940f-6b78-4873-ac15-a8ec59cd2622.jpg?v=1655810891', 'Bombay Dyeing', 'Soft polyester winter blanket with anti-pilling technology.', 1999.00, 1599.00, 120, FALSE, 3),
-
-('Blackout Curtain Pair', 'https://www.jysk.ca/media/catalog/product/o/m/omegna-blackout-curtain-black-01.jpg?quality=80&fit=bounds&height=520&width=520&canvas=520:520', 'Story@Home', 'Pair of blackout curtains for bedroom privacy.', 2499.00, 1999.00, 70, FALSE, 3),
-
-('Silent Wall Clock', 'https://www.pshomeandliving.com.au/assets/full/23043.jpg?20230609154407', 'Seiko', 'Silent sweep wall clock with wood frame design.', 1499.00, 1199.00, 80, TRUE, 3),
-
-('Photo Frame Set', 'https://artstreet.in/cdn/shop/files/61Q46qy3LLL._SX522_522x522.jpg?v=1686979748', 'Ikea', 'Set of 6 minimalist photo frames in different sizes.', 1999.00, 1599.00, 100, FALSE, 3),
-
-('Sensor Trash Can', 'https://image.made-in-china.com/2f0j00aBLkoVDZbsct/Automatic-Smart-Trash-Can-with-Sensor-Big-Capacity-Bin.webp', 'Joseph Joseph', 'Stainless steel sensor trash can with soft-close lid.', 3999.00, 3299.00, 50, FALSE, 3),
-
-('Laundry Basket', 'https://bengal.com.bd/wp-content/uploads/2019/06/Square-Laundry-Basket-500x500.jpg', 'Sterilite', 'Large wicker-style laundry basket with lid.', 1499.00, 1199.00, 80, FALSE, 3),
-
-('RO Water Purifier', 'https://www.kent.co.in/images/ro/ro-water-purifiers-banner.png', 'Kent', 'RO+UV water purifier with 8L storage tank.', 14999.00, 12999.00, 25, TRUE, 3),
-
-('Smart Humidifier', 'https://extremegadgets.com.bd/wp-content/uploads/2023/12/description-image-13.jpeg', 'Xiaomi', 'Smart ultrasonic humidifier with app control.', 4999.00, 3999.00, 40, FALSE, 3),
-
-('Smart Air Purifier', 'https://gadgetbreeze.com.bd/wp-content/uploads/2024/12/Xiaomi-MIJIA-Air-Purifier-5_Main.jpg', 'Xiaomi', 'Smart air purifier with HEPA filter and air quality display.', 12999.00, 10999.00, 20, FALSE, 3),
-
-('Spin Mop Bucket Set', 'https://enfield-bd.com/wp-content/uploads/2022/04/High-Quality-Floor-Cleaner-With-Steel-Spin-Head-Multi-Color-Spin-Mop-Bucket-Portable-Magic-Double-Drive-Stainless-Steel-1-1.jpg', 'Scotch-Brite', 'Spin mop with wringer bucket for easy floor cleaning.', 2499.00, 1999.00, 60, FALSE, 3),
-
-('Bathroom Accessories Set', 'https://market99.com/cdn/shop/files/WW10005014_1.jpg?v=1750931236', 'Neatly', '5-piece bathroom accessories set with soap dispenser.', 1999.00, 1599.00, 70, TRUE, 3),
-
-('4-Slice Toaster', 'https://m.media-amazon.com/images/S/aplus-media-library-service-media/a3df8160-afd7-4645-846f-c2c221e94607.__CR0,0,970,600_PT0_SX970_V1___.jpg', 'Philips', '4-slice toaster with 7 browning settings.', 3499.00, 2799.00, 50, FALSE, 3),
-
-('Hand Mixer', 'https://rokbucket.rokomari.io/ProductNew20190903/260X372/Scarlett_Super_Hand_Mixer_260w-Non_Brand-b8a2a-440827.png', 'Kenwood', '300W hand mixer with 5 speed settings.', 3999.00, 3299.00, 40, FALSE, 3),
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    (
-        'Shampoo Bundle',
-        'https://img.drz.lazcdn.com/static/bd/p/73598bde01dcbc3e1eddf941ce07cdde.png_720x720q80.png',
-        'Loreal',
-        'Professional hair care shampoo and conditioner bundle set.',
-        2999.00,
-        1999.00,
-        80,
-        TRUE,
-        6
-    ) ON CONFLICT DO NOTHING;
-
--- ✅ Phase 4: Pre-seed Admin User BEFORE Orders
--- Admin user is created with is_admin = true on system initialization
--- This MUST come before orders insert so that orders can reference the admin user
--- Credentials: admin@daraz.com / admin123
 INSERT INTO users (name, email, password, phone, is_admin)
 VALUES (
     'System Admin',
