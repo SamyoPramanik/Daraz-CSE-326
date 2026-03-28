@@ -75,7 +75,7 @@ const getProductReliabilityScore = async (req, res) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: "nvidia/nemotron-3-nano-30b-a3b:free",
+          model: "nvidia/nemotron-3-super-120b-a12b:free",
           messages: [
             {
               role: "user",
