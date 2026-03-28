@@ -136,6 +136,13 @@ export interface AdminUserDetails {
   }>;
 }
 
+export interface AdminDashboardStats {
+  total_users: number;
+  total_orders: number;
+  total_products: number;
+  total_revenue: number;
+}
+
 export async function fetchCategories(): Promise<Category[]> {
   const url = `${BASE_URL}/products/categories`;
 
@@ -341,6 +348,32 @@ export async function fetchAdminUsers() {
   return json.data as AdminUserInfo[];
 }
 
+export async function fetchAdminDashboardStats() {
+  const token =
+    typeof window !== "undefined" ? localStorage.getItem("token") : null;
+
+  if (!token) {
+    throw new Error("Unauthorized - Please login as admin");
+  }
+
+  const url = `${BASE_URL}/admin/stats`;
+  const res = await fetch(url, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    cache: "no-store",
+  });
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.message || "Failed to fetch dashboard stats");
+  }
+
+  const json = await res.json();
+  return json.data as AdminDashboardStats;
+}
+
 export async function fetchAdminUserById(userId: string) {
   const token =
     typeof window !== "undefined" ? localStorage.getItem("token") : null;
@@ -365,6 +398,24 @@ export async function fetchAdminUserById(userId: string) {
 
   const json = await res.json();
   return json.data as AdminUserDetails;
+}
+
+export async function logoutCurrentUser() {
+  const token =
+    typeof window !== "undefined" ? localStorage.getItem("token") : null;
+
+  if (!token) {
+    return;
+  }
+
+  const url = `${BASE_URL}/auth/logout`;
+  await fetch(url, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    cache: "no-store",
+  });
 }
 
 // ============ CART API FUNCTIONS ============

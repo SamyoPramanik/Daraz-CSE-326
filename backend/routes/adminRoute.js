@@ -1,6 +1,7 @@
 const express = require("express");
 const adminMiddleware = require("../middleware/adminMiddleware");
 const {
+  getAdminDashboardStats,
   getCompletedOrders,
   getAdminOrderById,
   getAllUsersWithStatus,
@@ -9,6 +10,7 @@ const {
 
 const router = express.Router();
 
+router.get("/stats", adminMiddleware, getAdminDashboardStats);
 router.get("/orders", adminMiddleware, getCompletedOrders);
 router.get("/orders/:id", adminMiddleware, getAdminOrderById);
 router.get("/users", adminMiddleware, getAllUsersWithStatus);

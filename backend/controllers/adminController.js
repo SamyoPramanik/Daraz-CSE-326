@@ -224,6 +224,38 @@ const getAllUsersWithStatus = async (req, res) => {
   }
 };
 
+const getAdminDashboardStats = async (req, res) => {
+  try {
+    const result = await pool.query(
+      `SELECT
+        (SELECT COUNT(*)::int FROM users WHERE is_admin = FALSE) AS total_users,
+        (SELECT COUNT(*)::int FROM orders) AS total_orders,
+        (SELECT COUNT(*)::int FROM products) AS total_products,
+        (SELECT COALESCE(SUM(total_amount), 0)::numeric FROM orders) AS gross_order_amount`,
+    );
+
+    const row = result.rows[0];
+    const grossAmount = Number(row.gross_order_amount || 0);
+    const revenue = Number((grossAmount * 0.01).toFixed(2));
+
+    res.json({
+      status: "success",
+      data: {
+        total_users: Number(row.total_users || 0),
+        total_orders: Number(row.total_orders || 0),
+        total_products: Number(row.total_products || 0),
+        total_revenue: revenue,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: "error",
+      message: "Failed to retrieve dashboard stats",
+      error: error.message,
+    });
+  }
+};
+
 const getAdminUserById = async (req, res) => {
   try {
     const { id } = req.params;
@@ -328,6 +360,7 @@ const getAdminUserById = async (req, res) => {
 };
 
 module.exports = {
+  getAdminDashboardStats,
   getCompletedOrders,
   getAdminOrderById,
   getAllUsersWithStatus,
