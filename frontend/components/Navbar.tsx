@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
@@ -50,9 +51,14 @@ export default function Navbar() {
           {/* Logo - Hidden for admins, show for regular users */}
           {!user?.is_admin && (
             <Link href="/" className="flex items-center gap-2">
-              <span className="text-2xl font-bold text-primary tracking-tight">
-                Daraz
-              </span>
+              <Image
+                src="/daraz-logo.png"
+                alt="Daraz"
+                width={180}
+                height={60}
+                className="h-10 w-auto"
+                priority
+              />
             </Link>
           )}
         </div>
