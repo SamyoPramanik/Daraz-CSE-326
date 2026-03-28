@@ -4,15 +4,44 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuthStore } from "@/lib/authStore";
 import { LogOut, BarChart3, Users, ShoppingCart, TrendingUp } from "lucide-react";
 import { toast } from "sonner";
+import { createProduct, fetchCategories, type Category } from "@/lib/api";
+
+type ProductFormState = {
+  name: string;
+  image_url: string;
+  brand: string;
+  description: string;
+  price: string;
+  discount_price: string;
+  stock: string;
+  category_id: string;
+  flash_sale: boolean;
+};
+
+const initialFormState: ProductFormState = {
+  name: "",
+  image_url: "",
+  brand: "",
+  description: "",
+  price: "",
+  discount_price: "",
+  stock: "0",
+  category_id: "",
+  flash_sale: false,
+};
 
 export default function AdminDashboard() {
   const router = useRouter();
   const { user, isLoggedIn, clearAuth, hasInitialized, initializeFromStorage } = useAuthStore();
   const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [formData, setFormData] = useState<ProductFormState>(initialFormState);
 
   // Initialize from storage on mount only
   useEffect(() => {
@@ -43,6 +72,61 @@ export default function AdminDashboard() {
     clearAuth();
     toast.success("Logged out successfully");
     router.push("/");
+  };
+
+  useEffect(() => {
+    if (!isLoading) {
+      fetchCategories()
+        .then((items) => setCategories(items))
+        .catch(() => {
+          toast.error("Failed to load product categories");
+        });
+    }
+  }, [isLoading]);
+
+  const handleFormChange =
+    (field: keyof ProductFormState) =>
+    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+      const value =
+        field === "flash_sale" && e.target instanceof HTMLInputElement
+          ? e.target.checked
+          : e.target.value;
+
+      setFormData((prev) => ({
+        ...prev,
+        [field]: value,
+      }));
+    };
+
+  const handleCreateProduct = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (!formData.category_id) {
+      toast.error("Please select a category");
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      await createProduct({
+        name: formData.name.trim(),
+        image_url: formData.image_url.trim(),
+        brand: formData.brand.trim() || null,
+        description: formData.description.trim() || null,
+        price: Number(formData.price),
+        discount_price: formData.discount_price ? Number(formData.discount_price) : null,
+        stock: Number(formData.stock),
+        flash_sale: formData.flash_sale,
+        category_id: Number(formData.category_id),
+      });
+
+      toast.success("Product created successfully");
+      setFormData(initialFormState);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to create product");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (isLoading) {
@@ -157,6 +241,156 @@ export default function AdminDashboard() {
                   Settings
                 </Button>
               </Link>
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="mb-8">
+          <Card>
+            <CardHeader>
+              <CardTitle>Add New Product</CardTitle>
+              <CardDescription>Create and publish a product for users</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleCreateProduct} className="grid gap-4 md:grid-cols-2">
+                <div className="space-y-2 md:col-span-2">
+                  <label className="text-sm font-medium text-gray-700" htmlFor="product-name">
+                    Product Name
+                  </label>
+                  <Input
+                    id="product-name"
+                    value={formData.name}
+                    onChange={handleFormChange("name")}
+                    placeholder="Product name"
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2 md:col-span-2">
+                  <label className="text-sm font-medium text-gray-700" htmlFor="product-image-url">
+                    Image URL
+                  </label>
+                  <Input
+                    id="product-image-url"
+                    type="url"
+                    value={formData.image_url}
+                    onChange={handleFormChange("image_url")}
+                    placeholder="https://example.com/image.jpg"
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700" htmlFor="product-brand">
+                    Brand
+                  </label>
+                  <Input
+                    id="product-brand"
+                    value={formData.brand}
+                    onChange={handleFormChange("brand")}
+                    placeholder="Brand name"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700" htmlFor="product-category">
+                    Category
+                  </label>
+                  <select
+                    id="product-category"
+                    value={formData.category_id}
+                    onChange={handleFormChange("category_id")}
+                    className="h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    required
+                  >
+                    <option value="">Select a category</option>
+                    {categories.map((category) => (
+                      <option key={category.id} value={category.id}>
+                        {category.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="space-y-2 md:col-span-2">
+                  <label className="text-sm font-medium text-gray-700" htmlFor="product-description">
+                    Description
+                  </label>
+                  <textarea
+                    id="product-description"
+                    value={formData.description}
+                    onChange={handleFormChange("description")}
+                    placeholder="Write a short product description"
+                    rows={4}
+                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700" htmlFor="product-price">
+                    Price
+                  </label>
+                  <Input
+                    id="product-price"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={formData.price}
+                    onChange={handleFormChange("price")}
+                    placeholder="0.00"
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700" htmlFor="product-discount-price">
+                    Discount Price (Optional)
+                  </label>
+                  <Input
+                    id="product-discount-price"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={formData.discount_price}
+                    onChange={handleFormChange("discount_price")}
+                    placeholder="0.00"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700" htmlFor="product-stock">
+                    Stock
+                  </label>
+                  <Input
+                    id="product-stock"
+                    type="number"
+                    min="0"
+                    step="1"
+                    value={formData.stock}
+                    onChange={handleFormChange("stock")}
+                    required
+                  />
+                </div>
+
+                <div className="flex items-center gap-2 pt-7">
+                  <input
+                    id="product-flash-sale"
+                    type="checkbox"
+                    checked={formData.flash_sale}
+                    onChange={handleFormChange("flash_sale")}
+                    className="h-4 w-4"
+                  />
+                  <label className="text-sm font-medium text-gray-700" htmlFor="product-flash-sale">
+                    Enable flash sale
+                  </label>
+                </div>
+
+                <div className="md:col-span-2">
+                  <Button type="submit" disabled={isSubmitting} className="w-full md:w-auto">
+                    {isSubmitting ? "Creating Product..." : "Create Product"}
+                  </Button>
+                </div>
+              </form>
             </CardContent>
           </Card>
         </div>
