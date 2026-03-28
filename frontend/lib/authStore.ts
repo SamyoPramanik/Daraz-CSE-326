@@ -1,10 +1,11 @@
 import { create } from "zustand";
 
 type AuthUser = {
-    id?: number;
+    id?: string | number;
     name?: string;
     email?: string;
     phone?: string;
+    is_admin?: boolean;
 };
 
 type AuthState = {
@@ -41,14 +42,12 @@ const getStoredUser = (): AuthUser | null => {
         let hasValue = false;
 
         if ("id" in parsed) {
-            if (typeof parsed.id === "number") {
+            if (typeof parsed.id === "string") {
+                // Accept any string as ID (UUIDs, numbers, etc.)
                 user.id = parsed.id;
                 hasValue = true;
-            } else if (typeof parsed.id === "string") {
-                if (!/^\d+$/.test(parsed.id)) {
-                    return null;
-                }
-                user.id = Number(parsed.id);
+            } else if (typeof parsed.id === "number") {
+                user.id = parsed.id;
                 hasValue = true;
             } else {
                 return null;
@@ -73,6 +72,21 @@ const getStoredUser = (): AuthUser | null => {
                 return null;
             }
             user.phone = parsed.phone;
+            hasValue = true;
+        }
+        if ("is_admin" in parsed) {
+            if (typeof parsed.is_admin === "boolean") {
+                user.is_admin = parsed.is_admin;
+            } else if (parsed.is_admin === "true" || parsed.is_admin === 1 || parsed.is_admin === "1") {
+                user.is_admin = true;
+            } else if (parsed.is_admin === "false" || parsed.is_admin === 0 || parsed.is_admin === "0") {
+                user.is_admin = false;
+            } else {
+                user.is_admin = false;
+            }
+            hasValue = true;
+        } else {
+            user.is_admin = false;
             hasValue = true;
         }
 

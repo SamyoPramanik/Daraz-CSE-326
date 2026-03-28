@@ -10,6 +10,365 @@ const toNumberOrNull = (value) => {
   return Number(value);
 };
 
+const createProduct = async (req, res) => {
+  try {
+    const {
+      name,
+      image_url,
+      brand,
+      description,
+      price,
+      discount_price,
+      stock,
+      flash_sale,
+      category_id,
+    } = req.body;
+
+    if (!name || !image_url || price === undefined || category_id === undefined) {
+      return res.status(400).json({
+        status: "error",
+        message: "name, image_url, price, and category_id are required",
+      });
+    }
+
+    const numericPrice = Number(price);
+    const numericDiscountPrice =
+      discount_price === null || discount_price === undefined || discount_price === ""
+        ? null
+        : Number(discount_price);
+    const numericStock = stock === undefined || stock === null || stock === "" ? 0 : Number(stock);
+    const numericCategoryId = Number(category_id);
+
+    if (!Number.isFinite(numericPrice) || numericPrice < 0) {
+      return res.status(400).json({
+        status: "error",
+        message: "price must be a valid non-negative number",
+      });
+    }
+
+    if (
+      numericDiscountPrice !== null &&
+      (!Number.isFinite(numericDiscountPrice) || numericDiscountPrice < 0)
+    ) {
+      return res.status(400).json({
+        status: "error",
+        message: "discount_price must be a valid non-negative number",
+      });
+    }
+
+    if (
+      numericDiscountPrice !== null &&
+      numericDiscountPrice > numericPrice
+    ) {
+      return res.status(400).json({
+        status: "error",
+        message: "discount_price cannot be greater than price",
+      });
+    }
+
+    if (!Number.isInteger(numericStock) || numericStock < 0) {
+      return res.status(400).json({
+        status: "error",
+        message: "stock must be a valid non-negative integer",
+      });
+    }
+
+    if (!Number.isInteger(numericCategoryId) || numericCategoryId <= 0) {
+      return res.status(400).json({
+        status: "error",
+        message: "category_id must be a valid category id",
+      });
+    }
+
+    const categoryExists = await pool.query(
+      "SELECT id FROM categories WHERE id = $1",
+      [numericCategoryId],
+    );
+
+    if (categoryExists.rows.length === 0) {
+      return res.status(404).json({
+        status: "error",
+        message: "Category not found",
+      });
+    }
+
+    const existingProduct = await pool.query(
+      `SELECT id
+       FROM products
+       WHERE LOWER(TRIM(name)) = LOWER(TRIM($1))
+         AND category_id = $2
+         AND COALESCE(LOWER(TRIM(brand)), '') = COALESCE(LOWER(TRIM($3)), '')
+       LIMIT 1`,
+      [name, numericCategoryId, brand || null],
+    );
+
+    if (existingProduct.rows.length > 0) {
+      return res.status(409).json({
+        status: "error",
+        message: "This product is already available for users",
+      });
+    }
+
+    const result = await pool.query(
+      `INSERT INTO products
+        (name, image_url, brand, description, price, discount_price, stock, flash_sale, category_id)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+       RETURNING id, name, image_url, brand, description, price, discount_price, stock, flash_sale, category_id`,
+      [
+        name,
+        image_url,
+        brand || null,
+        description || null,
+        numericPrice,
+        numericDiscountPrice,
+        numericStock,
+        Boolean(flash_sale),
+        numericCategoryId,
+      ],
+    );
+
+    const createdProduct = result.rows[0];
+    res.status(201).json({
+      status: "success",
+      message: "Product created successfully",
+      data: {
+        ...createdProduct,
+        price: Number(createdProduct.price),
+        discount_price: toNumberOrNull(createdProduct.discount_price),
+      },
+    });
+  } catch (err) {
+    res.status(500).json({
+      status: "error",
+      message: "Failed to create product",
+      error: err.message,
+    });
+  }
+};
+
+const updateProduct = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!isValidUuid(id)) {
+      return res.status(400).json({
+        status: "error",
+        message: "Invalid product id",
+      });
+    }
+
+    const existingResult = await pool.query(
+      `SELECT id, name, image_url, brand, description, price, discount_price, stock, flash_sale, category_id
+       FROM products
+       WHERE id = $1`,
+      [id],
+    );
+
+    if (existingResult.rows.length === 0) {
+      return res.status(404).json({
+        status: "error",
+        message: "Product not found",
+      });
+    }
+
+    const existing = existingResult.rows[0];
+    const {
+      name,
+      image_url,
+      brand,
+      description,
+      price,
+      discount_price,
+      stock,
+      flash_sale,
+      category_id,
+    } = req.body;
+
+    const nextName =
+      name === undefined ? existing.name : String(name).trim();
+    const nextImageUrl =
+      image_url === undefined ? existing.image_url : String(image_url).trim();
+    const nextBrand =
+      brand === undefined
+        ? existing.brand
+        : String(brand || "").trim() || null;
+    const nextDescription =
+      description === undefined
+        ? existing.description
+        : String(description || "").trim() || null;
+    const nextPrice =
+      price === undefined ? Number(existing.price) : Number(price);
+    const nextDiscountPrice =
+      discount_price === undefined
+        ? toNumberOrNull(existing.discount_price)
+        : discount_price === null || discount_price === ""
+          ? null
+          : Number(discount_price);
+    const nextStock =
+      stock === undefined ? Number(existing.stock) : Number(stock);
+    const nextFlashSale =
+      flash_sale === undefined ? Boolean(existing.flash_sale) : Boolean(flash_sale);
+    const nextCategoryId =
+      category_id === undefined ? Number(existing.category_id) : Number(category_id);
+
+    if (!nextName || !nextImageUrl) {
+      return res.status(400).json({
+        status: "error",
+        message: "name and image_url are required",
+      });
+    }
+
+    if (!Number.isFinite(nextPrice) || nextPrice < 0) {
+      return res.status(400).json({
+        status: "error",
+        message: "price must be a valid non-negative number",
+      });
+    }
+
+    if (
+      nextDiscountPrice !== null &&
+      (!Number.isFinite(nextDiscountPrice) || nextDiscountPrice < 0)
+    ) {
+      return res.status(400).json({
+        status: "error",
+        message: "discount_price must be a valid non-negative number",
+      });
+    }
+
+    if (nextDiscountPrice !== null && nextDiscountPrice > nextPrice) {
+      return res.status(400).json({
+        status: "error",
+        message: "discount_price cannot be greater than price",
+      });
+    }
+
+    if (!Number.isInteger(nextStock) || nextStock < 0) {
+      return res.status(400).json({
+        status: "error",
+        message: "stock must be a valid non-negative integer",
+      });
+    }
+
+    if (!Number.isInteger(nextCategoryId) || nextCategoryId <= 0) {
+      return res.status(400).json({
+        status: "error",
+        message: "category_id must be a valid category id",
+      });
+    }
+
+    const categoryExists = await pool.query(
+      "SELECT id FROM categories WHERE id = $1",
+      [nextCategoryId],
+    );
+
+    if (categoryExists.rows.length === 0) {
+      return res.status(404).json({
+        status: "error",
+        message: "Category not found",
+      });
+    }
+
+    const duplicateProduct = await pool.query(
+      `SELECT id
+       FROM products
+       WHERE LOWER(TRIM(name)) = LOWER(TRIM($1))
+         AND category_id = $2
+         AND COALESCE(LOWER(TRIM(brand)), '') = COALESCE(LOWER(TRIM($3)), '')
+         AND id <> $4
+       LIMIT 1`,
+      [nextName, nextCategoryId, nextBrand, id],
+    );
+
+    if (duplicateProduct.rows.length > 0) {
+      return res.status(409).json({
+        status: "error",
+        message: "This product is already available for users",
+      });
+    }
+
+    const result = await pool.query(
+      `UPDATE products
+       SET name = $1,
+           image_url = $2,
+           brand = $3,
+           description = $4,
+           price = $5,
+           discount_price = $6,
+           stock = $7,
+           flash_sale = $8,
+           category_id = $9
+       WHERE id = $10
+       RETURNING id, name, image_url, brand, description, price, discount_price, stock, flash_sale, category_id`,
+      [
+        nextName,
+        nextImageUrl,
+        nextBrand,
+        nextDescription,
+        nextPrice,
+        nextDiscountPrice,
+        nextStock,
+        nextFlashSale,
+        nextCategoryId,
+        id,
+      ],
+    );
+
+    const updatedProduct = result.rows[0];
+    res.json({
+      status: "success",
+      message: "Product updated successfully",
+      data: {
+        ...updatedProduct,
+        price: Number(updatedProduct.price),
+        discount_price: toNumberOrNull(updatedProduct.discount_price),
+      },
+    });
+  } catch (err) {
+    res.status(500).json({
+      status: "error",
+      message: "Failed to update product",
+      error: err.message,
+    });
+  }
+};
+
+const deleteProduct = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!isValidUuid(id)) {
+      return res.status(400).json({
+        status: "error",
+        message: "Invalid product id",
+      });
+    }
+
+    const result = await pool.query(
+      "DELETE FROM products WHERE id = $1 RETURNING id, name",
+      [id],
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({
+        status: "error",
+        message: "Product not found",
+      });
+    }
+
+    res.json({
+      status: "success",
+      message: "Product deleted successfully",
+      data: result.rows[0],
+    });
+  } catch (err) {
+    res.status(500).json({
+      status: "error",
+      message: "Failed to delete product",
+      error: err.message,
+    });
+  }
+};
+
 const getProducts = async (req, res) => {
   try {
     const {
@@ -33,13 +392,21 @@ const getProducts = async (req, res) => {
                 p.id,
                 p.name,
                 p.image_url,
+              p.brand,
+              p.description,
                 p.price,
                 p.discount_price,
                 p.stock,
                 p.flash_sale,
                 p.category_id,
                 c.name as category_name,
-                ROUND(AVG(oi.rating), 2) as rating
+                ROUND(AVG(oi.rating), 2) as rating,
+                COUNT(oi.id) as review_count,
+                COALESCE((
+                  SELECT SUM(oi_total.quantity)
+                  FROM order_items oi_total
+                  WHERE oi_total.product_id = p.id
+                ), 0) as sold_count
             FROM products p
             LEFT JOIN categories c ON p.category_id = c.id
             LEFT JOIN order_items oi ON p.id = oi.product_id AND oi.rating IS NOT NULL
@@ -85,7 +452,7 @@ const getProducts = async (req, res) => {
       }
     }
 
-    query += ` GROUP BY p.id, p.name, p.image_url, p.price, p.discount_price, p.stock, p.flash_sale, p.category_id, c.name`;
+    query += ` GROUP BY p.id, p.name, p.image_url, p.brand, p.description, p.price, p.discount_price, p.stock, p.flash_sale, p.category_id, c.name`;
 
     if (trending === "true") {
       query += ` ORDER BY rating DESC NULLS LAST`;
@@ -162,6 +529,8 @@ const getProducts = async (req, res) => {
       price: Number(row.price),
       discount_price: toNumberOrNull(row.discount_price),
       rating: toNumberOrNull(row.rating),
+      review_count: Number(row.review_count || 0),
+      sold_count: Number(row.sold_count || 0),
     }));
 
     res.json({
@@ -306,6 +675,8 @@ const getTrendingProducts = async (req, res) => {
                 p.id,
                 p.name,
                 p.image_url,
+            p.brand,
+            p.description,
                 p.price,
                 p.discount_price,
                 p.flash_sale,
@@ -315,7 +686,7 @@ const getTrendingProducts = async (req, res) => {
             FROM products p
             LEFT JOIN categories c ON p.category_id = c.id
             LEFT JOIN order_items oi ON p.id = oi.product_id AND oi.rating IS NOT NULL
-            GROUP BY p.id, p.name, p.image_url, p.price, p.discount_price, p.flash_sale, p.category_id, c.name
+          GROUP BY p.id, p.name, p.image_url, p.brand, p.description, p.price, p.discount_price, p.flash_sale, p.category_id, c.name
             ORDER BY rating DESC NULLS LAST
             LIMIT 10`,
     );
@@ -339,6 +710,9 @@ const getTrendingProducts = async (req, res) => {
 };
 
 module.exports = {
+  createProduct,
+  updateProduct,
+  deleteProduct,
   getProducts,
   getProductWithReviews,
   getProductCategories,

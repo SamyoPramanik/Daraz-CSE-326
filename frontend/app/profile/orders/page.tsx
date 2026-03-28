@@ -13,12 +13,29 @@ import {
   AccordionContent,
 } from "@/components/ui/accordion";
 import { fetchOrders } from "@/lib/api";
+import { useAuthStore } from "@/lib/authStore";
 
 export default function MyOrdersPage() {
   const router = useRouter();
+  const { user, isLoggedIn, hasInitialized, initializeFromStorage } = useAuthStore();
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Initialize auth on mount
+  useEffect(() => {
+    if (!hasInitialized) {
+      initializeFromStorage();
+    }
+  }, []);
+
+  // Check if user is admin - redirect if so
+  useEffect(() => {
+    if (hasInitialized && isLoggedIn && user?.is_admin) {
+      router.push("/admin");
+      return;
+    }
+  }, [hasInitialized, isLoggedIn, user?.is_admin, router]);
 
   // Fetch orders on component mount
   useEffect(() => {

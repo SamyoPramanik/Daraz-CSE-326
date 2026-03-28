@@ -4,8 +4,10 @@ import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { useAuthStore } from "@/lib/authStore";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Lock } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -22,6 +24,7 @@ const BASE_URL =
 
 export default function LoginPage() {
   const router = useRouter();
+  const { setAuth } = useAuthStore();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -36,11 +39,7 @@ export default function LoginPage() {
       const data = await res.json();
 
       if (res.ok && data.status === "success") {
-        localStorage.setItem("token", data.data.token);
-        localStorage.setItem("user", JSON.stringify(data.data.user));
-
-        // Dispatch event to notify navbar of auth state change
-        window.dispatchEvent(new Event("authStateChanged"));
+        setAuth(data.data.token, data.data.user);
 
         router.push("/");
       } else {
@@ -113,6 +112,16 @@ export default function LoginPage() {
                 Sign up
               </Link>
             </div>
+            <Link href="/admin-login" className="w-full">
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full border-orange-600 text-orange-600 hover:bg-orange-50"
+              >
+                <Lock className="mr-2 h-4 w-4" />
+                Admin Login
+              </Button>
+            </Link>
           </CardFooter>
         </form>
       </Card>

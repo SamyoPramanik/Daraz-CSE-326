@@ -6,6 +6,7 @@ const aiRoute = require("./routes/aiRoute");
 const authRoute = require("./routes/authRoute");
 const orderRoute = require("./routes/orderRoute");
 const cartRoute = require("./routes/cartRoute");
+const adminRoute = require('./routes/adminRoute');
 
 const app = express();
 const port = process.env.PORT || 4000;
@@ -18,6 +19,7 @@ app.use("/ai", aiRoute);
 app.use("/auth", authRoute);
 app.use("/orders", orderRoute);
 app.use("/cart", cartRoute);
+app.use("/admin", adminRoute);
 
 app.get("/health", async (req, res) => {
   try {

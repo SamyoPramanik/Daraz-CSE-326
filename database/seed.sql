@@ -10,39 +10,39 @@ VALUES ('Electronics'),
     ('Sports & Outdoors'),
     ('Beauty & Personal Care') ON CONFLICT DO NOTHING;
 
--- Insert Users
-INSERT INTO
-    users (name, email, password, phone)
-VALUES (
-        'Ahmed Hassan',
-        'ahmed@example.com',
-        'hashed_password_123',
-        '01812345678'
-    ),
-    (
-        'Fatima Khan',
-        'fatima@example.com',
-        'hashed_password_456',
-        '01712345679'
-    ),
-    (
-        'Karim Ali',
-        'karim@example.com',
-        'hashed_password_789',
-        '01612345680'
-    ),
-    (
-        'Nadia Amin',
-        'nadia@example.com',
-        'hashed_password_012',
-        '01512345681'
-    ),
-    (
-        'Rashed Mahmud',
-        'rashed@example.com',
-        'hashed_password_345',
-        '01412345682'
-    ) ON CONFLICT DO NOTHING;
+-- Insert Users - COMMENTED OUT (Admin user will be seeded separately)
+-- INSERT INTO
+--     users (name, email, password, phone)
+-- VALUES (
+--         'Ahmed Hassan',
+--         'ahmed@example.com',
+--         'hashed_password_123',
+--         '01812345678'
+--     ),
+--     (
+--         'Fatima Khan',
+--         'fatima@example.com',
+--         'hashed_password_456',
+--         '01712345679'
+--     ),
+--     (
+--         'Karim Ali',
+--         'karim@example.com',
+--         'hashed_password_789',
+--         '01612345680'
+--     ),
+--     (
+--         'Nadia Amin',
+--         'nadia@example.com',
+--         'hashed_password_012',
+--         '01512345681'
+--     ),
+--     (
+--         'Rashed Mahmud',
+--         'rashed@example.com',
+--         'hashed_password_345',
+--         '01412345682'
+--     ) ON CONFLICT DO NOTHING;
 
 -- Insert Products (with descriptions)
 INSERT INTO
@@ -353,7 +353,7 @@ VALUES (
 
 ('Knife Set', 'https://m.media-amazon.com/images/I/81dIS4ecWfL._AC_UF894,1000_QL80_.jpg', 'Victorinox', 'Professional 5-piece stainless steel knife set.', 7999.00, 6499.00, 30, FALSE, 3),
 
-('Bamboo Cutting Board Set', 'https://images-cdn.ubuy.com.sa/634ed49f124d62741b4d28fc-royalhouse-bamboo-cutting-board-set-of.jpg', 'OXO', 'Set of 3 bamboo cutting boards in different sizes.', 1999.00, 1599.00, 100, TRUE, 3),
+('Bamboo Cutting Board Set', 'https://livingtoday.com.au/cdn/shop/files/1_6eac956d-452c-4690-8583-d7e3fe85748c.jpg?v=1752471030&width=1445', 'OXO', 'Set of 3 bamboo cutting boards in different sizes.', 1999.00, 1599.00, 100, TRUE, 3),
 
 ('Vacuum Cleaner', 'https://ebestsupply.com.bd/wp-content/uploads/2023/12/1b377ac5cc8283acad30735d503300c5.jpg', 'Dyson', 'Cordless vacuum cleaner with powerful suction.', 29999.00, 24999.00, 20, FALSE, 3),
 
@@ -446,193 +446,15 @@ VALUES (
         6
     ) ON CONFLICT DO NOTHING;
 
--- Insert Sample Orders
-INSERT INTO
-    orders (
-        user_id,
-        total_amount,
-        payment_method,
-        payment_status,
-        order_status,
-        shipping_address
-    )
+-- ✅ Phase 4: Pre-seed Admin User BEFORE Orders
+-- Admin user is created with is_admin = true on system initialization
+-- This MUST come before orders insert so that orders can reference the admin user
+-- Credentials: admin@daraz.com / admin123
+INSERT INTO users (name, email, password, phone, is_admin)
 VALUES (
-        (
-            SELECT id
-            FROM users
-            LIMIT 1
-        ),
-        129999.00,
-        'bKash',
-        'Paid',
-        'Delivered',
-        '123 Main St, Dhaka, Bangladesh'
-    ),
-    (
-        (
-            SELECT id
-            FROM users
-            LIMIT 1
-            OFFSET
-                1
-        ),
-        5999.00,
-        'Nagad',
-        'Paid',
-        'Pending',
-        '456 Park Ave, Chittagong, Bangladesh'
-    ),
-    (
-        (
-            SELECT id
-            FROM users
-            LIMIT 1
-            OFFSET
-                2
-        ),
-        79999.00,
-        'COD',
-        'Pending',
-        'Pending',
-        '789 Oak Rd, Sylhet, Bangladesh'
-    ) ON CONFLICT DO NOTHING;
-
--- Insert Order Items (using product UUIDs)
-INSERT INTO
-    order_items (
-        order_id,
-        product_id,
-        quantity,
-        price,
-        rating,
-        review,
-        review_date
-    )
-VALUES (
-        (
-            SELECT id
-            FROM orders
-            LIMIT 1
-        ),
-        (
-            SELECT id
-            FROM products
-            WHERE
-                name = 'iPhone 15 Pro'
-        ),
-        1,
-        129999.00,
-        5,
-        'Excellent product!',
-        NOW()
-    ),
-    (
-        (
-            SELECT id
-            FROM orders
-            LIMIT 1
-            OFFSET
-                1
-        ),
-        (
-            SELECT id
-            FROM products
-            WHERE
-                name = 'Running Shoes'
-        ),
-        1,
-        5999.00,
-        5,
-        'Very comfortable for long runs. Great build quality.',
-        NOW()
-    ),
-    (
-        (
-            SELECT id
-            FROM orders
-            LIMIT 1
-            OFFSET
-                2
-        ),
-        (
-            SELECT id
-            FROM products
-            WHERE
-                name = 'Samsung Galaxy S24'
-        ),
-        1,
-        79999.00,
-        5,
-        'Great performance and battery life.',
-        NOW()
-    ) ON CONFLICT DO NOTHING;
-
--- ⭐ Insert Bookings (temporary reservations during checkout)
-INSERT INTO
-    bookings (
-        user_id,
-        product_id,
-        booking_count
-    )
-VALUES (
-        (
-            SELECT id
-            FROM users
-            LIMIT 1
-        ),
-        (
-            SELECT id
-            FROM products
-            WHERE
-                name = 'iPhone 15 Pro'
-        ),
-        1
-    ),
-    (
-        (
-            SELECT id
-            FROM users
-            LIMIT 1
-            OFFSET
-                1
-        ),
-        (
-            SELECT id
-            FROM products
-            WHERE
-                name = 'Winter Jacket'
-        ),
-        1
-    ),
-    (
-        (
-            SELECT id
-            FROM users
-            LIMIT 1
-            OFFSET
-                2
-        ),
-        (
-            SELECT id
-            FROM products
-            WHERE
-                name = 'Denim Jeans'
-        ),
-        2
-    ),
-    (
-        (
-            SELECT id
-            FROM users
-            LIMIT 1
-            OFFSET
-                3
-        ),
-        (
-            SELECT id
-            FROM products
-            WHERE
-                name = 'The Midnight Library'
-        ),
-        1
-    ) ON CONFLICT DO NOTHING;
+    'System Admin',
+    'admin@daraz.com',
+    '$2b$10$JxPJGPQ15Cwi2P6y0aUI4OkK3zzTIpPf/8rye.VuupOFvqqDu5M8i',
+    '+8801234567890',
+    true
+) ON CONFLICT (email) DO UPDATE SET is_admin = true;
