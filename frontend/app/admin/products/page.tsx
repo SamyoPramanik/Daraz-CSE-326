@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -381,7 +382,12 @@ export default function AdminProductsPage() {
                             </div>
                           ) : (
                             <div>
-                              <p className="font-medium text-gray-900">{product.name}</p>
+                              <Link
+                                href={`/product/${product.id}`}
+                                className="font-medium text-gray-900 hover:text-primary underline-offset-2 hover:underline"
+                              >
+                                {product.name}
+                              </Link>
                               <p className="mt-1 line-clamp-2 text-xs text-gray-500">
                                 {product.description || "No description"}
                               </p>

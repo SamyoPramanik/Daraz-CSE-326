@@ -255,6 +255,11 @@ export default function AdminDashboard() {
                   View Users
                 </Button>
               </Link>
+              <Link href="/admin/analytics">
+                <Button variant="outline" className="w-full">
+                  Sales Analytics
+                </Button>
+              </Link>
             </CardContent>
           </Card>
         </div>

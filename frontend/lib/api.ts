@@ -146,6 +146,36 @@ export interface AdminDashboardStats {
   total_revenue: number;
 }
 
+export interface AdminAnalyticsDailyPoint {
+  date: string;
+  order_count: number;
+  gross_revenue: number;
+  commission_revenue: number;
+}
+
+export interface AdminAnalyticsTopProduct {
+  id: string;
+  name: string;
+  brand?: string | null;
+  units_sold: number;
+  gross_sales: number;
+  commission_revenue: number;
+}
+
+export interface AdminSalesAnalytics {
+  range: {
+    start_date: string;
+    end_date: string;
+  };
+  summary: {
+    total_orders: number;
+    gross_revenue: number;
+    commission_revenue: number;
+  };
+  daily: AdminAnalyticsDailyPoint[];
+  top_products: AdminAnalyticsTopProduct[];
+}
+
 export async function fetchCategories(): Promise<Category[]> {
   const url = `${BASE_URL}/products/categories`;
 
@@ -375,6 +405,37 @@ export async function fetchAdminDashboardStats() {
 
   const json = await res.json();
   return json.data as AdminDashboardStats;
+}
+
+export async function fetchAdminSalesAnalytics(startDate: string, endDate: string) {
+  const token =
+    typeof window !== "undefined" ? localStorage.getItem("token") : null;
+
+  if (!token) {
+    throw new Error("Unauthorized - Please login as admin");
+  }
+
+  const params = new URLSearchParams({
+    start_date: startDate,
+    end_date: endDate,
+  });
+
+  const url = `${BASE_URL}/admin/analytics?${params.toString()}`;
+  const res = await fetch(url, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    cache: "no-store",
+  });
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.message || "Failed to fetch sales analytics");
+  }
+
+  const json = await res.json();
+  return json.data as AdminSalesAnalytics;
 }
 
 export async function fetchAdminUserById(userId: string) {

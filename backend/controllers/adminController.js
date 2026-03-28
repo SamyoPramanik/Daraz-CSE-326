@@ -4,6 +4,20 @@ const isValidUuid = (value) =>
   typeof value === "string" &&
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
 
+const formatDateOnly = (date) => {
+  const y = date.getUTCFullYear();
+  const m = String(date.getUTCMonth() + 1).padStart(2, "0");
+  const d = String(date.getUTCDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
+};
+
+const parseDateOnly = (value) => {
+  if (!value || typeof value !== "string") return null;
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return null;
+  const dt = new Date(`${value}T00:00:00Z`);
+  return Number.isNaN(dt.getTime()) ? null : value;
+};
+
 const getCompletedOrders = async (req, res) => {
   try {
     const { name = "" } = req.query;
@@ -256,6 +270,121 @@ const getAdminDashboardStats = async (req, res) => {
   }
 };
 
+const getAdminSalesAnalytics = async (req, res) => {
+  try {
+    const today = new Date();
+    today.setUTCHours(0, 0, 0, 0);
+
+    const defaultEnd = formatDateOnly(today);
+    const defaultStartDate = new Date(today);
+    defaultStartDate.setUTCDate(defaultStartDate.getUTCDate() - 29);
+    const defaultStart = formatDateOnly(defaultStartDate);
+
+    const startDate = parseDateOnly(req.query.start_date) || defaultStart;
+    const endDate = parseDateOnly(req.query.end_date) || defaultEnd;
+
+    if (startDate > endDate) {
+      return res.status(400).json({
+        status: "error",
+        message: "start_date cannot be later than end_date",
+      });
+    }
+
+    const dailyResult = await pool.query(
+      `WITH date_series AS (
+          SELECT generate_series($1::date, $2::date, interval '1 day')::date AS day
+        )
+        SELECT
+          ds.day::text AS date,
+          COALESCE(COUNT(o.id), 0)::int AS order_count,
+          COALESCE(SUM(o.total_amount), 0)::numeric AS gross_revenue
+        FROM date_series ds
+        LEFT JOIN orders o
+          ON o.created_at >= ds.day
+          AND o.created_at < ds.day + interval '1 day'
+        GROUP BY ds.day
+        ORDER BY ds.day ASC`,
+      [startDate, endDate],
+    );
+
+    const topProductsResult = await pool.query(
+      `SELECT
+          p.id,
+          p.name,
+          p.brand,
+          COALESCE(SUM(oi.quantity), 0)::int AS units_sold,
+          COALESCE(SUM(oi.quantity * oi.price), 0)::numeric AS gross_sales
+        FROM order_items oi
+        JOIN orders o ON o.id = oi.order_id
+        JOIN products p ON p.id = oi.product_id
+        WHERE o.created_at >= $1::date
+          AND o.created_at < ($2::date + interval '1 day')
+        GROUP BY p.id, p.name, p.brand
+        ORDER BY units_sold DESC, gross_sales DESC
+        LIMIT 10`,
+      [startDate, endDate],
+    );
+
+    const summaryResult = await pool.query(
+      `SELECT
+          COUNT(*)::int AS total_orders,
+          COALESCE(SUM(total_amount), 0)::numeric AS gross_revenue
+        FROM orders
+        WHERE created_at >= $1::date
+          AND created_at < ($2::date + interval '1 day')`,
+      [startDate, endDate],
+    );
+
+    const summary = summaryResult.rows[0];
+    const grossRevenue = Number(summary.gross_revenue || 0);
+
+    const daily = dailyResult.rows.map((row) => {
+      const gross = Number(row.gross_revenue || 0);
+      return {
+        date: row.date,
+        order_count: Number(row.order_count || 0),
+        gross_revenue: gross,
+        commission_revenue: Number((gross * 0.01).toFixed(2)),
+      };
+    });
+
+    const topProducts = topProductsResult.rows.map((row) => {
+      const grossSales = Number(row.gross_sales || 0);
+      return {
+        id: row.id,
+        name: row.name,
+        brand: row.brand,
+        units_sold: Number(row.units_sold || 0),
+        gross_sales: grossSales,
+        commission_revenue: Number((grossSales * 0.01).toFixed(2)),
+      };
+    });
+
+    res.json({
+      status: "success",
+      data: {
+        range: {
+          start_date: startDate,
+          end_date: endDate,
+        },
+        summary: {
+          total_orders: Number(summary.total_orders || 0),
+          gross_revenue: grossRevenue,
+          commission_revenue: Number((grossRevenue * 0.01).toFixed(2)),
+        },
+        daily,
+        top_products: topProducts,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: "error",
+      message: "Failed to retrieve sales analytics",
+      error: error.message,
+    });
+  }
+};
+
 const getAdminUserById = async (req, res) => {
   try {
     const { id } = req.params;
@@ -361,6 +490,7 @@ const getAdminUserById = async (req, res) => {
 
 module.exports = {
   getAdminDashboardStats,
+  getAdminSalesAnalytics,
   getCompletedOrders,
   getAdminOrderById,
   getAllUsersWithStatus,
