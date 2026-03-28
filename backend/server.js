@@ -6,6 +6,7 @@ const reviewRoute = require('./routes/reviewRoute');
 const authRoute = require('./routes/authRoute');
 const orderRoute = require('./routes/orderRoute');
 const cartRoute = require('./routes/cartRoute');
+const adminRoute = require('./routes/adminRoute');
 
 
 
@@ -19,6 +20,7 @@ app.use('/reviews', reviewRoute);
 app.use('/auth', authRoute);
 app.use('/orders', orderRoute);
 app.use('/cart', cartRoute);
+app.use('/admin', adminRoute);
 
 app.get('/health', async (req, res) => {
     try {

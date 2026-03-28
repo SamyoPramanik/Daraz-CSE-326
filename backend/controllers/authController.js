@@ -15,6 +15,24 @@ const generateToken = (user) => {
     );
 };
 
+const markUserOnline = async (userId) => {
+    await pool.query(`
+        CREATE TABLE IF NOT EXISTS user_presence (
+            user_id UUID PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+            last_seen_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+            is_online BOOLEAN NOT NULL DEFAULT FALSE
+        )
+    `);
+
+    await pool.query(
+        `INSERT INTO user_presence (user_id, last_seen_at, is_online)
+         VALUES ($1, NOW(), TRUE)
+         ON CONFLICT (user_id)
+         DO UPDATE SET last_seen_at = NOW(), is_online = TRUE`,
+        [userId]
+    );
+};
+
 const registerUser = async (req, res) => {
     try {
         const { name, email, password, phone } = req.body;
@@ -109,6 +127,7 @@ const userLogin = async (req, res) => {
         }
 
         const token = generateToken(user);
+        await markUserOnline(user.id);
 
         res.status(200).json({
             status: 'success',
@@ -173,6 +192,7 @@ const adminLogin = async (req, res) => {
         }
 
         const token = generateToken(user);
+        await markUserOnline(user.id);
 
         res.status(200).json({
             status: 'success',
