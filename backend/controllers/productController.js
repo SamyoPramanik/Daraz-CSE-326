@@ -400,7 +400,13 @@ const getProducts = async (req, res) => {
                 p.flash_sale,
                 p.category_id,
                 c.name as category_name,
-                ROUND(AVG(oi.rating), 2) as rating
+                ROUND(AVG(oi.rating), 2) as rating,
+                COUNT(oi.id) as review_count,
+                COALESCE((
+                  SELECT SUM(oi_total.quantity)
+                  FROM order_items oi_total
+                  WHERE oi_total.product_id = p.id
+                ), 0) as sold_count
             FROM products p
             LEFT JOIN categories c ON p.category_id = c.id
             LEFT JOIN order_items oi ON p.id = oi.product_id AND oi.rating IS NOT NULL
@@ -523,6 +529,8 @@ const getProducts = async (req, res) => {
       price: Number(row.price),
       discount_price: toNumberOrNull(row.discount_price),
       rating: toNumberOrNull(row.rating),
+      review_count: Number(row.review_count || 0),
+      sold_count: Number(row.sold_count || 0),
     }));
 
     res.json({
