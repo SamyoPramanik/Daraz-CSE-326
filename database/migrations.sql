@@ -82,7 +82,7 @@ CREATE TABLE IF NOT EXISTS order_items (
     FOREIGN KEY (product_id) REFERENCES products (id) ON DELETE CASCADE
 );
 
--- ⭐ Bookings Table (Temporary reservations during checkout)
+-- Bookings Table (Temporary reservations during checkout)
 CREATE TABLE IF NOT EXISTS bookings (
     id SERIAL PRIMARY KEY,
     user_id UUID NOT NULL,
