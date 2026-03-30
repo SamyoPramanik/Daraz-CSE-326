@@ -1,0 +1,28 @@
+{
+    "name": "Daraz in Dev Container",
+    "image": "mcr.microsoft.com/devcontainers/javascript-node:22",
+    "features": {
+        "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {
+            "moby": false
+        },
+        "ghcr.io/devcontainers-community/npm-features/prettier:1": {},
+        "ghcr.io/devcontainers-extra/features/prettier:1": {}
+    },
+    "workspaceMount": "source=${localWorkspaceFolder},target=${localWorkspaceFolder},type=bind",
+    "workspaceFolder": "${localWorkspaceFolder}",
+    
+    // Your existing SSH fix
+    // "mounts": [
+    //     "source=/home/samyo-pramanik/.ssh/github_ssh_auth_token.pub,target=/home/samyo-pramanik/.ssh/github_ssh_auth_token.pub,type=bind,readonly"
+    // ],
+    "remoteUser": "node",
+    "postCreateCommand": "bash -c 'source /usr/local/share/nvm/nvm.sh && nvm install 20 && nvm install 23 && cd backend && nvm use 20 && npm install && cd ../frontend && nvm use 23 && npm install'",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-azuretools.vscode-docker",
+                "esbenp.prettier-vscode"
+            ]
+        }
+    }
+}
