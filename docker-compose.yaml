@@ -46,8 +46,8 @@ services:
       SSLCOMMERZ_IS_LIVE: false
 
       # URLs
-      BACKEND_URL: http://localhost:9000/api
-      FRONTEND_URL: http://localhost:9000
+      BACKEND_URL: ${BACKEND_URL}
+      FRONTEND_URL: ${FRONTEND_URL}
     depends_on:
       db:
         condition: service_healthy
