@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { fetchProductReliabilityScore } from "@/lib/api";
-import { Loader2, AlertCircle, CheckCircle } from "lucide-react";
+import { Loader2 } from "lucide-react";
 
 interface ReliabilityData {
   reliability_score: number;
@@ -98,66 +98,24 @@ export default function ProductReliability({
         </h3>
 
         <div className="flex items-end gap-4">
-          <div>
-            <span className={`text-5xl font-bold ${scoreColor}`}>
-              {data.reliability_score}%
-            </span>
-            <p className="text-sm text-gray-600 mt-1">Reliability Score</p>
-          </div>
-          <div>
-            <span
-              className={`inline-block px-3 py-1 rounded-full text-sm font-semibold ${confidenceColor} capitalize`}
-            >
-              {data.confidence} Confidence
-            </span>
-          </div>
-        </div>
-      </div>
-
-      {/* Key Insights */}
-      <div className="space-y-3 mb-5">
-        {/* Reasoning */}
-        <div className="bg-white/60 rounded p-3 border border-gray-200">
-          <p className="text-sm text-gray-700">
-            <span className="font-semibold text-gray-900">Analysis: </span>
-            {data.reasoning}
-          </p>
-        </div>
-
-        {/* Strengths */}
-        <div className="bg-white/60 rounded p-3 border border-green-200 flex gap-2">
-          <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-          <div>
-            <p className="text-sm text-gray-600">
-              <span className="font-semibold text-green-700">Strengths: </span>
-              {data.strengths}
-            </p>
-          </div>
-        </div>
-
-        {/* Concerns */}
-        {data.concerns !== "None" && (
-          <div className="bg-white/60 rounded p-3 border border-amber-200 flex gap-2">
-            <AlertCircle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+          {data.metadata.total_reviews >= 5 ? (
             <div>
-              <p className="text-sm text-gray-600">
-                <span className="font-semibold text-amber-700">Note: </span>
-                {data.concerns}
+              <span className={`text-5xl font-bold ${scoreColor}`}>
+                {data.reliability_score}%
+              </span>
+              <p className="text-sm text-gray-600 mt-1">Reliability Score</p>
+            </div>
+          ) : (
+            <div className="flex bg-white/60 p-3 rounded-lg border border-gray-200">
+              <p className="text-sm text-gray-600 italic">
+                Need at least 5 reviews to calculate reliability score.
               </p>
             </div>
-          </div>
-        )}
-
-        {/* Recommendation */}
-        <div className="bg-white/60 rounded p-3 border border-blue-200">
-          <p className="text-sm text-gray-700">
-            <span className="font-semibold text-blue-700">
-              Recommendation:{" "}
-            </span>
-            {data.recommendation}
-          </p>
+          )}
         </div>
       </div>
+
+
 
       {/* Review Stats */}
       <div className="grid grid-cols-3 gap-3 pt-4 border-t border-gray-200/50">

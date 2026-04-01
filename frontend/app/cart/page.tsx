@@ -225,7 +225,7 @@ export default function CartPage() {
                   <button
                     onClick={() => updateQuantity(item.id, -1)}
                     disabled={item.quantity === 1 || updating === item.id}
-                    className="px-3 py-1 bg-gray-50 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed text-lg"
+                    className="px-3 rounded-l-md py-1 bg-gray-50 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed text-lg"
                   >
                     -
                   </button>
@@ -237,7 +237,7 @@ export default function CartPage() {
                     disabled={
                       item.quantity >= item.stock || updating === item.id
                     }
-                    className="px-3 py-1 bg-gray-50 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed text-lg"
+                    className="px-3 rounded-r-md py-1 bg-gray-50 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed text-lg"
                   >
                     +
                   </button>
