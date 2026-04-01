@@ -88,12 +88,13 @@ const createReview = async (req, res) => {
       });
     }
 
-    // Check if user has ordered the product
+    // Check if user has ordered the product AND the order is delivered
     const orderItemCheck = await pool.query(
       `SELECT oi.id, oi.rating
              FROM order_items oi
              JOIN orders o ON oi.order_id = o.id
              WHERE o.user_id = $1 AND oi.product_id = $2
+               AND o.order_status = 'Delivered'
              ORDER BY (oi.rating IS NULL) DESC, o.created_at DESC
              LIMIT 1`,
       [userId, productId],
@@ -102,7 +103,8 @@ const createReview = async (req, res) => {
     if (orderItemCheck.rows.length === 0) {
       return res.status(403).json({
         status: "error",
-        message: "You can only review products you have ordered",
+        message:
+          "You can only review products from delivered orders",
       });
     }
 

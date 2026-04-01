@@ -40,7 +40,7 @@ const getCompletedOrders = async (req, res) => {
       FROM orders o
       JOIN users u ON u.id = o.user_id
       LEFT JOIN order_items oi ON oi.order_id = o.id
-      WHERE LOWER(o.order_status) IN ('delivered', 'completed')
+      WHERE 1=1
     `;
 
     if (name && String(name).trim()) {
@@ -488,6 +488,104 @@ const getAdminUserById = async (req, res) => {
   }
 };
 
+const VALID_TRANSITIONS = {
+  "Cash on Delivery": {
+    Pending: ["Confirmed"],
+    Confirmed: ["Delivered"],
+  },
+  "Online Payment": {
+    Paid: ["Delivered"],
+  },
+};
+
+const updateOrderStatus = async (req, res) => {
+  const client = await pool.connect();
+  try {
+    const { id } = req.params;
+    const { order_status } = req.body;
+
+    if (!isValidUuid(id)) {
+      return res.status(400).json({
+        status: "error",
+        message: "Invalid order id",
+      });
+    }
+
+    if (!order_status) {
+      return res.status(400).json({
+        status: "error",
+        message: "order_status is required",
+      });
+    }
+
+    await client.query("BEGIN");
+
+    const orderResult = await client.query(
+      `SELECT id, order_status, payment_method FROM orders WHERE id = $1 FOR UPDATE`,
+      [id],
+    );
+
+    if (orderResult.rows.length === 0) {
+      await client.query("ROLLBACK");
+      return res.status(404).json({
+        status: "error",
+        message: "Order not found",
+      });
+    }
+
+    const order = orderResult.rows[0];
+    const transitions = VALID_TRANSITIONS[order.payment_method];
+
+    if (!transitions) {
+      await client.query("ROLLBACK");
+      return res.status(400).json({
+        status: "error",
+        message: `No status transitions available for payment method: ${order.payment_method}`,
+      });
+    }
+
+    const allowedNext = transitions[order.order_status];
+
+    if (!allowedNext || !allowedNext.includes(order_status)) {
+      await client.query("ROLLBACK");
+      return res.status(400).json({
+        status: "error",
+        message: `Cannot transition from '${order.order_status}' to '${order_status}' for ${order.payment_method}`,
+      });
+    }
+
+    // For COD orders being Delivered, auto-set payment_status to Paid
+    const updatePaymentToo =
+      order.payment_method === "Cash on Delivery" && order_status === "Delivered";
+
+    await client.query(
+      `UPDATE orders SET order_status = $1${updatePaymentToo ? ", payment_status = 'Paid'" : ""} WHERE id = $2`,
+      [order_status, id],
+    );
+
+    await client.query("COMMIT");
+
+    res.json({
+      status: "success",
+      message: `Order status updated to '${order_status}'`,
+      data: {
+        id,
+        order_status,
+        payment_method: order.payment_method,
+      },
+    });
+  } catch (error) {
+    await client.query("ROLLBACK");
+    res.status(500).json({
+      status: "error",
+      message: "Failed to update order status",
+      error: error.message,
+    });
+  } finally {
+    client.release();
+  }
+};
+
 module.exports = {
   getAdminDashboardStats,
   getAdminSalesAnalytics,
@@ -495,4 +593,5 @@ module.exports = {
   getAdminOrderById,
   getAllUsersWithStatus,
   getAdminUserById,
+  updateOrderStatus,
 };

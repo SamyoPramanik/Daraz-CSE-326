@@ -17,6 +17,35 @@ import {
   type CreateProductPayload,
 } from "@/lib/api";
 import { useAuthStore } from "@/lib/authStore";
+import {
+  Combobox,
+  ComboboxContent,
+  ComboboxEmpty,
+  ComboboxInput,
+  ComboboxItem,
+  ComboboxList,
+} from "@/components/ui/combobox";
+
+interface SortOption {
+  value: string;
+  label: string;
+}
+
+const SORT_OPTIONS: SortOption[] = [
+  { value: "sold_desc", label: "Sold (High to Low)" },
+  { value: "sold_asc", label: "Sold (Low to High)" },
+  { value: "reviews_desc", label: "Reviews (High to Low)" },
+  { value: "reviews_asc", label: "Reviews (Low to High)" },
+  { value: "price_desc", label: "Price (High to Low)" },
+  { value: "price_asc", label: "Price (Low to High)" },
+  { value: "name_asc", label: "Name (A-Z)" },
+  { value: "name_desc", label: "Name (Z-A)" },
+];
+
+interface CategoryFilterOption {
+  value: string;
+  label: string;
+}
 
 type AdminProduct = {
   id: string;
@@ -307,32 +336,64 @@ export default function AdminProductsPage() {
                 onChange={(e) => setSearchText(e.target.value)}
                 placeholder="Search by name, brand, or description"
               />
-              <select
-                value={categoryFilter}
-                onChange={(e) => setCategoryFilter(e.target.value)}
-                className="h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+              <Combobox
+                items={[
+                  { value: "all", label: "All categories" } as CategoryFilterOption,
+                  ...categories.map((c) => ({ value: String(c.id), label: c.name }) as CategoryFilterOption),
+                ]}
+                value={
+                  categoryFilter === "all"
+                    ? { value: "all", label: "All categories" }
+                    : (() => {
+                        const cat = categories.find((c) => String(c.id) === categoryFilter);
+                        return cat ? { value: String(cat.id), label: cat.name } : { value: "all", label: "All categories" };
+                      })()
+                }
+                onValueChange={(val) => {
+                  const opt = val as CategoryFilterOption | null;
+                  setCategoryFilter(opt ? opt.value : "all");
+                }}
               >
-                <option value="all">All categories</option>
-                {categories.map((category) => (
-                  <option key={category.id} value={category.id}>
-                    {category.name}
-                  </option>
-                ))}
-              </select>
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                className="h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                <ComboboxInput
+                  className="w-full"
+                  placeholder="Filter by category"
+                  showClear={false}
+                />
+                <ComboboxContent>
+                  <ComboboxEmpty>No categories.</ComboboxEmpty>
+                  <ComboboxList>
+                    {(option: CategoryFilterOption) => (
+                      <ComboboxItem key={option.value} value={option}>
+                        {option.label}
+                      </ComboboxItem>
+                    )}
+                  </ComboboxList>
+                </ComboboxContent>
+              </Combobox>
+              <Combobox
+                items={SORT_OPTIONS}
+                value={SORT_OPTIONS.find((o) => o.value === sortBy) || SORT_OPTIONS[0]}
+                onValueChange={(val) => {
+                  const opt = val as SortOption | null;
+                  if (opt) setSortBy(opt.value);
+                }}
               >
-                <option value="sold_desc">Sort: Sold (High to Low)</option>
-                <option value="sold_asc">Sort: Sold (Low to High)</option>
-                <option value="reviews_desc">Sort: Reviews (High to Low)</option>
-                <option value="reviews_asc">Sort: Reviews (Low to High)</option>
-                <option value="price_desc">Sort: Price (High to Low)</option>
-                <option value="price_asc">Sort: Price (Low to High)</option>
-                <option value="name_asc">Sort: Name (A-Z)</option>
-                <option value="name_desc">Sort: Name (Z-A)</option>
-              </select>
+                <ComboboxInput
+                  className="w-full"
+                  placeholder="Sort by..."
+                  showClear={false}
+                />
+                <ComboboxContent>
+                  <ComboboxEmpty>No options.</ComboboxEmpty>
+                  <ComboboxList>
+                    {(option: SortOption) => (
+                      <ComboboxItem key={option.value} value={option}>
+                        {option.label}
+                      </ComboboxItem>
+                    )}
+                  </ComboboxList>
+                </ComboboxContent>
+              </Combobox>
             </div>
 
             <div className="overflow-x-auto">
@@ -409,18 +470,32 @@ export default function AdminProductsPage() {
 
                         <td className="p-3">
                           {isEditing ? (
-                            <select
-                              value={editingData.category_id}
-                              onChange={handleEditFieldChange("category_id")}
-                              className="h-10 w-full rounded-md border border-input bg-background px-3 py-2"
+                            <Combobox
+                              items={categories}
+                              value={categories.find((c) => String(c.id) === editingData.category_id) || null}
+                              onValueChange={(val) => {
+                                const cat = val as Category | null;
+                                setEditingData((prev) => ({
+                                  ...prev,
+                                  category_id: cat ? String(cat.id) : "",
+                                }));
+                              }}
                             >
-                              <option value="">Select category</option>
-                              {categories.map((category) => (
-                                <option key={category.id} value={category.id}>
-                                  {category.name}
-                                </option>
-                              ))}
-                            </select>
+                              <ComboboxInput
+                                className="w-full"
+                                placeholder="Select category"
+                              />
+                              <ComboboxContent>
+                                <ComboboxEmpty>No categories.</ComboboxEmpty>
+                                <ComboboxList>
+                                  {(category: Category) => (
+                                    <ComboboxItem key={category.id} value={category}>
+                                      {category.name}
+                                    </ComboboxItem>
+                                  )}
+                                </ComboboxList>
+                              </ComboboxContent>
+                            </Combobox>
                           ) : (
                             <span>{product.category_name || categoryNameMap.get(product.category_id) || "-"}</span>
                           )}
