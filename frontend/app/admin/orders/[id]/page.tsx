@@ -4,12 +4,43 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Save } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuthStore } from "@/lib/authStore";
-import { fetchAdminOrderById, type AdminOrderDetails } from "@/lib/api";
+import {
+  fetchAdminOrderById,
+  updateAdminOrderStatus,
+  type AdminOrderDetails,
+} from "@/lib/api";
+
+const VALID_TRANSITIONS: Record<string, Record<string, string[]>> = {
+  "Cash on Delivery": {
+    Pending: ["Confirmed"],
+    Confirmed: ["Delivered"],
+  },
+  "Online Payment": {
+    Paid: ["Delivered"],
+  },
+};
+
+const getStatusColor = (status: string) => {
+  switch (status?.toLowerCase()) {
+    case "delivered":
+      return "bg-green-100 text-green-700 border-green-200";
+    case "paid":
+      return "bg-emerald-100 text-emerald-700 border-emerald-200";
+    case "confirmed":
+      return "bg-blue-100 text-blue-700 border-blue-200";
+    case "pending":
+      return "bg-yellow-100 text-yellow-700 border-yellow-200";
+    case "failed":
+      return "bg-red-100 text-red-700 border-red-200";
+    default:
+      return "bg-gray-100 text-gray-700 border-gray-200";
+  }
+};
 
 export default function AdminOrderDetailsPage({
   params,
@@ -17,11 +48,14 @@ export default function AdminOrderDetailsPage({
   params: Promise<{ id: string }>;
 }) {
   const router = useRouter();
-  const { user, isLoggedIn, hasInitialized, initializeFromStorage } = useAuthStore();
+  const { user, isLoggedIn, hasInitialized, initializeFromStorage } =
+    useAuthStore();
 
   const [resolvedId, setResolvedId] = useState<string>("");
   const [order, setOrder] = useState<AdminOrderDetails | null>(null);
   const [loading, setLoading] = useState(true);
+  const [selectedStatus, setSelectedStatus] = useState<string>("");
+  const [updating, setUpdating] = useState(false);
 
   useEffect(() => {
     if (!hasInitialized) {
@@ -48,8 +82,13 @@ export default function AdminOrderDetailsPage({
       try {
         const data = await fetchAdminOrderById(resolvedId);
         setOrder(data);
+        setSelectedStatus(data.order_status);
       } catch (error) {
-        toast.error(error instanceof Error ? error.message : "Failed to load order details");
+        toast.error(
+          error instanceof Error
+            ? error.message
+            : "Failed to load order details",
+        );
       } finally {
         setLoading(false);
       }
@@ -58,13 +97,54 @@ export default function AdminOrderDetailsPage({
     void loadOrder();
   }, [hasInitialized, isLoggedIn, router, user?.is_admin, resolvedId]);
 
+  const getNextStatuses = (): string[] => {
+    if (!order) return [];
+    const transitions = VALID_TRANSITIONS[order.payment_method];
+    if (!transitions) return [];
+    return transitions[order.order_status] || [];
+  };
+
+  const handleStatusUpdate = async () => {
+    if (!order || !selectedStatus || selectedStatus === order.order_status)
+      return;
+
+    try {
+      setUpdating(true);
+      await updateAdminOrderStatus(order.id, selectedStatus);
+      toast.success(`Order status updated to "${selectedStatus}"`);
+      // Refresh order data
+      const data = await fetchAdminOrderById(resolvedId);
+      setOrder(data);
+      setSelectedStatus(data.order_status);
+    } catch (error) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Failed to update order status",
+      );
+      // Reset selection
+      if (order) setSelectedStatus(order.order_status);
+    } finally {
+      setUpdating(false);
+    }
+  };
+
   if (loading) {
-    return <div className="p-8 text-center text-gray-500">Loading order details...</div>;
+    return (
+      <div className="p-8 text-center text-gray-500">
+        Loading order details...
+      </div>
+    );
   }
 
   if (!order) {
-    return <div className="p-8 text-center text-gray-500">Order not found.</div>;
+    return (
+      <div className="p-8 text-center text-gray-500">Order not found.</div>
+    );
   }
+
+  const nextStatuses = getNextStatuses();
+  const canUpdateStatus = nextStatuses.length > 0;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -77,7 +157,9 @@ export default function AdminOrderDetailsPage({
               </Button>
             </Link>
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Order Details</h1>
+              <h1 className="text-2xl font-bold text-gray-900">
+                Order Details
+              </h1>
               <p className="text-sm text-gray-600">Order ID: {order.id}</p>
             </div>
           </div>
@@ -92,7 +174,10 @@ export default function AdminOrderDetailsPage({
             </CardHeader>
             <CardContent className="space-y-4">
               {order.order_items.map((item) => (
-                <div key={item.id} className="flex items-center justify-between gap-4 border-b pb-4">
+                <div
+                  key={item.id}
+                  className="flex items-center justify-between gap-4 border-b pb-4"
+                >
                   <div className="flex items-center gap-4">
                     <div className="relative h-16 w-16 overflow-hidden rounded bg-gray-100">
                       {item.image_url ? (
@@ -106,12 +191,20 @@ export default function AdminOrderDetailsPage({
                       ) : null}
                     </div>
                     <div>
-                      <p className="font-medium text-gray-900">{item.product_name}</p>
-                      <p className="text-sm text-gray-500">Brand: {item.brand || "-"}</p>
-                      <p className="text-sm text-gray-500">Qty: {item.quantity}</p>
+                      <p className="font-medium text-gray-900">
+                        {item.product_name}
+                      </p>
+                      <p className="text-sm text-gray-500">
+                        Brand: {item.brand || "-"}
+                      </p>
+                      <p className="text-sm text-gray-500">
+                        Qty: {item.quantity}
+                      </p>
                     </div>
                   </div>
-                  <p className="font-semibold">৳ {item.price.toLocaleString()}</p>
+                  <p className="font-semibold">
+                    ৳ {item.price.toLocaleString()}
+                  </p>
                 </div>
               ))}
             </CardContent>
@@ -119,28 +212,118 @@ export default function AdminOrderDetailsPage({
         </div>
 
         <div className="space-y-6">
+          {/* Status Update Card */}
+          <Card className="border-2 border-primary/20">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                Update Status
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <p className="text-sm text-gray-500 mb-2">Current Status</p>
+                <span
+                  className={`inline-block px-3 py-1.5 rounded-full text-xs uppercase font-bold tracking-wider border ${getStatusColor(order.order_status)}`}
+                >
+                  {order.order_status}
+                </span>
+              </div>
+
+              {canUpdateStatus ? (
+                <>
+                  <div>
+                    <label
+                      htmlFor="statusSelect"
+                      className="text-sm font-medium text-gray-700 block mb-1.5"
+                    >
+                      Update to
+                    </label>
+                    <select
+                      id="statusSelect"
+                      value={selectedStatus}
+                      onChange={(e) => setSelectedStatus(e.target.value)}
+                      className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                    >
+                      <option value={order.order_status} disabled>
+                        {order.order_status} (current)
+                      </option>
+                      {nextStatuses.map((s) => (
+                        <option key={s} value={s}>
+                          {s}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <Button
+                    onClick={handleStatusUpdate}
+                    disabled={
+                      updating || selectedStatus === order.order_status
+                    }
+                    className="w-full bg-primary hover:bg-primary/90 text-white gap-2"
+                  >
+                    <Save className="w-4 h-4" />
+                    {updating ? "Updating..." : "Save Status"}
+                  </Button>
+                </>
+              ) : (
+                <p className="text-sm text-gray-500 italic">
+                  {order.order_status === "Delivered"
+                    ? "This order has been delivered. No further updates available."
+                    : order.order_status === "Failed"
+                      ? "This order has failed. No updates available."
+                      : order.order_status === "Pending" &&
+                          order.payment_method === "Online Payment"
+                        ? "Waiting for payment from customer."
+                        : "No status updates available."}
+                </p>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* User Details */}
           <Card>
             <CardHeader>
               <CardTitle>User Details</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2 text-sm">
-              <p><span className="font-semibold">Name:</span> {order.user.name}</p>
-              <p><span className="font-semibold">Email:</span> {order.user.email}</p>
-              <p><span className="font-semibold">Phone:</span> {order.user.phone || "-"}</p>
+              <p>
+                <span className="font-semibold">Name:</span> {order.user.name}
+              </p>
+              <p>
+                <span className="font-semibold">Email:</span> {order.user.email}
+              </p>
+              <p>
+                <span className="font-semibold">Phone:</span>{" "}
+                {order.user.phone || "-"}
+              </p>
             </CardContent>
           </Card>
 
+          {/* Order Summary */}
           <Card>
             <CardHeader>
               <CardTitle>Order Summary</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2 text-sm">
-              <p><span className="font-semibold">Status:</span> {order.order_status}</p>
-              <p><span className="font-semibold">Payment Method:</span> {order.payment_method}</p>
-              <p><span className="font-semibold">Payment Status:</span> {order.payment_status}</p>
-              <p><span className="font-semibold">Address:</span> {order.shipping_address}</p>
-              <p><span className="font-semibold">Date:</span> {new Date(order.created_at).toLocaleString()}</p>
-              <p className="pt-2 text-base font-bold">Total: ৳ {order.total_amount.toLocaleString()}</p>
+              <p>
+                <span className="font-semibold">Payment Method:</span>{" "}
+                {order.payment_method}
+              </p>
+              <p>
+                <span className="font-semibold">Payment Status:</span>{" "}
+                {order.payment_status}
+              </p>
+              <p>
+                <span className="font-semibold">Address:</span>{" "}
+                {order.shipping_address}
+              </p>
+              <p>
+                <span className="font-semibold">Date:</span>{" "}
+                {new Date(order.created_at).toLocaleString()}
+              </p>
+              <p className="pt-2 text-base font-bold">
+                Total: ৳ {order.total_amount.toLocaleString()}
+              </p>
             </CardContent>
           </Card>
         </div>

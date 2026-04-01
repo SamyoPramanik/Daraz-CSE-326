@@ -12,6 +12,7 @@ const app = express();
 const port = process.env.PORT || 4000;
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 app.use("/products", productRoute);
 app.use("/reviews", reviewRoute);
@@ -37,6 +38,81 @@ app.get("/health", async (req, res) => {
     });
   }
 });
+
+// ============ Expiry Cron Job ============
+// Every 60 seconds, expire stale online payment orders that passed the 10-minute window.
+// Restores stock and deletes booking entries.
+const expireStaleOrders = async () => {
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+
+    // Find expired online payment orders
+    const expiredOrders = await client.query(
+      `SELECT o.id
+       FROM orders o
+       WHERE o.payment_method = 'Online Payment'
+         AND o.order_status = 'Pending'
+         AND o.expires_at IS NOT NULL
+         AND o.expires_at < NOW()
+       FOR UPDATE OF o`,
+    );
+
+    if (expiredOrders.rows.length === 0) {
+      await client.query("ROLLBACK");
+      return;
+    }
+
+    const orderIds = expiredOrders.rows.map((r) => r.id);
+
+    // Restore stock from order_items
+    await client.query(
+      `UPDATE products p
+       SET stock = p.stock + oi.quantity
+       FROM order_items oi
+       WHERE oi.product_id = p.id
+         AND oi.order_id = ANY($1::uuid[])`,
+      [orderIds],
+    );
+
+    // Delete bookings for these orders' users/products
+    await client.query(
+      `DELETE FROM bookings b
+       USING order_items oi, orders o
+       WHERE o.id = oi.order_id
+         AND b.user_id = o.user_id
+         AND b.product_id = oi.product_id
+         AND o.id = ANY($1::uuid[])`,
+      [orderIds],
+    );
+
+    // Mark orders as Failed
+    await client.query(
+      `UPDATE orders
+       SET order_status = 'Failed',
+           payment_status = 'Failed',
+           expires_at = NULL
+       WHERE id = ANY($1::uuid[])`,
+      [orderIds],
+    );
+
+    await client.query("COMMIT");
+
+    if (orderIds.length > 0) {
+      console.log(
+        `[Cron] Expired ${orderIds.length} stale online payment order(s)`,
+      );
+    }
+  } catch (error) {
+    await client.query("ROLLBACK");
+    console.error("[Cron] Error expiring stale orders:", error.message);
+  } finally {
+    client.release();
+  }
+};
+
+// Run every 60 seconds
+setInterval(expireStaleOrders, 60 * 1000);
 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);

@@ -633,7 +633,17 @@ export async function placeOrder(
     throw new Error(errorData.message || "Failed to place order");
   }
 
-  return res.json();
+  const json = await res.json();
+  return json as {
+    status: string;
+    message: string;
+    data: {
+      orderId: string;
+      total_amount: number;
+      redirect: boolean;
+      checkout_url?: string;
+    };
+  };
 }
 
 export async function fetchOrders() {
@@ -754,6 +764,70 @@ export async function fetchProductReliabilityScore(productId: string) {
 
   if (!res.ok) {
     throw new Error("Failed to fetch reliability score");
+  }
+
+  return res.json();
+}
+
+// ============ ADMIN ORDER STATUS API ============
+
+export async function fetchAdminOrders(nameFilter?: string) {
+  const token =
+    typeof window !== "undefined" ? localStorage.getItem("token") : null;
+
+  if (!token) {
+    throw new Error("Unauthorized - Please login as admin");
+  }
+
+  const params = new URLSearchParams();
+  if (nameFilter?.trim()) {
+    params.set("name", nameFilter.trim());
+  }
+
+  const url = `${BASE_URL}/admin/orders${params.toString() ? `?${params.toString()}` : ""}`;
+
+  const res = await fetch(url, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    cache: "no-store",
+  });
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.message || "Failed to fetch admin orders");
+  }
+
+  const json = await res.json();
+  return json.data as AdminOrderSummary[];
+}
+
+export async function updateAdminOrderStatus(
+  orderId: string,
+  orderStatus: string,
+) {
+  const token =
+    typeof window !== "undefined" ? localStorage.getItem("token") : null;
+
+  if (!token) {
+    throw new Error("Unauthorized - Please login as admin");
+  }
+
+  const url = `${BASE_URL}/admin/orders/${orderId}/status`;
+  const res = await fetch(url, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ order_status: orderStatus }),
+    cache: "no-store",
+  });
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.message || "Failed to update order status");
   }
 
   return res.json();
