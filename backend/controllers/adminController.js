@@ -554,8 +554,12 @@ const updateOrderStatus = async (req, res) => {
       });
     }
 
+    // For COD orders being Delivered, auto-set payment_status to Paid
+    const updatePaymentToo =
+      order.payment_method === "Cash on Delivery" && order_status === "Delivered";
+
     await client.query(
-      `UPDATE orders SET order_status = $1 WHERE id = $2`,
+      `UPDATE orders SET order_status = $1${updatePaymentToo ? ", payment_status = 'Paid'" : ""} WHERE id = $2`,
       [order_status, id],
     );
 

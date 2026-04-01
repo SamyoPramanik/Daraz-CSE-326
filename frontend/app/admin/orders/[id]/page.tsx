@@ -8,6 +8,14 @@ import { ArrowLeft, Save } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Combobox,
+  ComboboxContent,
+  ComboboxEmpty,
+  ComboboxInput,
+  ComboboxItem,
+  ComboboxList,
+} from "@/components/ui/combobox";
 import { useAuthStore } from "@/lib/authStore";
 import {
   fetchAdminOrderById,
@@ -82,7 +90,7 @@ export default function AdminOrderDetailsPage({
       try {
         const data = await fetchAdminOrderById(resolvedId);
         setOrder(data);
-        setSelectedStatus(data.order_status);
+        setSelectedStatus("");
       } catch (error) {
         toast.error(
           error instanceof Error
@@ -115,15 +123,14 @@ export default function AdminOrderDetailsPage({
       // Refresh order data
       const data = await fetchAdminOrderById(resolvedId);
       setOrder(data);
-      setSelectedStatus(data.order_status);
+      setSelectedStatus("");
     } catch (error) {
       toast.error(
         error instanceof Error
           ? error.message
           : "Failed to update order status",
       );
-      // Reset selection
-      if (order) setSelectedStatus(order.order_status);
+      setSelectedStatus("");
     } finally {
       setUpdating(false);
     }
@@ -232,33 +239,36 @@ export default function AdminOrderDetailsPage({
               {canUpdateStatus ? (
                 <>
                   <div>
-                    <label
-                      htmlFor="statusSelect"
-                      className="text-sm font-medium text-gray-700 block mb-1.5"
-                    >
+                    <p className="text-sm font-medium text-gray-700 mb-1.5">
                       Update to
-                    </label>
-                    <select
-                      id="statusSelect"
-                      value={selectedStatus}
-                      onChange={(e) => setSelectedStatus(e.target.value)}
-                      className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                    </p>
+                    <Combobox
+                      items={nextStatuses}
+                      value={selectedStatus || null}
+                      onValueChange={(value) => {
+                        setSelectedStatus((value as string) || "");
+                      }}
                     >
-                      <option value={order.order_status} disabled>
-                        {order.order_status} (current)
-                      </option>
-                      {nextStatuses.map((s) => (
-                        <option key={s} value={s}>
-                          {s}
-                        </option>
-                      ))}
-                    </select>
+                      <ComboboxInput
+                        className="w-full"
+                        id="statusSelect"
+                        placeholder="Select new status..."
+                      />
+                      <ComboboxContent>
+                        <ComboboxEmpty>No statuses available.</ComboboxEmpty>
+                        <ComboboxList>
+                          {(status: string) => (
+                            <ComboboxItem key={status} value={status}>
+                              {status}
+                            </ComboboxItem>
+                          )}
+                        </ComboboxList>
+                      </ComboboxContent>
+                    </Combobox>
                   </div>
                   <Button
                     onClick={handleStatusUpdate}
-                    disabled={
-                      updating || selectedStatus === order.order_status
-                    }
+                    disabled={updating || !selectedStatus}
                     className="w-full bg-primary hover:bg-primary/90 text-white gap-2"
                   >
                     <Save className="w-4 h-4" />

@@ -6,13 +6,32 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import ProductCard from "@/components/ProductCard";
 import {
-  ChevronDown,
   SlidersHorizontal,
   Loader2,
   ChevronRight,
   ChevronLeft,
 } from "lucide-react";
 import { fetchProducts, fetchCategories } from "@/lib/api";
+import {
+  Combobox,
+  ComboboxContent,
+  ComboboxEmpty,
+  ComboboxInput,
+  ComboboxItem,
+  ComboboxList,
+} from "@/components/ui/combobox";
+
+interface SortOption {
+  value: string;
+  label: string;
+}
+
+const SORT_OPTIONS: SortOption[] = [
+  { value: "pop", label: "Popularity" },
+  { value: "price_asc", label: "Price: Low to High" },
+  { value: "price_desc", label: "Price: High to Low" },
+  { value: "rating_desc", label: "Top Rated" },
+];
 
 interface ProductSummary {
   id: string;
@@ -218,21 +237,30 @@ function SearchContent() {
               <span className="text-sm text-gray-500 whitespace-nowrap">
                 Sort by:
               </span>
-              <div className="relative">
-                <select
-                  className="appearance-none rounded-md border border-gray-300 bg-white py-2 pl-3 pr-8 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-                  value={currentSort}
-                  onChange={(e) => updateQuery("sort", e.target.value)}
-                >
-                  <option value="pop">Popularity</option>
-                  <option value="price_asc">Price: Low to High</option>
-                  <option value="price_desc">Price: High to Low</option>
-                  <option value="rating_desc">Top Rated</option>
-                </select>
-                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
-                  <ChevronDown className="h-4 w-4" />
-                </div>
-              </div>
+              <Combobox
+                items={SORT_OPTIONS}
+                value={SORT_OPTIONS.find((o) => o.value === currentSort) || SORT_OPTIONS[0]}
+                onValueChange={(val) => {
+                  const opt = val as SortOption | null;
+                  if (opt) updateQuery("sort", opt.value);
+                }}
+              >
+                <ComboboxInput
+                  className="w-48"
+                  placeholder="Sort by..."
+                  showClear={false}
+                />
+                <ComboboxContent>
+                  <ComboboxEmpty>No options.</ComboboxEmpty>
+                  <ComboboxList>
+                    {(option: SortOption) => (
+                      <ComboboxItem key={option.value} value={option}>
+                        {option.label}
+                      </ComboboxItem>
+                    )}
+                  </ComboboxList>
+                </ComboboxContent>
+              </Combobox>
             </div>
           </div>
 

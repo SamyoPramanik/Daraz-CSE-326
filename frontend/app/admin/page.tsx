@@ -10,6 +10,14 @@ import { useAuthStore } from "@/lib/authStore";
 import { LogOut, BarChart3, Users, ShoppingCart, TrendingUp } from "lucide-react";
 import { toast } from "sonner";
 import {
+  Combobox,
+  ComboboxContent,
+  ComboboxEmpty,
+  ComboboxInput,
+  ComboboxItem,
+  ComboboxList,
+} from "@/components/ui/combobox";
+import {
   createProduct,
   fetchAdminDashboardStats,
   fetchCategories,
@@ -315,20 +323,33 @@ export default function AdminDashboard() {
                   <label className="text-sm font-medium text-gray-700" htmlFor="product-category">
                     Category
                   </label>
-                  <select
-                    id="product-category"
-                    value={formData.category_id}
-                    onChange={handleFormChange("category_id")}
-                    className="h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                    required
+                  <Combobox
+                    items={categories}
+                    value={categories.find((c) => String(c.id) === formData.category_id) || null}
+                    onValueChange={(val) => {
+                      const cat = val as Category | null;
+                      setFormData((prev) => ({
+                        ...prev,
+                        category_id: cat ? String(cat.id) : "",
+                      }));
+                    }}
                   >
-                    <option value="">Select a category</option>
-                    {categories.map((category) => (
-                      <option key={category.id} value={category.id}>
-                        {category.name}
-                      </option>
-                    ))}
-                  </select>
+                    <ComboboxInput
+                      id="product-category"
+                      className="w-full"
+                      placeholder="Select a category"
+                    />
+                    <ComboboxContent>
+                      <ComboboxEmpty>No categories found.</ComboboxEmpty>
+                      <ComboboxList>
+                        {(category: Category) => (
+                          <ComboboxItem key={category.id} value={category}>
+                            {category.name}
+                          </ComboboxItem>
+                        )}
+                      </ComboboxList>
+                    </ComboboxContent>
+                  </Combobox>
                 </div>
 
                 <div className="space-y-2 md:col-span-2">
