@@ -65,11 +65,13 @@ export default function MyOrdersPage() {
     switch (status?.toLowerCase()) {
       case "delivered":
         return "bg-green-100 text-green-700";
-      case "processing":
+      case "paid":
+        return "bg-emerald-100 text-emerald-700";
+      case "confirmed":
         return "bg-blue-100 text-blue-700";
       case "pending":
         return "bg-yellow-100 text-yellow-700";
-      case "cancelled":
+      case "failed":
         return "bg-red-100 text-red-700";
       default:
         return "bg-gray-100 text-gray-700";
@@ -150,6 +152,11 @@ export default function MyOrdersPage() {
                       >
                         {order.order_status}
                       </span>
+                      {order.payment_method && (
+                        <span className="px-2.5 py-1 rounded-full text-[10px] uppercase font-bold tracking-wider bg-gray-100 text-gray-600">
+                          {order.payment_method}
+                        </span>
+                      )}
                       <div className="font-bold text-gray-900 shrink-0">
                         Total: ৳ {order.total_amount.toLocaleString()}
                       </div>

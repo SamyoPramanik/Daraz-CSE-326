@@ -61,6 +61,9 @@ CREATE TABLE IF NOT EXISTS orders (
     payment_status VARCHAR(50) NOT NULL,
     order_status VARCHAR(50) NOT NULL,
     shipping_address TEXT,
+    tran_id VARCHAR(255),
+    val_id VARCHAR(255),
+    expires_at TIMESTAMPTZ,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 );
@@ -113,3 +116,11 @@ WHERE
 CREATE INDEX IF NOT EXISTS idx_booking_product ON bookings (product_id);
 
 CREATE INDEX IF NOT EXISTS idx_booking_user ON bookings (user_id);
+
+CREATE INDEX IF NOT EXISTS idx_orders_tran_id ON orders (tran_id)
+WHERE
+    tran_id IS NOT NULL;
+
+CREATE INDEX IF NOT EXISTS idx_orders_expires_at ON orders (expires_at)
+WHERE
+    expires_at IS NOT NULL;

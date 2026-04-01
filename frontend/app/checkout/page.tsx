@@ -5,10 +5,10 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { fetchCart, placeOrder } from "@/lib/api";
 import { toast } from "sonner";
+import { Truck, CreditCard } from "lucide-react";
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -17,7 +17,7 @@ export default function CheckoutPage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [shippingAddress, setShippingAddress] = useState("");
-  const [paymentMethod, setPaymentMethod] = useState("COD"); // Changed to COD
+  const [paymentMethod, setPaymentMethod] = useState("Cash on Delivery");
 
   const DELIVERY_FEE = 60;
 
@@ -65,21 +65,22 @@ export default function CheckoutPage() {
     try {
       setSubmitting(true);
       setError(null);
-      console.log("[Checkout] Placing order...", {
-        shippingAddress,
-        paymentMethod,
-      });
 
       const response = await placeOrder(paymentMethod, shippingAddress);
-      console.log("[Checkout] Order placed successfully:", response);
 
-      toast.success("Order placed successfully! Redirecting to your orders...");
-
-      // Wait a bit longer to ensure order is created, then redirect
-      // This also allows the toast to be visible
-      setTimeout(() => {
-        router.push("/profile/orders");
-      }, 2000);
+      if (response.data.redirect && response.data.checkout_url) {
+        // Online Payment — redirect to SSLCommerz gateway
+        toast.success("Redirecting to payment gateway...");
+        window.location.href = response.data.checkout_url;
+      } else {
+        // COD — redirect to orders page
+        toast.success(
+          "Order placed successfully! Redirecting to your orders...",
+        );
+        setTimeout(() => {
+          router.push("/profile/orders");
+        }, 2000);
+      }
     } catch (err: any) {
       console.error("[Checkout] Error placing order:", err);
       const errorMessage = err.message || "Failed to place order";
@@ -131,6 +132,21 @@ export default function CheckoutPage() {
       </div>
     );
   }
+
+  const paymentOptions = [
+    {
+      value: "Cash on Delivery",
+      label: "Cash on Delivery",
+      description: "Pay when you receive your order",
+      icon: Truck,
+    },
+    {
+      value: "Online Payment",
+      label: "Online Payment",
+      description: "Pay securely via SSLCommerz",
+      icon: CreditCard,
+    },
+  ];
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-5xl">
@@ -210,21 +226,58 @@ export default function CheckoutPage() {
               <CardTitle className="text-xl">Payment Method</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                {["COD", "bKash", "Credit/Debit Card"].map((method) => (
-                  <label
-                    key={method}
-                    className="flex items-center gap-3 p-4 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors"
-                  >
-                    <Checkbox
-                      checked={paymentMethod === method}
-                      onCheckedChange={() => setPaymentMethod(method)}
-                    />
-                    <span className="font-medium text-gray-700">
-                      {method === "COD" ? "Cash on Delivery" : method}
-                    </span>
-                  </label>
-                ))}
+              <div className="space-y-3">
+                {paymentOptions.map((option) => {
+                  const isSelected = paymentMethod === option.value;
+                  const Icon = option.icon;
+                  return (
+                    <label
+                      key={option.value}
+                      className={`flex items-center gap-4 p-4 border-2 rounded-xl cursor-pointer transition-all duration-200 ${
+                        isSelected
+                          ? "border-primary bg-orange-50 shadow-sm"
+                          : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        name="paymentMethod"
+                        value={option.value}
+                        checked={isSelected}
+                        onChange={() => setPaymentMethod(option.value)}
+                        className="sr-only"
+                      />
+                      <div
+                        className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${
+                          isSelected
+                            ? "bg-primary text-white"
+                            : "bg-gray-100 text-gray-500"
+                        }`}
+                      >
+                        <Icon className="w-5 h-5" />
+                      </div>
+                      <div className="flex-1">
+                        <p
+                          className={`font-semibold ${isSelected ? "text-primary" : "text-gray-700"}`}
+                        >
+                          {option.label}
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          {option.description}
+                        </p>
+                      </div>
+                      <div
+                        className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                          isSelected ? "border-primary" : "border-gray-300"
+                        }`}
+                      >
+                        {isSelected && (
+                          <div className="w-2.5 h-2.5 rounded-full bg-primary" />
+                        )}
+                      </div>
+                    </label>
+                  );
+                })}
               </div>
             </CardContent>
           </Card>
@@ -258,10 +311,23 @@ export default function CheckoutPage() {
               disabled={submitting || cartItems.length === 0}
               className="w-full bg-primary hover:bg-primary/90 text-white font-bold h-14 text-lg disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {submitting ? "Placing Order..." : "Place Order"}
+              {submitting
+                ? paymentMethod === "Online Payment"
+                  ? "Redirecting to Payment..."
+                  : "Placing Order..."
+                : paymentMethod === "Online Payment"
+                  ? "Pay Now"
+                  : "Place Order"}
             </Button>
+
+            {paymentMethod === "Online Payment" && (
+              <p className="text-xs text-center text-amber-600 mt-3 font-medium">
+                ⏱ Products will be reserved for 10 minutes during payment
+              </p>
+            )}
+
             <p className="text-xs text-center text-gray-400 mt-4">
-              By clicking &quot;Place Order&quot; you agree to our Terms &
+              By clicking &quot;{paymentMethod === "Online Payment" ? "Pay Now" : "Place Order"}&quot; you agree to our Terms &
               Conditions.
             </p>
           </div>
