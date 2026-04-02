@@ -90,11 +90,13 @@ CREATE TABLE IF NOT EXISTS bookings (
     id SERIAL PRIMARY KEY,
     user_id UUID NOT NULL,
     product_id UUID NOT NULL,
+    order_id UUID NOT NULL,
     booking_count INT NOT NULL DEFAULT 1,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
     FOREIGN KEY (product_id) REFERENCES products (id) ON DELETE CASCADE,
-    UNIQUE (user_id, product_id)
+    FOREIGN KEY (order_id) REFERENCES orders (id) ON DELETE CASCADE,
+    UNIQUE (order_id, product_id)
 );
 
 CREATE INDEX IF NOT EXISTS idx_products_category ON products (category_id);

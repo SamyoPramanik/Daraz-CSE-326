@@ -75,14 +75,9 @@ const expireStaleOrders = async () => {
       [orderIds],
     );
 
-    // Delete bookings for these orders' users/products
+    // Delete bookings for these orders
     await client.query(
-      `DELETE FROM bookings b
-       USING order_items oi, orders o
-       WHERE o.id = oi.order_id
-         AND b.user_id = o.user_id
-         AND b.product_id = oi.product_id
-         AND o.id = ANY($1::uuid[])`,
+      `DELETE FROM bookings WHERE order_id = ANY($1::uuid[])`,
       [orderIds],
     );
 
