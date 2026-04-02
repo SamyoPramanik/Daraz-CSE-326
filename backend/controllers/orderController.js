@@ -4,7 +4,7 @@ const SSLCommerzPayment = require("sslcommerz-lts");
 const STORE_ID = process.env.SSLCOMMERZ_STORE_ID;
 const STORE_PASSWORD = process.env.SSLCOMMERZ_STORE_PASSWORD;
 const IS_LIVE = process.env.SSLCOMMERZ_IS_LIVE === "true";
-const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:4000";
+const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:9000/api";
 const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:9000";
 
 const getOrCreateCartId = async (queryable, userId) => {
