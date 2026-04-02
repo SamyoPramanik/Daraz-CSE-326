@@ -490,7 +490,7 @@ const getAdminUserById = async (req, res) => {
 
 const VALID_TRANSITIONS = {
   "Cash on Delivery": {
-    Pending: ["Confirmed"],
+    Pending: ["Confirmed", "Canceled"],
     Confirmed: ["Delivered"],
   },
   "Online Payment": {
@@ -554,12 +554,32 @@ const updateOrderStatus = async (req, res) => {
       });
     }
 
+    // For COD orders being Canceled, restore stock and remove bookings
+    if (order_status === "Canceled") {
+      const itemsRes = await client.query(
+        `SELECT product_id, quantity FROM order_items WHERE order_id = $1`,
+        [id]
+      );
+      for (const item of itemsRes.rows) {
+        await client.query(
+          `UPDATE products SET stock = stock + $1 WHERE id = $2`,
+          [item.quantity, item.product_id]
+        );
+      }
+      await client.query(`DELETE FROM bookings WHERE order_id = $1`, [id]);
+    }
+
     // For COD orders being Delivered, auto-set payment_status to Paid
     const updatePaymentToo =
       order.payment_method === "Cash on Delivery" && order_status === "Delivered";
+    const cancelPaymentToo = order_status === "Canceled";
+
+    let paymentUpdateSql = "";
+    if (updatePaymentToo) paymentUpdateSql = ", payment_status = 'Paid'";
+    else if (cancelPaymentToo) paymentUpdateSql = ", payment_status = 'Cancelled'";
 
     await client.query(
-      `UPDATE orders SET order_status = $1${updatePaymentToo ? ", payment_status = 'Paid'" : ""} WHERE id = $2`,
+      `UPDATE orders SET order_status = $1${paymentUpdateSql} WHERE id = $2`,
       [order_status, id],
     );
 

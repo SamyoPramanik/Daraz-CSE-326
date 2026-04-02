@@ -25,7 +25,7 @@ import {
 
 const VALID_TRANSITIONS: Record<string, Record<string, string[]>> = {
   "Cash on Delivery": {
-    Pending: ["Confirmed"],
+    Pending: ["Confirmed", "Canceled"],
     Confirmed: ["Delivered"],
   },
   "Online Payment": {
@@ -44,6 +44,7 @@ const getStatusColor = (status: string) => {
     case "pending":
       return "bg-yellow-100 text-yellow-700 border-yellow-200";
     case "failed":
+    case "canceled":
       return "bg-red-100 text-red-700 border-red-200";
     default:
       return "bg-gray-100 text-gray-700 border-gray-200";
@@ -279,8 +280,8 @@ export default function AdminOrderDetailsPage({
                 <p className="text-sm text-gray-500 italic">
                   {order.order_status === "Delivered"
                     ? "This order has been delivered. No further updates available."
-                    : order.order_status === "Failed"
-                      ? "This order has failed. No updates available."
+                    : order.order_status === "Failed" || order.order_status === "Canceled"
+                      ? "This order has been cancelled/failed. No updates available."
                       : order.order_status === "Pending" &&
                           order.payment_method === "Online Payment"
                         ? "Waiting for payment from customer."
