@@ -113,8 +113,9 @@ export interface AdminUserInfo {
   total_spent: number;
   last_order_at?: string | null;
   last_cart_at?: string | null;
+  last_seen_at?: string | null;
   last_activity_at: string;
-  status: "Online" | "Offline";
+  status: string;
 }
 
 export interface AdminUserDetails {
@@ -124,7 +125,7 @@ export interface AdminUserDetails {
   phone?: string | null;
   created_at: string;
   last_seen_at?: string | null;
-  status: "Online" | "Offline";
+  status: string;
   total_orders: number;
   total_spent: number;
   last_order_at?: string | null;
@@ -831,4 +832,70 @@ export async function updateAdminOrderStatus(
   }
 
   return res.json();
+}
+
+// ============ AUDIT LOGS API ============
+
+export interface AuditLog {
+  id: number;
+  user_id: string | null;
+  user_name: string | null;
+  user_email: string | null;
+  method: string;
+  path: string;
+  frontend_url: string | null;
+  ip: string | null;
+  user_agent: string | null;
+  status_code: number | null;
+  req_body: Record<string, unknown> | null;
+  res_body: Record<string, unknown> | null;
+  created_at: string;
+}
+
+export interface AuditLogMeta {
+  total: number;
+  page: number;
+  limit: number;
+  total_pages: number;
+}
+
+export async function fetchAuditLogs(params: {
+  user_id?: string;
+  user_email?: string;
+  method?: string;
+  path?: string;
+  status_code?: string;
+  from?: string;
+  to?: string;
+  page?: number;
+  limit?: number;
+}): Promise<{ data: AuditLog[]; meta: AuditLogMeta }> {
+  const token =
+    typeof window !== "undefined" ? localStorage.getItem("token") : null;
+
+  if (!token) {
+    throw new Error("Unauthorized - Please login as admin");
+  }
+
+  const query = new URLSearchParams();
+  Object.entries(params).forEach(([k, v]) => {
+    if (v !== undefined && v !== null && v !== "") {
+      query.set(k, String(v));
+    }
+  });
+
+  const url = `${BASE_URL}/admin/audit-logs?${query.toString()}`;
+  const res = await fetch(url, {
+    method: "GET",
+    headers: { Authorization: `Bearer ${token}` },
+    cache: "no-store",
+  });
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error((errorData as { message?: string }).message || "Failed to fetch audit logs");
+  }
+
+  const json = await res.json();
+  return { data: json.data as AuditLog[], meta: json.meta as AuditLogMeta };
 }

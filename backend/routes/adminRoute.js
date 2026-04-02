@@ -9,6 +9,7 @@ const {
   getAdminUserById,
   updateOrderStatus,
 } = require("../controllers/adminController");
+const { getAuditLogs } = require("../controllers/auditController");
 
 const router = express.Router();
 
@@ -19,6 +20,7 @@ router.get("/orders/:id", adminMiddleware, getAdminOrderById);
 router.patch("/orders/:id/status", adminMiddleware, updateOrderStatus);
 router.get("/users", adminMiddleware, getAllUsersWithStatus);
 router.get("/users/:id", adminMiddleware, getAdminUserById);
+router.get("/audit-logs", adminMiddleware, getAuditLogs);
 
 module.exports = router;
 

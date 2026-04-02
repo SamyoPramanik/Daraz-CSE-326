@@ -169,14 +169,6 @@ const getAdminOrderById = async (req, res) => {
 
 const getAllUsersWithStatus = async (req, res) => {
   try {
-    await pool.query(`
-      CREATE TABLE IF NOT EXISTS user_presence (
-        user_id UUID PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
-        last_seen_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-        is_online BOOLEAN NOT NULL DEFAULT FALSE
-      )
-    `);
-
     const result = await pool.query(
       `SELECT
         u.id,
@@ -187,35 +179,32 @@ const getAllUsersWithStatus = async (req, res) => {
         COALESCE(stats.total_orders, 0)::int AS total_orders,
         COALESCE(stats.total_spent, 0)::numeric AS total_spent,
         stats.last_order_at,
-        stats.last_cart_at,
-        up.last_seen_at,
+        ua.last_cart_activity AS last_cart_at,
+        ua.last_seen_at,
         COALESCE(
           GREATEST(
-            up.last_seen_at,
+            ua.last_seen_at,
             u.created_at,
             COALESCE(stats.last_order_at, u.created_at),
-            COALESCE(stats.last_cart_at, u.created_at)
+            COALESCE(ua.last_cart_activity, u.created_at)
           ),
           u.created_at
         ) AS last_activity_at,
         CASE
-          WHEN up.is_online = TRUE
-            AND up.last_seen_at >= NOW() - INTERVAL '15 minutes'
+          WHEN ua.last_seen_at >= NOW() - INTERVAL '15 minutes'
           THEN 'Online'
           ELSE 'Offline'
         END AS status
       FROM users u
-      LEFT JOIN user_presence up ON up.user_id = u.id
+      LEFT JOIN user_activity ua ON ua.user_id = u.id
       LEFT JOIN (
         SELECT
           u2.id AS user_id,
           COUNT(DISTINCT o.id) AS total_orders,
           SUM(o.total_amount) AS total_spent,
-          MAX(o.created_at) AS last_order_at,
-          MAX(c.created_at) AS last_cart_at
+          MAX(o.created_at) AS last_order_at
         FROM users u2
         LEFT JOIN orders o ON o.user_id = u2.id
-        LEFT JOIN carts c ON c.user_id = u2.id
         GROUP BY u2.id
       ) stats ON stats.user_id = u.id
       WHERE u.is_admin = FALSE
@@ -396,14 +385,6 @@ const getAdminUserById = async (req, res) => {
       });
     }
 
-    await pool.query(`
-      CREATE TABLE IF NOT EXISTS user_presence (
-        user_id UUID PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
-        last_seen_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-        is_online BOOLEAN NOT NULL DEFAULT FALSE
-      )
-    `);
-
     const userResult = await pool.query(
       `SELECT
         u.id,
@@ -411,19 +392,18 @@ const getAdminUserById = async (req, res) => {
         u.email,
         u.phone,
         u.created_at,
-        up.last_seen_at,
+        ua.last_seen_at,
         CASE
-          WHEN up.is_online = TRUE
-            AND up.last_seen_at >= NOW() - INTERVAL '15 minutes'
+          WHEN ua.last_seen_at >= NOW() - INTERVAL '15 minutes'
           THEN 'Online'
           ELSE 'Offline'
         END AS status,
         COALESCE(stats.total_orders, 0)::int AS total_orders,
         COALESCE(stats.total_spent, 0)::numeric AS total_spent,
         stats.last_order_at,
-        carts_stats.last_cart_at AS last_cart_at
+        ua.last_cart_activity AS last_cart_at
       FROM users u
-      LEFT JOIN user_presence up ON up.user_id = u.id
+      LEFT JOIN user_activity ua ON ua.user_id = u.id
       LEFT JOIN (
         SELECT
           o.user_id,
@@ -433,11 +413,6 @@ const getAdminUserById = async (req, res) => {
         FROM orders o
         GROUP BY o.user_id
       ) stats ON stats.user_id = u.id
-      LEFT JOIN (
-        SELECT c.user_id, MAX(c.created_at) AS last_cart_at
-        FROM carts c
-        GROUP BY c.user_id
-      ) carts_stats ON carts_stats.user_id = u.id
       WHERE u.id = $1 AND u.is_admin = FALSE`,
       [id],
     );
