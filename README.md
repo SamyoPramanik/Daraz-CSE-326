@@ -17,6 +17,16 @@
 
 ---
 
+## 🚀 Live Demo
+
+Experience the live, production deployment of the application:
+
+🔗 **URL:** http://samyopramanik.duckdns.org:9000/
+
+> ⚠️ **Note:** The server may take a few seconds to respond on first load due to inactivity (cold start).
+
+---
+
 ## 📖 Table of Contents
 
 - [Overview](#-overview)
@@ -479,29 +489,3 @@ Daraz/
 ├── docker-compose.yaml      # Multi-container orchestration
 └── README.md                # ← You are here
 ```
-
----
-
-## 🤝 Contributing
-
-Contributions are welcome! To get started:
-
-1. **Fork** the repository
-2. **Create** a feature branch: `git checkout -b feature/your-feature`
-3. **Commit** your changes: `git commit -m "feat: add your feature"`
-4. **Push** to the branch: `git push origin feature/your-feature`
-5. **Open** a Pull Request
-
-Please ensure your PR passes the CI pipeline before requesting a review.
-
----
-
-## 📄 License
-
-This project is licensed under the **ISC License**. See the [LICENSE](./LICENSE) file for details.
-
----
-
-<p align="center">
-  Built with ❤️ using the PERN Stack
-</p>
