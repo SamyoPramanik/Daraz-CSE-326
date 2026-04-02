@@ -5,6 +5,33 @@ const UUID_REGEX =
 const isValidUuid = (value) =>
   typeof value === "string" && UUID_REGEX.test(value);
 
+const updateReliabilityScore = async (productId) => {
+  try {
+    const result = await pool.query(
+      `SELECT ROUND(AVG(rating), 2) as avg_rating, COUNT(*) as review_count
+       FROM order_items 
+       WHERE product_id = $1 AND rating IS NOT NULL`,
+      [productId]
+    );
+
+    const count = parseInt(result.rows[0].review_count) || 0;
+    const avg = parseFloat(result.rows[0].avg_rating) || 0;
+
+    let score = 0;
+    if (count >= 3) {
+      // Scale of 1 to 10 based on 5-star rating system
+      score = Math.round(avg * 20) / 10;
+    }
+
+    await pool.query(
+      `UPDATE products SET reliability_score = $1 WHERE id = $2`,
+      [score, productId]
+    );
+  } catch (error) {
+    console.error('Failed to update reliability score:', error);
+  }
+};
+
 // Get all reviews for a product
 const getProductReviews = async (req, res) => {
   try {
@@ -130,6 +157,9 @@ const createReview = async (req, res) => {
       [rating, review || null, orderItemId],
     );
 
+    // Update reliability score
+    await updateReliabilityScore(productId);
+
     res.status(201).json({
       status: "success",
       message: "Review created/updated successfully",
@@ -159,7 +189,7 @@ const deleteReview = async (req, res) => {
 
     // Check if review exists and belongs to user
     const checkResult = await pool.query(
-      `SELECT oi.id 
+      `SELECT oi.id, oi.product_id 
              FROM order_items oi
              JOIN orders o ON oi.order_id = o.id
              WHERE oi.id = $1 AND o.user_id = $2`,
@@ -173,6 +203,8 @@ const deleteReview = async (req, res) => {
       });
     }
 
+    const productId = checkResult.rows[0].product_id;
+
     // Delete review (clear rating and review data from order_item)
     await pool.query(
       `UPDATE order_items 
@@ -180,6 +212,8 @@ const deleteReview = async (req, res) => {
              WHERE id = $1`,
       [reviewId],
     );
+
+    await updateReliabilityScore(productId);
 
     res.json({
       status: "success",
