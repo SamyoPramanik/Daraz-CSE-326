@@ -31,6 +31,7 @@ CREATE TABLE IF NOT EXISTS products (
     stock INT NOT NULL DEFAULT 0,
     flash_sale BOOLEAN DEFAULT FALSE,
     category_id INT NOT NULL,
+    reliability_score NUMERIC(3, 1) DEFAULT 0,
     FOREIGN KEY (category_id) REFERENCES categories (id) ON DELETE CASCADE
 );
 
