@@ -564,7 +564,7 @@ const viewOrders = async (req, res) => {
             FROM orders o
             LEFT JOIN order_items oi ON oi.order_id = o.id
             LEFT JOIN products p ON p.id = oi.product_id
-            WHERE o.user_id = $1
+            WHERE o.user_id = $1 AND o.order_status = 'Delivered'
             ORDER BY o.created_at DESC, oi.id ASC`,
       [userId],
     );
