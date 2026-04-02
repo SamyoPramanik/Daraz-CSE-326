@@ -405,7 +405,8 @@ const getProducts = async (req, res) => {
                 COALESCE((
                   SELECT SUM(oi_total.quantity)
                   FROM order_items oi_total
-                  WHERE oi_total.product_id = p.id
+                  JOIN orders o_total ON oi_total.order_id = o_total.id
+                  WHERE oi_total.product_id = p.id AND o_total.order_status IN ('Paid', 'Confirmed', 'Delivered')
                 ), 0) as sold_count
             FROM products p
             LEFT JOIN categories c ON p.category_id = c.id
@@ -607,9 +608,10 @@ const getProductWithReviews = async (req, res) => {
 
     // Get total sold quantity
     const soldResult = await pool.query(
-      `SELECT COALESCE(SUM(quantity), 0) as total_sold
-            FROM order_items
-            WHERE product_id = $1`,
+      `SELECT COALESCE(SUM(oi.quantity), 0) as total_sold
+            FROM order_items oi
+            JOIN orders o ON oi.order_id = o.id
+            WHERE oi.product_id = $1 AND o.order_status IN ('Paid', 'Confirmed', 'Delivered')`,
       [id],
     );
 
