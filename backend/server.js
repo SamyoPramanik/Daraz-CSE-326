@@ -7,12 +7,16 @@ const authRoute = require("./routes/authRoute");
 const orderRoute = require("./routes/orderRoute");
 const cartRoute = require("./routes/cartRoute");
 const adminRoute = require("./routes/adminRoute");
+const activityMiddleware = require("./middleware/activityMiddleware");
 
 const app = express();
 const port = process.env.PORT || 4000;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Track user activity & write audit log on every request
+app.use(activityMiddleware);
 
 app.use("/products", productRoute);
 app.use("/reviews", reviewRoute);

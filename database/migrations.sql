@@ -126,3 +126,32 @@ WHERE
 CREATE INDEX IF NOT EXISTS idx_orders_expires_at ON orders (expires_at)
 WHERE
     expires_at IS NOT NULL;
+
+-- User Activity Table (last_seen + last_cart_activity per user)
+CREATE TABLE IF NOT EXISTS user_activity (
+    user_id            UUID PRIMARY KEY REFERENCES users (id) ON DELETE CASCADE,
+    last_seen_at       TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    last_cart_activity TIMESTAMPTZ
+);
+
+-- Audit Logs Table (every API request/response)
+CREATE TABLE IF NOT EXISTS audit_logs (
+    id           BIGSERIAL PRIMARY KEY,
+    user_id      UUID REFERENCES users (id) ON DELETE SET NULL,
+    user_name    VARCHAR(255),
+    user_email   VARCHAR(255),
+    method       VARCHAR(10) NOT NULL,
+    path         TEXT NOT NULL,
+    frontend_url TEXT,
+    ip           TEXT,
+    user_agent   TEXT,
+    status_code  INT,
+    req_body     JSONB,
+    res_body     JSONB,
+    created_at   TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_audit_logs_user_id    ON audit_logs (user_id);
+CREATE INDEX IF NOT EXISTS idx_audit_logs_created_at ON audit_logs (created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_audit_logs_path       ON audit_logs (path);
+CREATE INDEX IF NOT EXISTS idx_user_activity_user    ON user_activity (user_id);
