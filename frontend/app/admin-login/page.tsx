@@ -59,8 +59,8 @@ export default function AdminLoginPage() {
         // Dispatch event to notify navbar of auth state change
         window.dispatchEvent(new Event("authStateChanged"));
 
-        toast.success("✅ Login successful!");
-        
+        toast.success("Login successful!");
+
         // Redirect to admin dashboard
         console.log("Redirecting to /admin");
         router.push("/admin");
