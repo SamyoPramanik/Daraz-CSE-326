@@ -146,11 +146,11 @@ const checkout = async (req, res) => {
 
       // Insert booking reservation
       await client.query(
-        `INSERT INTO bookings (user_id, product_id, booking_count)
-                 VALUES ($1, $2, $3)
-                 ON CONFLICT (user_id, product_id)
+        `INSERT INTO bookings (user_id, product_id, order_id, booking_count)
+                 VALUES ($1, $2, $3, $4)
+                 ON CONFLICT (order_id, product_id)
                  DO UPDATE SET booking_count = bookings.booking_count + EXCLUDED.booking_count`,
-        [userId, item.product_id, item.quantity],
+        [userId, item.product_id, order.id, item.quantity],
       );
     }
 
@@ -226,8 +226,8 @@ const checkout = async (req, res) => {
         }
         // Delete bookings
         await revertClient.query(
-          `DELETE FROM bookings WHERE user_id = $1`,
-          [userId],
+          `DELETE FROM bookings WHERE order_id = $1`,
+          [order.id],
         );
         // Mark order as failed
         await revertClient.query(
@@ -327,12 +327,8 @@ const paymentSuccess = async (req, res) => {
 
     // Delete bookings (reservation complete — payment confirmed)
     await client.query(
-      `DELETE FROM bookings b
-       USING order_items oi
-       WHERE oi.order_id = $1
-         AND b.user_id = $2
-         AND b.product_id = oi.product_id`,
-      [order.id, order.user_id],
+      `DELETE FROM bookings WHERE order_id = $1`,
+      [order.id],
     );
 
     await client.query("COMMIT");
@@ -386,12 +382,8 @@ const paymentFail = async (req, res) => {
 
     // Delete bookings
     await client.query(
-      `DELETE FROM bookings b
-       USING order_items oi
-       WHERE oi.order_id = $1
-         AND b.user_id = $2
-         AND b.product_id = oi.product_id`,
-      [order.id, order.user_id],
+      `DELETE FROM bookings WHERE order_id = $1`,
+      [order.id],
     );
 
     // Mark order as failed
@@ -452,12 +444,8 @@ const paymentCancel = async (req, res) => {
 
     // Delete bookings
     await client.query(
-      `DELETE FROM bookings b
-       USING order_items oi
-       WHERE oi.order_id = $1
-         AND b.user_id = $2
-         AND b.product_id = oi.product_id`,
-      [order.id, order.user_id],
+      `DELETE FROM bookings WHERE order_id = $1`,
+      [order.id],
     );
 
     // Mark order as cancelled
@@ -533,12 +521,8 @@ const paymentIPN = async (req, res) => {
     );
 
     await client.query(
-      `DELETE FROM bookings b
-       USING order_items oi
-       WHERE oi.order_id = $1
-         AND b.user_id = $2
-         AND b.product_id = oi.product_id`,
-      [order.id, order.user_id],
+      `DELETE FROM bookings WHERE order_id = $1`,
+      [order.id],
     );
 
     await client.query("COMMIT");
