@@ -188,7 +188,7 @@ export default function OrderDetailsPage({
                             productId={item.product_id.toString()}
                             productName={item.product_name}
                             onReviewSubmitted={() => {
-                              window.location.reload();
+                              router.refresh();
                             }}
                           />
                         )
@@ -221,11 +221,10 @@ export default function OrderDetailsPage({
                 {order.payment_method || "N/A"}
               </p>
               <p
-                className={`font-medium text-sm mt-2 ${
-                  order.payment_status === "Paid"
+                className={`font-medium text-sm mt-2 ${order.payment_status === "Paid"
                     ? "text-green-600"
                     : "text-yellow-600"
-                }`}
+                  }`}
               >
                 {order.payment_status === "Paid"
                   ? "Payment Completed"

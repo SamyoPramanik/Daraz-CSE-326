@@ -27,7 +27,7 @@ const getProductReviews = async (req, res) => {
             FROM order_items oi
             JOIN orders o ON oi.order_id = o.id
             JOIN users u ON o.user_id = u.id
-            WHERE oi.product_id = $1 AND oi.rating IS NOT NULL
+            WHERE oi.product_id = $1 AND oi.rating IS NOT NULL AND o.order_status = 'Delivered'
             ORDER BY oi.review_date DESC`,
       [productId],
     );
@@ -37,7 +37,8 @@ const getProductReviews = async (req, res) => {
                 ROUND(AVG(oi.rating), 2) as avg_rating,
                 COUNT(oi.id) as review_count
             FROM order_items oi
-            WHERE oi.product_id = $1 AND oi.rating IS NOT NULL`,
+            JOIN orders o ON oi.order_id = o.id
+            WHERE oi.product_id = $1 AND oi.rating IS NOT NULL AND o.order_status = 'Delivered'`,
       [productId],
     );
 
