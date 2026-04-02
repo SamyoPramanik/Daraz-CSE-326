@@ -57,7 +57,7 @@ export default function MyReviewsPage() {
         // Extract all products from orders
         const products: Product[] = [];
         orders.forEach((order: any) => {
-          if (order.order_items && Array.isArray(order.order_items)) {
+          if (order.order_items && order.order_status === 'Delivered' && Array.isArray(order.order_items)) {
             order.order_items.forEach((item: any) => {
               products.push({
                 id: item.id,
@@ -205,11 +205,10 @@ export default function MyReviewsPage() {
                           {[1, 2, 3, 4, 5].map((star) => (
                             <Star
                               key={star}
-                              className={`w-4 h-4 ${
-                                star <= (product.rating || 0)
+                              className={`w-4 h-4 ${star <= (product.rating || 0)
                                   ? "fill-yellow-400"
                                   : "text-gray-300"
-                              }`}
+                                }`}
                             />
                           ))}
                         </div>
