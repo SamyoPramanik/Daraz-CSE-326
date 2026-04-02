@@ -8,19 +8,90 @@ const isValidUuid = (value) =>
 const updateReliabilityScore = async (productId) => {
   try {
     const result = await pool.query(
-      `SELECT ROUND(AVG(rating), 2) as avg_rating, COUNT(*) as review_count
-       FROM order_items 
-       WHERE product_id = $1 AND rating IS NOT NULL`,
+      `SELECT 
+        oi.rating, 
+        oi.review, 
+        u.name as user_name 
+       FROM order_items oi
+       JOIN orders o ON oi.order_id = o.id
+       JOIN users u ON o.user_id = u.id
+       WHERE oi.product_id = $1 AND oi.rating IS NOT NULL`,
       [productId]
     );
 
-    const count = parseInt(result.rows[0].review_count) || 0;
-    const avg = parseFloat(result.rows[0].avg_rating) || 0;
+    const count = result.rows.length;
 
     let score = 0;
     if (count >= 3) {
-      // Scale of 1 to 10 based on 5-star rating system
-      score = Math.round(avg * 20) / 10;
+      const avg = result.rows.reduce((sum, r) => sum + Number(r.rating), 0) / count;
+      const reviewSummary = result.rows
+        .map((r, idx) => `Review ${idx + 1} (${r.rating}⭐): ${r.review || "No text"} - by ${r.user_name}`)
+        .join("\n");
+
+      // Set timeout for AI request
+      const controller = new AbortController();
+      const timeoutMs = 10000;
+      const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+      try {
+        const aiResponse = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
+            "Content-Type": "application/json",
+          },
+          signal: controller.signal,
+          body: JSON.stringify({
+            model: "llama-3.1-8b-instant",
+            messages: [
+              {
+                role: "user",
+                content: `Analyze the following product reviews and provide a reliability score on a scale of 1 to 10 (where 10 is highly reliable). 
+                
+Average rating: ${avg.toFixed(2)}/5  
+Total reviews: ${count}
+
+Customer Reviews:
+${reviewSummary}
+
+Return ONLY valid JSON with no backticks, no markdown, and no extra text from this exact schema:
+{
+  "reliability_score": number
+}`,
+              },
+            ],
+            temperature: 0.3,
+            max_tokens: 150,
+          }),
+        });
+
+        clearTimeout(timeoutId);
+
+        if (aiResponse.ok) {
+          const data = await aiResponse.json();
+          let rawContent = data.choices[0].message.content;
+          let parsedData = {};
+          try {
+            parsedData = JSON.parse(rawContent);
+          } catch (e) {
+            const match = rawContent.match(/\{[\s\S]*\}/);
+            if (match) parsedData = JSON.parse(match[0]);
+          }
+          
+          if (typeof parsedData.reliability_score === 'number' && parsedData.reliability_score >= 1 && parsedData.reliability_score <= 10) {
+             score = parsedData.reliability_score;
+          } else {
+             // Fallback to average score shifted to 10 scale
+             score = Math.round(avg * 20) / 10;
+          }
+        } else {
+           score = Math.round(avg * 20) / 10;
+        }
+      } catch (err) {
+        console.error('Groq AI calculation failed, falling back to local processing:', err);
+        clearTimeout(timeoutId);
+        score = Math.round(avg * 20) / 10;
+      }
     }
 
     await pool.query(
