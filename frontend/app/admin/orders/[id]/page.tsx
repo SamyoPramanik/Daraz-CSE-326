@@ -283,7 +283,7 @@ export default function AdminOrderDetailsPage({
                     : order.order_status === "Failed" || order.order_status === "Canceled"
                       ? "This order has been cancelled/failed. No updates available."
                       : order.order_status === "Pending" &&
-                          order.payment_method === "Online Payment"
+                        order.payment_method === "Online Payment"
                         ? "Waiting for payment from customer."
                         : "No status updates available."}
                 </p>

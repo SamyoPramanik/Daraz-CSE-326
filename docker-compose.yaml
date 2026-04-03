@@ -37,12 +37,12 @@ services:
       DB_NAME: daraz_db
       DB_HOST: db
       DB_PORT: 5432
-      GROQ_API_KEY: ***REMOVED***
+      GROQ_API_KEY: ${GROQ_API_KEY}
       AI_TIMEOUT_MS: 5000
 
       # SSLCommerz Sandbox
-      SSLCOMMERZ_STORE_ID: ***REMOVED***
-      SSLCOMMERZ_STORE_PASSWORD: ***REMOVED***@ssl
+      SSLCOMMERZ_STORE_ID: ${SSLCOMMERZ_STORE_ID}
+      SSLCOMMERZ_STORE_PASSWORD: ${SSLCOMMERZ_STORE_PASSWORD}
       SSLCOMMERZ_IS_LIVE: false
 
       # URLs
