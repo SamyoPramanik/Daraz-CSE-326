@@ -32,6 +32,7 @@ CREATE TABLE IF NOT EXISTS products (
     flash_sale BOOLEAN DEFAULT FALSE,
     category_id INT NOT NULL,
     reliability_score NUMERIC(3, 1) DEFAULT 0,
+    ai_comment TEXT,
     FOREIGN KEY (category_id) REFERENCES categories (id) ON DELETE CASCADE
 );
 
