@@ -6,6 +6,7 @@ import { Loader2, ShieldCheck } from "lucide-react";
 
 interface ReliabilityData {
   reliability_score: number;
+  ai_comment?: string | null;
 }
 
 interface ProductReliabilityProps {
@@ -81,10 +82,17 @@ export default function ProductReliability({
 
         <div>
           {hasScore ? (
-            <div className="text-center">
-              <span className={`text-4xl font-extrabold ${scoreColor}`}>
-                {data.reliability_score}<span className="text-xl text-gray-500 font-medium">/10</span>
-              </span>
+            <div className="flex flex-col sm:flex-row items-center gap-6">
+              <div className="text-center">
+                <span className={`text-4xl font-extrabold ${scoreColor}`}>
+                  {data.reliability_score}<span className="text-xl text-gray-500 font-medium">/10</span>
+                </span>
+              </div>
+              {data.ai_comment && (
+                <div className="flex-1 bg-white/60 p-4 rounded-lg border border-gray-200">
+                  <p className="text-sm text-gray-700 italic font-medium">"{data.ai_comment}"</p>
+                </div>
+              )}
             </div>
           ) : (
             <p className="text-sm text-gray-600 italic bg-white/60 p-3 rounded-lg border border-gray-200">

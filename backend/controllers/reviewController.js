@@ -22,6 +22,7 @@ const updateReliabilityScore = async (productId) => {
     const count = result.rows.length;
 
     let score = 0;
+    let ai_comment = null;
     if (count >= 3) {
       const avg = result.rows.reduce((sum, r) => sum + Number(r.rating), 0) / count;
       const reviewSummary = result.rows
@@ -46,7 +47,7 @@ const updateReliabilityScore = async (productId) => {
             messages: [
               {
                 role: "user",
-                content: `Analyze the following product reviews and provide a reliability score on a scale of 1 to 10 (where 10 is highly reliable). 
+                content: `Analyze the following product reviews and provide a reliability score on a scale of 1 to 10 (where 10 is highly reliable). Also provide a concise ai_comment summarizing the overall sentiment.
                 
 Average rating: ${avg.toFixed(2)}/5  
 Total reviews: ${count}
@@ -56,7 +57,8 @@ ${reviewSummary}
 
 Return ONLY valid JSON with no backticks, no markdown, and no extra text from this exact schema:
 {
-  "reliability_score": number
+  "reliability_score": number,
+  "ai_comment": "string"
 }`,
               },
             ],
@@ -80,23 +82,27 @@ Return ONLY valid JSON with no backticks, no markdown, and no extra text from th
           
           if (typeof parsedData.reliability_score === 'number' && parsedData.reliability_score >= 1 && parsedData.reliability_score <= 10) {
              score = parsedData.reliability_score;
+             ai_comment = parsedData.ai_comment || "Score calculated based on reliable reviews.";
           } else {
              // Fallback to average score shifted to 10 scale
              score = Math.round(avg * 20) / 10;
+             ai_comment = "Generated based on basic rating averages.";
           }
         } else {
            score = Math.round(avg * 20) / 10;
+           ai_comment = "Generated based on basic rating averages.";
         }
       } catch (err) {
         console.error('Groq AI calculation failed, falling back to local processing:', err);
         clearTimeout(timeoutId);
         score = Math.round(avg * 20) / 10;
+        ai_comment = "Generated based on basic rating averages.";
       }
     }
 
     await pool.query(
-      `UPDATE products SET reliability_score = $1 WHERE id = $2`,
-      [score, productId]
+      `UPDATE products SET reliability_score = $1, ai_comment = $2 WHERE id = $3`,
+      [score, ai_comment, productId]
     );
   } catch (error) {
     console.error('Failed to update reliability score:', error);
