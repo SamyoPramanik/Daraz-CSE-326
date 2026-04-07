@@ -25,7 +25,7 @@ const getProductReliabilityScore = async (req, res) => {
 
     // Fetch the simple reliability score out of 10 from the products table
     const productResult = await pool.query(
-      `SELECT reliability_score FROM products WHERE id = $1`,
+      `SELECT reliability_score, ai_comment FROM products WHERE id = $1`,
       [productId]
     );
 
@@ -36,12 +36,13 @@ const getProductReliabilityScore = async (req, res) => {
       });
     }
 
-    const { reliability_score } = productResult.rows[0];
+    const { reliability_score, ai_comment } = productResult.rows[0];
 
     return res.json({
       status: "success",
       data: {
         reliability_score: parseFloat(reliability_score),
+        ai_comment: ai_comment || null
       },
     });
   } catch (error) {
